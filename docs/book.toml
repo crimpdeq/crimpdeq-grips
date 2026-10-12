@@ -1,0 +1,10 @@
+[book]
+title = "Crimpdeq Grips"
+description = "Fitting, printing and assembly of the Prometheus and Sisyphus finger training grips."
+authors = ["Sergio Gasquez"]
+language = "en"
+
+[output.html]
+preferred-dark-theme = "ayu"
+git-repository-url = "https://github.com/crimpdeq/crimpdeq-grips"
+edit-url-template = "https://github.com/crimpdeq/crimpdeq-grips/edit/main/docs/{path}"
