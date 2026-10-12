@@ -5,24 +5,88 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Photon hand measurement</title>
 <style>
+  /* Theme of crimpdeq.com (crimpdeq-web/web/index.html). */
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+  :root {
+    --bg: #0b1118;
+    --bg-soft: #101a26;
+    --panel: #162333;
+    --text: #ecf2f8;
+    --muted: #9eb1c5;
+    --accent: #4fc3f7;
+    --accent-strong: #7cd6ff;
+    --border: #2b3f53;
+    --shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+    accent-color: var(--accent);
+  }
+  * { box-sizing: border-box; }
   [hidden] { display: none !important; }
-  body { margin: 0; display: flex; height: 100vh; font: 14px system-ui, sans-serif; }
-  main { flex: 1; position: relative; background: #222; }
+  body {
+    margin: 0; display: flex; gap: 16px; height: 100vh; padding: 16px;
+    font: 14px/1.5 "Space Grotesk", system-ui, sans-serif; color: var(--text);
+    background:
+      radial-gradient(1200px 450px at 20% -10%, rgba(79, 195, 247, 0.18), transparent 55%),
+      radial-gradient(700px 380px at 85% 15%, rgba(124, 214, 255, 0.14), transparent 60%),
+      linear-gradient(180deg, #0b1118 0%, #070c12 100%);
+  }
+  main, aside { border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); }
+  main { flex: 1; position: relative; overflow: hidden; background: var(--bg-soft); }
   canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
-  #hint { position: absolute; inset: 0; display: grid; place-items: center; color: #aaa; pointer-events: none; }
-  aside { width: 380px; overflow: auto; padding: 0 12px 12px; box-sizing: border-box; border-left: 1px solid #ccc; }
-  ol { padding-left: 24px; margin: 4px 0; }
-  li { cursor: pointer; padding: 1px 4px; }
-  li.done { color: #888; }
-  li.active { background: #ffe58a; color: #000; }
-  table { border-collapse: collapse; width: 100%; margin: 4px 0; }
-  th, td { border: 1px solid #ccc; padding: 2px 4px; text-align: right; }
+  #hint { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); pointer-events: none; }
+  aside {
+    width: 400px; overflow: auto; padding: 22px;
+    background: linear-gradient(180deg, rgba(22, 35, 51, 0.95), rgba(12, 19, 29, 0.94));
+  }
+  .kicker { margin: 0; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.78rem; font-weight: 600; }
+  h1 { margin: 4px 0 6px; font: 800 1.6rem/1.1 Inter, sans-serif; }
+  h2 { margin: 22px 0 8px; font-size: 1.05rem; }
+  p { margin: 8px 0; }
+  a { color: var(--accent-strong); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  small { color: var(--muted); }
+  label { display: block; margin: 4px 0; }
+  input[type=number], textarea {
+    padding: 6px 10px; font: inherit; color: var(--text);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+  }
+  #rulerMm { display: block; width: 90px; margin-top: 4px; }
+  #file { max-width: 100%; color: var(--muted); }
+  button, ::file-selector-button {
+    padding: 8px 14px; font: 600 14px "Space Grotesk", system-ui, sans-serif; color: var(--text); cursor: pointer;
+    background: rgba(16, 26, 38, 0.9); border: 1px solid var(--border); border-radius: 12px;
+    transition: background 160ms ease, box-shadow 160ms ease;
+  }
+  ::file-selector-button { margin-right: 10px; }
+  button:hover, ::file-selector-button:hover { background: var(--panel); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+  button.primary {
+    color: #00111c; border-color: transparent;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    box-shadow: 0 10px 25px rgba(79, 195, 247, 0.25);
+  }
+  :focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+  ol { padding-left: 28px; margin: 8px 0; }
+  li { cursor: pointer; margin: 2px 0; padding: 2px 8px; border-radius: 0 8px 8px 0; }
+  li::marker { color: var(--muted); }
+  li:hover { background: rgba(79, 195, 247, 0.08); }
+  li.done { color: var(--muted); }
+  li.active { background: rgba(79, 195, 247, 0.18); color: var(--accent-strong); font-weight: 600; }
+  table { border-collapse: collapse; width: 100%; margin: 4px 0; font-variant-numeric: tabular-nums; }
+  th, td { border-bottom: 1px solid var(--border); padding: 4px 6px; text-align: right; }
+  th { color: var(--muted); font-weight: 600; }
   th:first-child, td:first-child { text-align: left; }
-  #tabs { display: flex; gap: 4px; margin-top: 6px; }
+  #tabs { display: flex; gap: 8px; margin-top: 10px; }
   #tabs button { flex: 1; }
-  #tabs button.active { background: #ffe58a; }
-  textarea { width: 100%; height: 200px; font: 12px ui-monospace, monospace; box-sizing: border-box; }
-  small { color: #666; }
+  textarea { display: block; width: 100%; height: 200px; margin: 10px 0; font: 12px/1.4 ui-monospace, monospace; resize: vertical; }
+  .diagram { color: var(--text); }
+  @media (max-width: 800px) {
+    body { flex-direction: column; height: auto; min-height: 100vh; }
+    main { flex: none; height: 70vh; }
+    aside { width: auto; overflow: visible; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    button, ::file-selector-button { transition: none; }
+  }
 </style>
 </head>
 <body>
@@ -31,26 +95,29 @@
   <div id="hint">Choose, drop, or paste a hand photo</div>
 </main>
 <aside>
-  <h3>1. Hands</h3>
-  <label><input type="radio" name="mode" value="one" checked> Measure one hand, use it for both</label><br>
+  <p class="kicker"><a href="https://crimpdeq.com">Crimpdeq</a> Grips</p>
+  <h1>Photon hand measurement</h1>
+  <small>Instructions: <a href="photon/fit.html">Fit to your hand</a>.</small>
+  <h2>1. Hands</h2>
+  <label><input type="radio" name="mode" value="one" checked> Measure one hand, use it for both</label>
   <label><input type="radio" name="mode" value="each"> Measure each hand</label>
   <div id="tabs"></div>
-  <h3>2. Photo</h3>
+  <h2>2. Photo</h2>
   <input type="file" id="file" accept="image/jpeg,image/png,image/webp">
   <p><small>Palm up, fingers straight, ruler at palm height beside the fingers, camera parallel to the table.
     Scroll to zoom, drag to pan, drag a point to move it, click a step to place it again.</small></p>
-  <h3>3. Points</h3>
+  <h2>3. Points</h2>
   <!-- One finger, palm side, pointing right; the double PIP crease is clicked at its midpoint. -->
-  <svg viewBox="0 20 300 92" width="100%" role="img" aria-label="Finger landmarks and measured lengths">
+  <svg class="diagram" viewBox="0 20 300 92" width="100%" role="img" aria-label="Finger landmarks and measured lengths">
     <defs>
       <marker id="arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M0 0L6 3L0 6z" fill="#333"/>
+        <path d="M0 0L6 3L0 6z" fill="currentColor"/>
       </marker>
     </defs>
     <path d="M0 48H262a22 22 0 0 1 0 44H0" fill="#f2c9a8" stroke="#b07a5a"/>
     <path d="M40 52V88M118 52V88M124 52V88M200 52V88" stroke="#8a5a3c" stroke-width="1.5"/>
-    <path d="M40 34V48M121 34V48M200 34V48M284 34V70" stroke="#999" stroke-dasharray="2 2"/>
-    <g stroke="#333" marker-start="url(#arrow)" marker-end="url(#arrow)">
+    <path d="M40 34V48M121 34V48M200 34V48M284 34V70" stroke="#5f7a94" stroke-dasharray="2 2"/>
+    <g stroke="currentColor" marker-start="url(#arrow)" marker-end="url(#arrow)">
       <path d="M40 38H121"/>
       <path d="M121 38H200"/>
       <path d="M200 38H284"/>
@@ -61,7 +128,7 @@
       <circle cx="200" cy="70" r="4"/>
       <circle cx="284" cy="70" r="4"/>
     </g>
-    <g font-size="10" text-anchor="middle" fill="#333">
+    <g font-size="10" text-anchor="middle" fill="currentColor">
       <text x="80" y="33">base → PIP</text>
       <text x="160" y="33">PIP → DIP</text>
       <text x="242" y="33">DIP → tip</text>
@@ -74,15 +141,15 @@
   <p><small>Click the four circled points on every finger. The segments and how far each base crease
     sits along the hand place the roller (Height, Depth); DIP → tip sets the blocker (To_Blocker).</small></p>
   <label>Distance between the two ruler marks (mm)
-    <input type="number" id="rulerMm" placeholder="e.g. 100" min="1" step="any" style="width: 70px"></label>
+    <input type="number" id="rulerMm" placeholder="e.g. 100" min="1" step="any"></label>
   <p><small>Pick two ruler marks far apart that span the fingers (e.g. 0 and 10 cm), not the palm:
     camera tilt changes the scale across the photo.
     If a joint has a double crease, click midway between the creases.</small></p>
   <ol id="steps"></ol>
-  <h3>4. Results (mm)</h3>
+  <h2>4. Results (mm)</h2>
   <div id="results"></div>
   <textarea id="output" readonly></textarea>
-  <button id="copy">Copy</button>
+  <button id="copy" class="primary">Copy</button>
 </aside>
 <script>
 // Parameter names and defaults match the VarSet of the original FreeCAD model
@@ -234,7 +301,7 @@ function update() {
   $('tabs').replaceChildren(...['left', 'right'].map(key => {
     const button = document.createElement('button');
     button.textContent = `${key === 'left' ? 'Left' : 'Right'} hand${measure(hands[key]) ? ' ✓' : ''}`;
-    button.className = key === current ? 'active' : '';
+    button.className = key === current ? 'primary' : '';
     button.onclick = () => selectHand(key);
     return button;
   }));
