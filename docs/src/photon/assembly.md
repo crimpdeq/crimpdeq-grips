@@ -4,6 +4,11 @@ Build from the pinky side to the index side. Walls slide into the slot in the fr
 from its open end, along the roller axis; they cannot drop in from above. Each pin rests in a
 hole in the wall on both sides of its roller.
 
+Once together, the parts are hard to take apart without marring them: read the steps through
+first and check each part's orientation before pushing it in. A little inert lubricant, such as
+Super Lube, on the post and in the crossbar slot helps the parts slide in; wipe off the excess so
+it does not get on your fingers.
+
 ## 1. Pinky roller and pin
 
 Lay the pinky roller in the frame, narrow end against the frame's outer wall. Push the long pin
@@ -24,34 +29,38 @@ Lay the ring roller on the ring wall and push a short pin through it into the wa
 
 ![Step 3](images/step-3.png)
 
-## 4. Middle wall
+## 4. Post
 
-Slide it in like the ring wall, onto the ring pin.
+Install the post now: pushed through more walls later, it can hardly go in without breaking.
+Turn it so its chamfered corner matches the corner of the square hole, and push it through the
+ring wall into the frame as far as it goes. The rest sticks out and guides the next walls.
 
 ![Step 4](images/step-4.png)
 
-## 5. Middle roller and pin
+## 5. Middle wall
+
+Slide it into the crossbar slot and onto the post at the same time, and push it onto the ring pin.
+From here on, tap each wall home with the mallet over the wood block, alternating between its
+crossbar end and its post end so it goes in straight.
 
 ![Step 5](images/step-5.png)
 
-## 6. Index wall
+## 6. Middle roller and pin
 
 ![Step 6](images/step-6.png)
 
-## 7. Index roller and pin
+## 7. Index wall
 
 ![Step 7](images/step-7.png)
 
-## 8. End wall
-
-Slide it in last, onto the index pin, engraving facing out.
+## 8. Index roller and pin
 
 ![Step 8](images/step-8.png)
 
-## 9. Post
+## 9. End wall
 
-Turn the post so its chamfered corner matches the corner of the square hole. Push it through
-the end wall and every other wall into the frame until it sits flush with the end wall.
+Slide it in last, onto the index pin and the post, engraving facing out. The post ends flush with
+it.
 
 ![Step 9](images/step-9.png)
 
@@ -63,8 +72,9 @@ Thread the cord through the round hole in the frame's anchor, behind the crossba
 
 ## If something does not fit
 
-- The wall tongues fit their slot with no clearance. Tap the walls home with the mallet over the
-  wood block. If one will not move, sand its tongue instead of forcing it.
+- The wall tongues fit their slot with no clearance. With lubricant and careful taps, a wall goes
+  in even when it seems too tight. If one still will not move, sand its tongue instead of forcing
+  it, or reprint the walls and the post slightly scaled down; keep the frame at full size.
 - Pins, rollers and the post have clearance: every roller should spin freely and nothing should
   rattle.
 - Finally, hold the grip: each fingertip should rest on its roller with the last finger joint

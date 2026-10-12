@@ -3,8 +3,8 @@
 How to put together a printed Photon grip. The pictures show the right-hand grip at the
 model's defaults; a left-hand grip is its mirror image and goes together the same way.
 
-You need the 14 printed parts, a cord for the anchor, and a mallet or hammer with a small wood
-block.
+You need the 14 printed parts, a cord for the anchor, a mallet or hammer with a small wood block,
+and optionally an inert lubricant such as Super Lube.
 
 The middle and index walls look alike: label them as you take them off the plate (the slicer's
 object list names every part).

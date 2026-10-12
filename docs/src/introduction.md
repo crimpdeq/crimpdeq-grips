@@ -9,7 +9,8 @@ models:
 - **Photon**, fitted to your hand: [measure a photo of it](photon/fit.md) and export parts
   that place every roller under its fingertip.
 - **Spark**, with larger rollers (22 to 40 mm). Its chapters are still to come; its parts export
-  like Photon's (see [Models and checks](development.md)).
+  like Photon's (see [Models and checks](development.md)) and go together in the same order
+  (see [Assembly](photon/assembly.md)).
 
 Every part, pins included, prints in the same plastic: no metal rods, screws or TPU. The only
 extra is a cord through the anchor.

@@ -36,6 +36,9 @@ rerun them.
   and push them there), `fork` is the user's personal fork, `jared` and `upstream` are the sources
   (fetch only, never push).
 - No TPU guard and no non-printed parts besides the cord.
+- The book's print and assembly advice (walls print without supports, post installed right after
+  the ring roller, lubricant, scaling walls but not the frame) follows the original author's
+  OpenGrips assembly instructions (PDF of 2026-10-12, not kept); the same order applies to Spark.
 
 ## Model facts
 
@@ -88,7 +91,7 @@ committed. It was built with the Bambu Studio CLI
    (`0.20mm Photon @BBL A1`); otherwise the CLI reports the process as incompatible.
 2. Import the STLs with `--orient 0 --arrange 1 --export-3mf` (no slicing).
 3. In `Metadata/model_settings.config`, add per-object `enable_support 1` / `support_type
-   normal(auto)` to the frame and index wall, plus `brim_type outer_only` / `brim_width 5` to the
+   normal(auto)` to the frame, plus `brim_type outer_only` / `brim_width 5` to the
    frame and the ring, middle and index walls. Without a brim, a middle wall lifted on its first
    layers in a test print and the rest of it printed as spaghetti over the plate.
 4. Re-run `--arrange 1 --orient 0` on that 3MF (supports added after arranging collide), then
