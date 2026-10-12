@@ -1,6 +1,6 @@
 # Parts
 
-How to put together a printed Prometheus grip. The pictures show the right-hand grip at the
+How to put together a printed Photon grip. The pictures show the right-hand grip at the
 model's defaults; a left-hand grip is its mirror image and goes together the same way.
 
 You need the 14 printed parts, a cord for the anchor, and a mallet or hammer with a small wood
@@ -11,7 +11,7 @@ object list names every part).
 
 | Part | | How to recognize it |
 |---|---|---|
-| Frame | ![Frame](images/frame.png) | The largest part, with the top crossbar and the cord hole |
+| Frame | ![Frame](images/frame.png) | The largest part, with the top crossbar engraved `Crimpdeq Photon` and the cord hole |
 | Ring wall | ![Ring wall](images/ring_wall.png) | Round hump around a pin hole |
 | Middle wall | ![Middle wall](images/middle_wall.png) | Looks like the index wall |
 | Index wall | ![Index wall](images/index_wall.png) | Looks like the middle wall |

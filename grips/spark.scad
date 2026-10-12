@@ -1,4 +1,4 @@
-// OpenGrips Sisyphus: parametric rebuild of "OpenGrips Sisyphus v27.step" (commit f14f3e9).
+// Spark: parametric rebuild of OpenGrips Sisyphus, "OpenGrips Sisyphus v27.step" (commit f14f3e9).
 //
 // Coordinates: a left-hand grip, X across the fingers along the roller axes (pinky at low X),
 // Y along the fingers, Z depth; the frame's front bottom corner is the origin (the STEP is
@@ -7,6 +7,7 @@
 // Base_<F>_height, Base_<F>_blocker, Base_<F>_diameter, Base_R_diamter, I_width, Base_wall_width).
 
 use <common.scad>
+use <fonts/Inter-Bold.ttf>
 
 /* [Output] */
 part = "assembly"; // [assembly, frame, pinky_roller, ring_roller, middle_roller, index_roller, ring_wall, middle_wall, index_wall, end_wall, pinky_pin, ring_pin, middle_pin, index_pin, post]
@@ -118,10 +119,29 @@ ANCHOR_X0 = E + WIDTH[P] + 2.255;
 ANCHOR_X1 = roller_x(I) + WIDTH[I] / 2 - 2.185;
 FRAME_TOP = ANCHOR_Y - ANCHOR_Z + ANCHOR_R * sqrt(2); // where the bar's underside meets the bed
 CORD_EXIT_R = 3;
+// The bar's top face (Y, Z): from the crossbar top to where it meets the tube tangentially.
+BAR_TOP_START = [ANCHOR_Y - ANCHOR_Z + WH - ANCHOR_R * sqrt(2), WH];
+BAR_TOP_END = [ANCHOR_Y, ANCHOR_Z] + ANCHOR_R / sqrt(2) * [-1, 1];
+
+// Engraved on the bar's top face, which faces the fingers, centered on it and across the grip;
+// it reads from the front with the anchor up.
+NAME_TEXT = "Crimpdeq Spark";
+NAME_FONT = "Inter:style=Bold";
+NAME_SIZE = 7;
+NAME_DEPTH = 0.8;
+// Text extents ([along the text, across it]) measured with textmetrics(), which is experimental
+// and off by default in OpenSCAD; remeasure when the text or its size changes.
+NAME_EXTENT = [76.68, 9.45]; // [along X, along the bar]
+NAME_TOP_Y = (BAR_TOP_START[0] + BAR_TOP_END[0] + NAME_EXTENT[1] / sqrt(2)) / 2;
 
 for (f = [R:I])
   assert(seat_end(f) < LOCK_Y - STOP_SETBACK[f] - WH * tan(STOP_ANGLE[f]),
          str(FINGERS[f], " seat (Y ", seat_end(f), ") runs into its finger stop"));
+assert(NAME_EXTENT[1] + 2 < norm(BAR_TOP_END - BAR_TOP_START),
+       str("the anchor bar (", norm(BAR_TOP_END - BAR_TOP_START), " mm top face) is too short for ", NAME_TEXT));
+assert(NAME_EXTENT[0] + 2 < FW - 2 * EDGE_R, str("the frame (", FW, " mm wide) is too narrow for ", NAME_TEXT));
+assert(FW / 2 - NAME_EXTENT[0] / 2 > ANCHOR_X0 - (ANCHOR_Y + ANCHOR_R - NAME_TOP_Y) + 1,
+       str(NAME_TEXT, " reaches the pinky-side end of the anchor bar"));
 
 // ---------------------------------------------------------------------------------------------
 // Rollers, pins, post
@@ -183,6 +203,15 @@ module post_hole(x0, x1) {
 
 module lock() {
   lock2d(LOCK_Y, LOCK_Z, W);
+}
+
+// NAME_TEXT engraved into the anchor bar's top face; flipped for the right hand, where
+// hand_mirror mirrors the part.
+module grip_name() {
+  c = (BAR_TOP_START + BAR_TOP_END) / 2;
+  translate([FW / 2, c[0], c[1]]) rotate([45, 0, 0]) translate([0, 0, -NAME_DEPTH]) linear_extrude(NAME_DEPTH + 1)
+    mirror([hand == "right" ? 1 : 0, 0])
+      text(NAME_TEXT, size = NAME_SIZE, font = NAME_FONT, halign = "center", valign = "center");
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -367,8 +396,7 @@ module crossbar2d() {
 module anchor2d() {
   c = [ANCHOR_Y, ANCHOR_Z];
   d = ANCHOR_R / sqrt(2);
-  top_start = [c[0] - c[1] + WH - ANCHOR_R * sqrt(2), WH];
-  polygon([[FRAME_TOP, 0], c + [d, -d], c + [-d, d], top_start, [top_start[0], 0]]);
+  polygon([[FRAME_TOP, 0], c + [d, -d], BAR_TOP_END, BAR_TOP_START, [BAR_TOP_START[0], 0]]);
   translate(c) circle(ANCHOR_R);
 }
 
@@ -470,6 +498,7 @@ module frame() {
     post_hole(POST_X0, x1);
     along_x(x1, FW + 1) lock();
     cord_path();
+    grip_name();
   }
 }
 

@@ -1,17 +1,17 @@
 #!/bin/sh
-# Renders the Prometheus illustrations in ../src/prometheus/images from the model's right-hand defaults.
+# Renders the Photon illustrations in ../src/photon/images from the model's right-hand defaults.
 # Needs OpenSCAD 2025 or newer.
 set -eu
 cd "$(dirname "$0")"
-images=../src/prometheus/images
+images=../src/photon/images
 stl=$(mktemp -d)
 trap 'rm -r "$stl"' EXIT
-python3 ../../scripts/export.py prometheus --hand right --in-place --out "$stl" >/dev/null
+python3 ../../scripts/export.py photon --hand right --in-place --out "$stl" >/dev/null
 
 render() {
   out=$1
   shift
-  openscad -q --colorscheme Tomorrow -D "stl=\"$stl/prometheus_right_\"" -o "$images/$out.png" "$@" prometheus.scad
+  openscad -q --colorscheme Tomorrow -D "stl=\"$stl/photon_right_\"" -o "$images/$out.png" "$@" photon.scad
 }
 
 mkdir -p "$images"

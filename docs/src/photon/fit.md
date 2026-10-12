@@ -1,6 +1,6 @@
 # Fit to your hand
 
-Prometheus places each roller from three values per finger, relative to the pinky. The
+Photon places each roller from three values per finger, relative to the pinky. The
 [measuring page](../measure-hand.html) computes them from a photo of your hand, and
 `scripts/export.py` turns them into print-ready STLs.
 
@@ -46,7 +46,7 @@ Two things skew the values:
 With [OpenSCAD](https://openscad.org) 2025 or newer installed, from the repository root:
 
 ```sh
-python3 scripts/export.py prometheus my-right-hand.txt --hand right --out my-right-hand
+python3 scripts/export.py photon my-right-hand.txt --hand right --out my-right-hand
 ```
 
 This writes one STL per part to `my-right-hand/`, already oriented for printing. The model is a

@@ -2,12 +2,12 @@
 
 [Introduction](introduction.md)
 
-# Prometheus
+# Photon
 
-- [Fit to your hand](prometheus/fit.md)
-- [Printing](prometheus/printing.md)
-- [Parts](prometheus/parts.md)
-- [Assembly](prometheus/assembly.md)
+- [Fit to your hand](photon/fit.md)
+- [Printing](photon/printing.md)
+- [Parts](photon/parts.md)
+- [Assembly](photon/assembly.md)
 
 # Development
 

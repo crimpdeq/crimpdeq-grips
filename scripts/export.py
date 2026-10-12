@@ -1,9 +1,9 @@
 """Export every part of a grip model in ../grips as print-ready STLs.
 
 Usage:
-    python3 scripts/export.py prometheus PARAMS --hand right
-    python3 scripts/export.py sisyphus --hand left --out DIR
-    python3 scripts/export.py prometheus PARAMS --hand right --in-place --out DIR
+    python3 scripts/export.py photon PARAMS --hand right
+    python3 scripts/export.py spark --hand left --out DIR
+    python3 scripts/export.py photon PARAMS --hand right --in-place --out DIR
 
 PARAMS (optional) holds `Name = value` lines, `#` lines ignored, e.g. the output of
 ../docs/src/measure-hand.html; names must be parameters of the model. The STLs, named
@@ -76,7 +76,7 @@ def export(openscad, scad, part, hand, in_place, params, path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("model", choices=("prometheus", "sisyphus"))
+    parser.add_argument("model", choices=("photon", "spark"))
     parser.add_argument("params", type=Path, nargs="?")
     parser.add_argument("--hand", choices=("left", "right"), required=True)
     parser.add_argument("--out", type=Path)

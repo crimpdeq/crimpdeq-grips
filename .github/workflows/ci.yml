@@ -25,7 +25,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                grip: [prometheus, sisyphus]
+                grip: [photon, spark]
                 hand: [left, right]
         steps:
             - name: Checkout

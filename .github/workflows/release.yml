@@ -15,7 +15,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                grip: [prometheus, sisyphus]
+                grip: [photon, spark]
                 hand: [left, right]
         env:
             NAME: crimpdeq-grips-${{ matrix.grip }}-${{ matrix.hand }}
@@ -63,7 +63,7 @@ jobs:
 
             - name: Verify release assets exist
               run: |
-                  for grip in prometheus sisyphus; do
+                  for grip in photon spark; do
                       for hand in left right; do
                           test -f "release-assets/crimpdeq-grips-$grip-$hand.zip"
                       done
