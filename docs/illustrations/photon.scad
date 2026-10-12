@@ -1,8 +1,8 @@
-// Illustrations of the Prometheus parts and assembly steps, from the STLs of
+// Illustrations of the Photon parts and assembly steps, from the STLs of
 // ../../scripts/export.py --in-place.
 // render.sh sets stl and either part (one part alone) or step (1 to 9, 10 the finished grip).
 
-stl = "/tmp/prometheus_in_place/prometheus_right_";
+stl = "/tmp/photon_in_place/photon_right_";
 part = "";
 step = 1;
 
@@ -12,12 +12,13 @@ STEPS = [
   [["pinky_roller", [0, 0, 35]], ["pinky_pin", [-50, 0, 35]]],
   [["ring_wall", [-40, 0, 0]]],
   [["ring_roller", [0, 0, 30]], ["ring_pin", [-40, 0, 30]]],
+  // The post goes in before the middle wall: later it hardly goes in without breaking.
+  [["post", [-80, 0, 0]]],
   [["middle_wall", [-40, 0, 0]]],
   [["middle_roller", [0, 0, 30]], ["middle_pin", [-40, 0, 30]]],
   [["index_wall", [-40, 0, 0]]],
   [["index_roller", [0, 0, 30]], ["index_pin", [-40, 0, 30]]],
   [["end_wall", [-40, 0, 0]]],
-  [["post", [-80, 0, 0]]],
 ];
 
 module show(name, c) {

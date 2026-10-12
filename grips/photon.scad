@@ -1,4 +1,4 @@
-// OpenGrips Prometheus: parametric rebuild of "OpenGrips Prometheus v43.step" (commit f14f3e9).
+// Photon: parametric rebuild of OpenGrips Prometheus, "OpenGrips Prometheus v43.step" (commit f14f3e9).
 //
 // Coordinates follow the original FreeCAD model, a left-hand grip: X runs across the fingers
 // along the roller axes (pinky at low X), Y along the fingers, Z is depth (frame bottom at 0).
@@ -137,7 +137,15 @@ BRAND_FONT = "Inter:style=Bold";
 BRAND_SIZE = 4.5;
 BRAND_DEPTH = 0.8;
 BRAND_Y = (POST_Y + POST_SIZE + LOCK_Y) / 2;
-BRAND_EXTENT = textmetrics(BRAND_TEXT, size = BRAND_SIZE, font = BRAND_FONT).size; // [along Y, Z]
+// Text extents ([along the text, across it]) measured with textmetrics(), which is experimental
+// and off by default in OpenSCAD; remeasure when the text or its size changes.
+BRAND_EXTENT = [43.86, 6.07]; // [along Y, Z]
+
+// Engraved on the front face of the crossbar, between the walls and the anchor, centered across
+// the grip; it reads from the front with the anchor up.
+NAME_TEXT = "Crimpdeq Photon";
+NAME_SIZE = 7;
+NAME_EXTENT = [81.93, 9.45]; // [along X, Y]
 
 for (f = [P:I])
   assert(blocker_y(f) + 2 * BLOCKER_R < LOCK_Y,
@@ -150,6 +158,9 @@ assert(BRAND_Y - BRAND_EXTENT[0] / 2 > axis_y(P) + DIAMETER[P] / 4 + POLE,
        str(BRAND_TEXT, " reaches the pinky pole wall on the frame"));
 assert(BRAND_EXTENT[1] + 1 < T - 2 * EDGE_R,
        str("the frame (", T, " mm thick) is too thin for ", BRAND_TEXT));
+assert(NAME_EXTENT[1] + 2 < FRAME_TOP - LOCK_Y,
+       str("the crossbar (", FRAME_TOP - LOCK_Y, " mm between walls and anchor) is too short for ", NAME_TEXT));
+assert(NAME_EXTENT[0] + 2 < FW - 2 * EDGE_R, str("the frame (", FW, " mm wide) is too narrow for ", NAME_TEXT));
 
 // ---------------------------------------------------------------------------------------------
 // Rollers, pins, post
@@ -243,6 +254,14 @@ module brand(x, side) {
   along_x(side > 0 ? x - BRAND_DEPTH : x - 1, side > 0 ? x + 1 : x + BRAND_DEPTH)
     translate([BRAND_Y, T / 2]) mirror([flip ? 1 : 0, 0])
       text(BRAND_TEXT, size = BRAND_SIZE, font = BRAND_FONT, halign = "center", valign = "center");
+}
+
+// NAME_TEXT engraved into the crossbar's front face (z = T); flipped for the right hand, where
+// hand_mirror mirrors the part.
+module grip_name() {
+  translate([FW / 2, (LOCK_Y + FRAME_TOP) / 2, T - BRAND_DEPTH]) linear_extrude(BRAND_DEPTH + 1)
+    mirror([hand == "right" ? 1 : 0, 0])
+      text(NAME_TEXT, size = NAME_SIZE, font = BRAND_FONT, halign = "center", valign = "center");
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -542,6 +561,7 @@ module frame() {
     along_x(x1, FW + 1) lock();
     cord_path();
     brand(0, -1);
+    grip_name();
   }
 }
 

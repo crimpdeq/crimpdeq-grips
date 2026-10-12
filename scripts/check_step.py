@@ -5,7 +5,7 @@
 """Compare every part of the OpenSCAD models with the STEP files they rebuild.
 
 Usage:
-    uv run scripts/check_step.py [prometheus|sisyphus]
+    uv run scripts/check_step.py [photon|spark]
 
 The STEP files are read from STEP_COMMIT, the last commit that has them (needs a full clone), and
 tessellated with OpenCascade (OCP). Each OpenSCAD part is exported in assembly coordinates
@@ -49,7 +49,7 @@ SOLIDS = {
 MODELS = {
     # v43's values; it moved the blockers by hand but kept the frame length of the original blocker
     # positions.
-    "prometheus": {
+    "photon": {
         "step": "OpenGrips Prometheus v43.step",
         "defines": [
             f"-DBase_{finger}_{name}={value}"
@@ -61,7 +61,7 @@ MODELS = {
         "solids": SOLIDS,
     },
     # v27 also holds an all-round copy of the post (13); the printable, chamfered one is 15.
-    "sisyphus": {
+    "spark": {
         "step": "OpenGrips Sisyphus v27.step",
         "defines": [],
         "offset": [-5.965, -8.069, -4.13],

@@ -1,6 +1,6 @@
 # Fit to your hand
 
-Prometheus places each roller from three values per finger, relative to the pinky. The
+Photon places each roller from three values per finger, relative to the pinky. The
 [measuring page](../measure-hand.html) computes them from a photo of your hand, and
 `scripts/export.py` turns them into print-ready STLs.
 
@@ -46,12 +46,22 @@ Two things skew the values:
 With [OpenSCAD](https://openscad.org) 2025 or newer installed, from the repository root:
 
 ```sh
-python3 scripts/export.py prometheus my-right-hand.txt --hand right --out my-right-hand
+python3 scripts/export.py photon my-right-hand.txt --hand right --out my-right-hand
 ```
 
 This writes one STL per part to `my-right-hand/`, already oriented for printing. The model is a
 left-hand grip; `--hand right` mirrors it. The frame length follows the middle finger, so its
 `Base_M_Height + Base_M_To_Blocker` must be the largest of the four; the export stops with a
 message if not.
+
+For a Bambu Lab A1, `scripts/export_bambu_project.py` turns these STLs into a Bambu Studio project
+with all parts on one plate and the settings of [Printing](printing.md):
+
+```sh
+python3 scripts/export_bambu_project.py my-right-hand --output my-right-hand.3mf
+```
+
+It needs [Bambu Studio](https://bambulab.com/en/download/studio) installed and slices the project
+to check it.
 
 The fit has only been checked digitally; adjust the values after a test print.

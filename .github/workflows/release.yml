@@ -15,7 +15,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                grip: [prometheus, sisyphus]
+                grip: [photon, spark]
                 hand: [left, right]
         env:
             NAME: crimpdeq-grips-${{ matrix.grip }}-${{ matrix.hand }}
@@ -37,11 +37,19 @@ jobs:
             - name: Zip the STLs
               run: zip -r "$NAME.zip" "$NAME"
 
-            - name: Upload the zip
+            - name: Install Bambu Studio
+              uses: ./.github/actions/setup-bambu-studio
+
+            - name: Build the Bambu Studio project
+              run: python3 scripts/export_bambu_project.py "$NAME" --output "$NAME.3mf"
+
+            - name: Upload the release files
               uses: actions/upload-artifact@v6
               with:
                   name: ${{ env.NAME }}
-                  path: ${{ env.NAME }}.zip
+                  path: |
+                      ${{ env.NAME }}.zip
+                      ${{ env.NAME }}.3mf
                   if-no-files-found: error
                   compression-level: 0
 
@@ -54,7 +62,7 @@ jobs:
         permissions:
             contents: write
         steps:
-            - name: Download the zips
+            - name: Download the release files
               uses: actions/download-artifact@v7
               with:
                   pattern: crimpdeq-grips-*
@@ -63,9 +71,10 @@ jobs:
 
             - name: Verify release assets exist
               run: |
-                  for grip in prometheus sisyphus; do
+                  for grip in photon spark; do
                       for hand in left right; do
                           test -f "release-assets/crimpdeq-grips-$grip-$hand.zip"
+                          test -f "release-assets/crimpdeq-grips-$grip-$hand.3mf"
                       done
                   done
 
@@ -74,6 +83,6 @@ jobs:
               with:
                   repo_token: ${{ secrets.GITHUB_TOKEN }}
                   tag: ${{ github.ref }}
-                  file: release-assets/*.zip
+                  file: release-assets/*
                   file_glob: true
                   overwrite: true
