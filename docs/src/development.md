@@ -64,9 +64,8 @@ CI runs these on every pull request:
 
 - `uv run scripts/check_step.py` exports each part at the STEP's own values and compares it with
   the STEP solid, read from git history (needs a full clone) and tessellated with OpenCascade.
-  Every part is within 0.5% of the STEP volume and within 0.1 mm of its surface at the 95th
-  percentile, except the parts engraved on their sides (up to 0.22 mm). It fails beyond
-  1% or 0.6 mm.
+  The engravings, absent from the STEP files, are left out. Every part is within 0.5% of the STEP
+  volume and within 0.1 mm of its surface at the 95th percentile. It fails beyond 1% or 0.6 mm.
 - `python3 scripts/check_stl.py` on the exports of both grips for both hands: each STL is one
   closed body resting on z = 0.
 - `uvx ruff check --line-length 120 scripts` and `mdbook build docs`.
