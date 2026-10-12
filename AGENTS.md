@@ -67,6 +67,8 @@ rerun them.
   meet faces tangentially: `check_step.py` drops zero-volume fragments before comparing, and
   `check_stl.py` accepts edges shared four or six times (never an odd count).
 - `render()` wraps every part: without it OpenCSG previews of the frame come out empty.
+- No `minkowski()` of non-convex solids: it needs CGAL, which fails in WebAssembly and falls back
+  to minutes per part on the measuring page. Round with `along_x_ball_swept` (offset layers).
 
 ## Verify after changes
 

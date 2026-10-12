@@ -283,10 +283,7 @@ module blocker2d(f, inset = 0) {
 // Blocker of finger f over [x0, x1] with every exposed edge rounded by BLOCKER_R.
 module blocker(f, x0, x1) {
   intersection() {
-    minkowski() {
-      along_x(x0 + BLOCKER_R, x1 - BLOCKER_R) blocker2d(f, BLOCKER_R);
-      ball(BLOCKER_R);
-    }
+    along_x_ball_swept(x0 + BLOCKER_R, x1 - BLOCKER_R, BLOCKER_R) blocker2d(f, BLOCKER_R);
     translate([x0, 0, 0]) cube([x1 - x0, LOCK_Y, 100]);
   }
 }
