@@ -1,0 +1,73 @@
+name: Set up Bambu Studio
+description: >
+    Install the pinned Bambu Studio AppImage as `bambu-studio`, for building
+    the release project files.
+
+inputs:
+    version:
+        description: Bambu Studio release tag on github.com/bambulab/BambuStudio
+        default: v02.08.02.61
+    asset:
+        description: Ubuntu 24.04 AppImage asset of that release
+        default: BambuStudio_ubuntu24.04-v02.08.02.61-20260820225108.AppImage
+    sha256:
+        description: SHA-256 of the AppImage
+        default: d501b103fac5424513ec0e8d6bc145fb30719de2c7d94d7320d723740c81a7fd
+
+runs:
+    using: composite
+    steps:
+        - name: Cache the AppImage
+          uses: actions/cache@v6
+          with:
+              path: ${{ runner.temp }}/bambu-studio-appimage
+              key: bambu-studio-${{ inputs.asset }}
+
+        - name: Install Bambu Studio
+          shell: bash
+          env:
+              BAMBU_VERSION: ${{ inputs.version }}
+              BAMBU_ASSET: ${{ inputs.asset }}
+              BAMBU_SHA256: ${{ inputs.sha256 }}
+              APPIMAGE_DIR: ${{ runner.temp }}/bambu-studio-appimage
+          run: |
+              set -euo pipefail
+              appimage="$APPIMAGE_DIR/$BAMBU_ASSET"
+              if [[ ! -f "$appimage" ]]; then
+                  mkdir -p "$APPIMAGE_DIR"
+                  curl -fsSL --retry 3 -o "$appimage" \
+                      "https://github.com/bambulab/BambuStudio/releases/download/${BAMBU_VERSION}/${BAMBU_ASSET}"
+              fi
+              echo "$BAMBU_SHA256  $appimage" | sha256sum -c -
+              chmod +x "$appimage"
+              # Extract instead of mounting: the runner has no FUSE 2.
+              mkdir -p "$RUNNER_TEMP/bambu-studio"
+              cd "$RUNNER_TEMP/bambu-studio"
+              "$appimage" --appimage-extract >/dev/null
+              root="$RUNNER_TEMP/bambu-studio/squashfs-root"
+
+              # The AppImage leaves GTK, WebKit, GStreamer and OpenGL to the
+              # host. Its CLI can't render plate thumbnails on a runner: its
+              # GLFW is built for Wayland only and its GLEW needs GLX. It logs
+              # that and writes the project without them.
+              sudo apt-get update -q
+              sudo apt-get install -y -q --no-install-recommends \
+                  libgtk-3-0t64 libwebkit2gtk-4.1-0 \
+                  libgstreamer1.0-0 libgstreamer-plugins-base1.0-0 \
+                  libegl1 libgl1 libglu1-mesa libopengl0 libosmesa6
+
+              # Name every library still missing, not just the first one.
+              libdirs="$(find "$root" -name '*.so*' -printf '%h\n' | sort -u | paste -sd:)"
+              missing="$(find "$root" -maxdepth 2 -type f -name 'bambu-studio' \
+                  -exec env LD_LIBRARY_PATH="$libdirs" ldd {} \; | grep 'not found' || true)"
+              if [[ -n "$missing" ]]; then
+                  echo "::error::Bambu Studio ${BAMBU_VERSION} needs host libraries:"
+                  echo "$missing"
+                  exit 1
+              fi
+
+              sudo ln -sf "$root/AppRun" /usr/local/bin/bambu-studio
+              echo "BAMBU_STUDIO_PROFILES=$root/resources/profiles" >>"$GITHUB_ENV"
+              test -d "$root/resources/profiles/BBL"
+              # The CLI writes result.json into the working directory.
+              (cd "$RUNNER_TEMP" && bambu-studio --help >/dev/null)

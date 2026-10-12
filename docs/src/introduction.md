@@ -18,9 +18,9 @@ extra is a cord through the anchor.
 ## Getting the parts
 
 Each [release](https://github.com/crimpdeq/crimpdeq-grips/releases) attaches the STLs of both grips
-for both hands, at the models' defaults; Photon defaults to one measured right hand. To fit
-Photon to your own hand, export the parts yourself as described in
-[Fit to your hand](photon/fit.md).
+for both hands, at the models' defaults, and a Bambu Studio project of each for the Bambu Lab A1;
+Photon defaults to one measured right hand. To fit Photon to your own hand, export the parts
+yourself as described in [Fit to your hand](photon/fit.md).
 
 ## Credits
 

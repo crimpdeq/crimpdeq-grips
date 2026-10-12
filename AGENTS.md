@@ -17,14 +17,18 @@ rerun them.
 - `scripts/check_step.py`: compares every part with its STEP solid (`uv run`, inline dependencies;
   reads the STEP files from git history at `STEP_COMMIT` and tessellates them with OCP).
 - `scripts/check_stl.py`: each exported STL is one closed body resting on z = 0 (stdlib only).
+- `scripts/export_bambu_project.py`: the Bambu Lab A1 project of one grip and hand from its STLs
+  (stdlib plus the Bambu Studio CLI); lays the parts out itself, slices to check.
 - `docs/`: mdBook (the website). `src/measure-hand.html` is the hand measuring page, served as-is:
   photo → parameter text; formulas live in `measure()`, parameter names and defaults match the
   Photon model. `illustrations/render.sh` regenerates `src/photon/images` from the
   right-hand defaults (`export.py --in-place`, then `illustrations/photon.scad`); rerun it when
   the model changes. Spark chapters and illustrations are not written yet.
 - `.github/workflows/`: `ci.yml` runs the checks below on pull requests; `release.yml` exports
-  both grips for both hands and attaches one zip per grip and hand to the release.
-- Generated files (STLs, 3MF projects, `docs/book/`) do not go in git; releases carry the STLs.
+  both grips for both hands and attaches one zip of STLs and one 3MF project per grip and hand to
+  the release. `actions/setup-bambu-studio` pins the Bambu Studio AppImage (as in
+  `crimpdeq-platform`).
+- Generated files (STLs, 3MF projects, `docs/book/`) do not go in git; releases carry them.
 
 ## Origins
 
@@ -76,30 +80,24 @@ rerun them.
 
 Digital checks do not validate fit, strength or comfort; report the test print as pending.
 
-## Building the Bambu Lab A1 project
+## Bambu Lab A1 project
 
-Not scripted yet (see `crimpdeq-platform/scripts/export-bambu-project.py` for the pattern) and not
-committed. It was built with the Bambu Studio CLI
-(`/Applications/BambuStudio.app/Contents/MacOS/BambuStudio`):
+`scripts/export_bambu_project.py` flattens the system presets (machine `Bambu Lab A1 0.4 nozzle`,
+filament `Bambu PETG HF @BBL A1`, process `0.20mm Standard @BBL A1` with the overrides of
+`docs/src/photon/printing.md`), so keep its settings and that page in sync. Facts it relies on:
 
-1. Flatten the system presets (merge each `inherits` chain) from
-   `BambuStudio.app/Contents/Resources/profiles/BBL`: machine `Bambu Lab A1 0.4 nozzle`, filament
-   `Bambu PETG HF @BBL A1`, and process `0.20mm Standard @BBL A1` overridden to `wall_loops 5`,
-   `sparse_infill_density 35%`, `sparse_infill_pattern cubic`, `enable_support 0`,
-   `curr_bed_type Textured PEI Plate` (the default Cool Plate rejects PETG). Keep `from: system`
-   on the machine and filament and set `from: User` only on the renamed process
-   (`0.20mm Photon @BBL A1`); otherwise the CLI reports the process as incompatible.
-2. Import the STLs with `--orient 0 --arrange 1 --export-3mf` (no slicing).
-3. In `Metadata/model_settings.config`, add per-object `enable_support 1` / `support_type
-   normal(auto)` to the frame, plus `brim_type outer_only` / `brim_width 5` to the
-   frame and the ring, middle and index walls. Without a brim, a middle wall lifted on its first
-   layers in a test print and the rest of it printed as spaghetti over the plate.
-4. Re-run `--arrange 1 --orient 0` on that 3MF (supports added after arranging collide), then
-   `--slice 0` to confirm no conflicts or floating-cantilever warnings. Slicing needs the same
-   `--load-settings`/`--load-filaments` again; read `warning_message` in `<outputdir>/result.json`.
-5. The CLI arrange ignores brims: check the gaps between first-layer paths of different objects in
-   the G-code (keep them ≥ 2 mm) and move the item `transform` in `3D/3dmodel.model` where brims
-   come closer.
-
-Use absolute output paths; the CLI also drops a `result.json` in the working directory, so run it
-outside the repository.
+- Only the renamed process gets `from: User`; on the machine or filament the CLI reports the
+  process as incompatible. The plate's `curr_bed_type` must be Textured PEI: the default Cool
+  Plate rejects PETG.
+- Without a brim, a middle wall lifted on its first layers in a test print and the rest of it
+  printed as spaghetti over the plate.
+- The CLI arrange ignores brims, so the script moves the STLs into rows itself (`need_arrange`
+  false keeps STL coordinates), with gaps that keep brims over 2 mm apart.
+- The CLI leaves `different_settings_to_system` empty, and Bambu Studio then resets the overrides
+  when opening the project; the script fills it in.
+- Slicing reports collisions and floating cantilevers in `warning_message` of `result.json`, which
+  the CLI writes to its working directory; the script runs it in a temporary directory. Neither
+  grip has a floating cantilever without supports; the walls need none (original instructions),
+  and the frame, with the largest overhangs, keeps its support.
+- Locally on Linux, `bambu-studio` may be a wrapper script: set `BAMBU_STUDIO` to the AppImage's
+  `AppRun` so the profiles are found next to it.

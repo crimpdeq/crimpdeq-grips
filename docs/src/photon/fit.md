@@ -54,4 +54,14 @@ left-hand grip; `--hand right` mirrors it. The frame length follows the middle f
 `Base_M_Height + Base_M_To_Blocker` must be the largest of the four; the export stops with a
 message if not.
 
+For a Bambu Lab A1, `scripts/export_bambu_project.py` turns these STLs into a Bambu Studio project
+with all parts on one plate and the settings of [Printing](printing.md):
+
+```sh
+python3 scripts/export_bambu_project.py my-right-hand --output my-right-hand.3mf
+```
+
+It needs [Bambu Studio](https://bambulab.com/en/download/studio) installed and slices the project
+to check it.
+
 The fit has only been checked digitally; adjust the values after a test print.

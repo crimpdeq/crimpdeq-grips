@@ -88,5 +88,13 @@ right-hand defaults. Rerun it when the model changes.
 ## Releases
 
 Creating a GitHub release runs `.github/workflows/release.yml`, which exports both grips for both
-hands, checks the STLs and attaches one zip per grip and hand. Run the workflow manually for a dry
-run.
+hands, checks the STLs and attaches one zip of STLs and one Bambu Studio project per grip and hand.
+Run the workflow manually for a dry run.
+
+`scripts/export_bambu_project.py` builds the project from the STLs of one grip and hand: it lays
+the parts out in rows on the A1 plate, far enough apart for their brims, assembles the project with
+the Bambu Studio CLI and the settings of [Printing](photon/printing.md) (for Spark too,
+untested in print), and fails if slicing it gives an error or a warning, such as a floating
+cantilever. The release workflow installs the pinned Bambu Studio AppImage with
+`.github/actions/setup-bambu-studio`; locally, set `BAMBU_STUDIO` if `bambu-studio` is not on the
+`PATH` or is a wrapper script.
