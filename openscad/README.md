@@ -1,7 +1,8 @@
 # OpenSCAD models
 
 Parametric OpenSCAD rebuilds of the fork's printable designs: `prometheus.scad` rebuilds
-`../OpenGrips Prometheus v43.step` and `sisyphus.scad` rebuilds `../OpenGrips Sisyphus v27.step`.
+`OpenGrips Prometheus v43.step` and `sisyphus.scad` rebuilds `OpenGrips Sisyphus v27.step`
+(no longer in the repository; `check_step.py` reads them from git history).
 Every part (frame, walls, end wall, rollers, pins and post) exports print-ready, for the left or
 the right hand, and all of them print in the same material: no metal rods, screws or TPU. The
 only extra is the cord through the anchor. Both reproduce their STEP file at the STEP's values
@@ -69,7 +70,8 @@ chamfered side. For Prometheus print settings see
 ## How faithful
 
 `check_step.py` exports each part at the STEP's own values and compares it with the STEP solid
-(run from the repository root; it tessellates the STEP files with FreeCAD's bundled Python):
+(run from the repository root of a full clone; it reads the STEP files from git history and
+tessellates them with FreeCAD's bundled Python):
 
 ```sh
 uvx --with trimesh --with manifold3d --with scipy --with rtree python openscad/check_step.py

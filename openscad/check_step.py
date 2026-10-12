@@ -3,6 +3,7 @@
 Usage (from the repository root):
     uvx --with trimesh --with manifold3d --with scipy --with rtree python openscad/check_step.py [prometheus|sisyphus]
 
+The STEP files are read from STEP_COMMIT, the last commit that has them (needs a full clone).
 FreeCAD's bundled Python tessellates the STEP solids; each OpenSCAD part is exported in assembly
 coordinates (in_place) at the STEP's own values, and the script reports its volume difference
 and the distance from its surface to the STEP part's. It fails if a part drifts beyond the
@@ -20,6 +21,7 @@ import trimesh
 
 ROOT = Path(__file__).resolve().parent.parent
 FREECAD_PYTHON = "/Applications/FreeCAD.app/Contents/Resources/bin/python"
+STEP_COMMIT = "f14f3e9a8debcf543786029dc3705c084ce92c35"
 # Solid order in both STEP files: frame, then roller, pin and wall per finger, end wall, post (the
 # TPU guard, solid 14, is not rebuilt).
 SOLIDS = {
@@ -87,12 +89,19 @@ def compare(mine, ref):
 
 
 def check(name, model, tmp):
+    step = subprocess.run(
+        ["git", "-C", ROOT, "show", f"{STEP_COMMIT}:{model['step']}"], check=False, capture_output=True
+    )
+    if step.returncode:
+        sys.exit(f"cannot read {model['step']} from {STEP_COMMIT}: {step.stderr.decode().strip()}")
+    step_path = tmp / f"{name}.step"
+    step_path.write_bytes(step.stdout)
     step_dir = tmp / f"{name}_step"
     step_dir.mkdir()
     # FreeCAD's interpreter must not see this script's virtualenv.
     env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "PYTHONHOME", "PYTHONPATH")}
     subprocess.run(
-        [FREECAD_PYTHON, "-c", TESSELLATE, str(ROOT / model["step"]), str(step_dir)],
+        [FREECAD_PYTHON, "-c", TESSELLATE, str(step_path), str(step_dir)],
         check=True,
         capture_output=True,
         env=env,

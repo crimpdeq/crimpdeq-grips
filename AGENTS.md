@@ -5,15 +5,17 @@ agent needs to change or rerun them.
 
 ## Layout
 
-- Jared's and opengrips' files (`Original/`, `Images/`, the STEP files, `README.md`) stay where they are,
+- Jared's and opengrips' files (`Original/`, `Images/`, `README.md`) stay where they are,
   so PRs to `jared` stay small; the root README only links to `prometheus-fit/` and `openscad/`.
+- The STEP files (Prometheus v43, Sisyphus v27) were removed; `check_step.py` reads them from its
+  `STEP_COMMIT`.
 - Everything added in this fork lives in `prometheus-fit/` (FreeCAD hand fitting) and `openscad/`
   (OpenSCAD rebuilds of the STEP files).
 
 ## Scope
 
-- Hand measuring covers Prometheus only. The STEP/STL files themselves are untouched; `openscad/`
-  rebuilds both (Prometheus v43, Sisyphus v27).
+- Hand measuring covers Prometheus only; `openscad/` rebuilds both STEP files (Prometheus v43,
+  Sisyphus v27).
 - No TPU guard and no non-printed parts besides the cord: neither `generate.py` nor `openscad/` makes
   the STEP files' guard.
 - Remotes: `origin` is the user's fork (SergioGasquez, push here), `jared` is its parent
@@ -30,7 +32,6 @@ agent needs to change or rerun them.
 - `prometheus-fit/examples/<hand>/`: one hand per folder: `params.txt` (comments record manual
   adjustments), generated STLs and the Bambu Lab A1 project. `left-hand` mirrors the right hand's values
   (no left-hand photo); keep the two `params.txt` equal.
-- Root `*.stl` files are local exports of the STEP files and are git-ignored.
 - `prometheus-fit/assembly/`: mdBook of the assembly steps. `render.sh` regenerates `src/images` from the
   right-hand example (`export.py --in-place`, then `steps.scad`); rerun it when the model changes.
 - `openscad/prometheus.scad`, `openscad/sisyphus.scad`: one model per grip, every part in assembly
@@ -40,8 +41,8 @@ agent needs to change or rerun them.
   engraving (frame and end wall outer faces), the font of `crimpdeq-case`.
 - `openscad/export.py`: all parts of one hand with the system Python (stdlib only); same parameter
   file format as `generate.py`, unknown names rejected.
-- `openscad/check_step.py`: compares every part with its STEP solid (run with `uvx`, tessellates with
-  FreeCAD's Python).
+- `openscad/check_step.py`: compares every part with its STEP solid (run with `uvx`, reads the STEP
+  files from git history, tessellates with FreeCAD's Python).
 
 ## Model facts
 
