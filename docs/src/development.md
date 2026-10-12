@@ -19,10 +19,22 @@ python3 scripts/export.py photon my-right-hand.txt --hand right --out my-right-h
 python3 scripts/export.py spark --hand left --out spark-left
 ```
 
-The parameter file is optional and uses the format the [measuring page](measure-hand.html) writes
-(`Name = value` lines, `#` comments); names that are not parameters of the model are rejected. The
-STLs are named `<model>_<hand>_<part>.stl`. `--in-place` keeps the parts in assembly coordinates
+The parameter file is optional and uses the format of the `parameters.txt` files the
+[measuring page](measure-hand.html) puts in its zip (`Name = value` lines, `#` comments); names
+that are not parameters of the model are rejected. The STLs are named `<model>_<hand>_<part>.stl`. `--in-place` keeps the parts in assembly coordinates
 instead of their print pose.
+
+## Measuring page
+
+`docs/src/measure-hand.html` renders the STLs in the browser with the official WebAssembly build of
+OpenSCAD, which `scripts/fetch_openscad_wasm.py` downloads to `docs/src/openscad/` (pinned and
+checked, not in git; the CI book build runs it). It loads the models from `docs/src/grips`, a link
+to `grips/`, so the book carries the models it renders. Each part renders in its own instance, in
+up to three web workers, and the page zips the STLs itself.
+
+CGAL fails in WebAssembly, so the models avoid `minkowski()` of non-convex solids, which needs it
+and falls back to minutes per part: `along_x_ball_swept()` builds the ball-swept extrusions of the
+rounded edges from offset profiles in 0.2 mm layers, the print layer height.
 
 ## Parameters
 
@@ -68,7 +80,8 @@ CI runs these on every pull request:
   1% or 0.6 mm.
 - `python3 scripts/check_stl.py` on the exports of both grips for both hands: each STL is one
   closed body resting on z = 0.
-- `uvx ruff check --line-length 120 scripts` and `mdbook build docs`.
+- `uvx ruff check --line-length 120 scripts` and `mdbook build docs`, after
+  `python3 scripts/fetch_openscad_wasm.py`.
 
 Known differences from the STEP files:
 

@@ -5,8 +5,8 @@ Usage:
     python3 scripts/export.py spark --hand left --out DIR
     python3 scripts/export.py photon PARAMS --hand right --in-place --out DIR
 
-PARAMS (optional) holds `Name = value` lines, `#` lines ignored, e.g. the output of
-../docs/src/measure-hand.html; names must be parameters of the model. The STLs, named
+PARAMS (optional) holds `Name = value` lines, `#` lines ignored, e.g. a parameters.txt from the
+zip of ../docs/src/measure-hand.html; names must be parameters of the model. The STLs, named
 <model>_<hand>_<part>.stl, go to --out, by default next to PARAMS (or the current directory).
 --in-place keeps every part where it sits in the assembly instead of its print pose.
 """

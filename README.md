@@ -7,7 +7,9 @@ on its own roller. Photon is fitted to your hand from a photo; Spark has larger 
 Every part prints in plastic, pins included; the only extra is a cord.
 
 - Book: fitting, printing and assembly in [`docs/`](docs/src/SUMMARY.md) (`mdbook serve docs`).
-- Hand measuring page: [`docs/src/measure-hand.html`](docs/src/measure-hand.html).
+- Hand measuring page: [`docs/src/measure-hand.html`](docs/src/measure-hand.html) measures a photo
+  and downloads the STLs of Photon, Spark or both in a zip (served with the book:
+  `python3 scripts/fetch_openscad_wasm.py`, then `mdbook serve docs`).
 - Models: [`grips/`](grips/); export all parts of one hand with
   `python3 scripts/export.py photon PARAMS --hand right --out DIR`.
 - STLs and Bambu Lab A1 projects (3MF) of both grips for both hands: attached to every

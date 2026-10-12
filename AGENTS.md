@@ -19,11 +19,17 @@ rerun them.
 - `scripts/check_stl.py`: each exported STL is one closed body resting on z = 0 (stdlib only).
 - `scripts/export_bambu_project.py`: the Bambu Lab A1 project of one grip and hand from its STLs
   (stdlib plus the Bambu Studio CLI); lays the parts out itself, slices to check.
+- `scripts/fetch_openscad_wasm.py`: the pinned official WebAssembly OpenSCAD (sha256-checked) into
+  `docs/src/openscad/` (not in git), which the measuring page renders with; CI runs it before
+  `mdbook build docs`.
 - `docs/`: mdBook (the website). `src/measure-hand.html` is the hand measuring page, served as-is:
-  photo → parameter text; formulas live in `measure()`, parameter names and defaults match the
-  Photon model. `illustrations/render.sh` regenerates `src/photon/images` from the
-  right-hand defaults (`export.py --in-place`, then `illustrations/photon.scad`); rerun it when
-  the model changes. Spark chapters and illustrations are not written yet.
+  photo → zip of the STLs of Photon, Spark or both, for one or both hands, with a `parameters.txt`
+  per grip and hand for `export.py`. Formulas live in `measure()`; parameter names, defaults and the
+  part list match the models and `export.py`. It renders with the WebAssembly OpenSCAD in web
+  workers and loads the models through `src/grips`, a symlink to `grips/`; it needs serving
+  (`mdbook serve docs`), not `file://`. `illustrations/render.sh` regenerates `src/photon/images`
+  from the right-hand defaults (`export.py --in-place`, then `illustrations/photon.scad`); rerun it
+  when the model changes. Spark chapters and illustrations are not written yet.
 - `.github/workflows/`: `ci.yml` runs the checks below on pull requests; `release.yml` exports
   both grips for both hands and attaches one zip of STLs and one 3MF project per grip and hand to
   the release. `actions/setup-bambu-studio` pins the Bambu Studio AppImage (as in
@@ -76,8 +82,9 @@ rerun them.
 2. Model changes: `uv run scripts/check_step.py` passes (each part within 1% volume and 0.6 mm at
    p95), and `scripts/export.py` for both grips and both hands passes `scripts/check_stl.py`.
 3. Photon model changes: rerun `docs/illustrations/render.sh`.
-4. Measuring page changes: load `docs/src/measure-hand.html` in a browser, place all points,
-   confirm no console errors.
+4. Measuring page or model changes: `scripts/fetch_openscad_wasm.py`, `mdbook serve docs`, load
+   the measuring page, place all points, download the zip, confirm no console errors and that its
+   STLs pass `scripts/check_stl.py`.
 5. `mdbook build docs`.
 
 Digital checks do not validate fit, strength or comfort; report the test print as pending.
