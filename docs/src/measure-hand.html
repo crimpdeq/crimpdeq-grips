@@ -35,38 +35,56 @@
   main { flex: 1; position: relative; overflow: hidden; background: var(--bg-soft); }
   canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
   #hint { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); pointer-events: none; }
+  /* The next point to click, over the photo. */
+  #banner {
+    position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px;
+    padding: 10px 14px; pointer-events: none; background: rgba(11, 17, 24, 0.85); border: 1px solid var(--border); border-radius: 14px;
+  }
+  #banner b { font-size: 1.05rem; }
+  #swatch { width: 12px; height: 12px; border-radius: 50%; }
   aside {
-    width: 400px; overflow: auto; padding: 22px;
+    width: 380px; overflow: auto; padding: 22px; counter-reset: step;
     background: linear-gradient(180deg, rgba(22, 35, 51, 0.95), rgba(12, 19, 29, 0.94));
   }
   .kicker { margin: 0; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.78rem; font-weight: 600; }
   h1 { margin: 4px 0 6px; font: 800 1.6rem/1.1 Inter, sans-serif; }
-  h2 { margin: 22px 0 8px; font-size: 1.05rem; }
+  /* Numbered by CSS: hidden sections drop out of the numbering. */
+  h2 { margin: 24px 0 10px; font-size: 1.05rem; }
+  h2::before { counter-increment: step; content: counter(step) ". "; color: var(--accent); }
   p { margin: 8px 0; }
   a { color: var(--accent-strong); text-decoration: none; }
   a:hover { text-decoration: underline; }
   small { color: var(--muted); }
-  label { display: block; margin: 4px 0; }
+  label { display: block; margin: 6px 0; }
+  label small { display: block; margin-left: 24px; }
   input[type=number] {
-    padding: 6px 10px; font: inherit; color: var(--text);
+    width: 80px; padding: 4px 8px; font: inherit; color: var(--text);
     background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
   }
-  #rulerMm { display: block; width: 90px; margin-top: 4px; }
   #file { max-width: 100%; color: var(--muted); }
-  button, ::file-selector-button {
+  button, ::file-selector-button, .choices span {
     padding: 8px 14px; font: 600 14px "Space Grotesk", system-ui, sans-serif; color: var(--text); cursor: pointer;
     background: rgba(16, 26, 38, 0.9); border: 1px solid var(--border); border-radius: 12px;
     transition: background 160ms ease, box-shadow 160ms ease;
   }
   ::file-selector-button { margin-right: 10px; }
-  button:hover, ::file-selector-button:hover { background: var(--panel); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
-  button.primary {
+  button:hover, ::file-selector-button:hover, .choices span:hover { background: var(--panel); }
+  button.primary, .choices input:checked + span {
     color: #00111c; border-color: transparent;
     background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-    box-shadow: 0 10px 25px rgba(79, 195, 247, 0.25);
   }
+  button.primary { box-shadow: 0 10px 25px rgba(79, 195, 247, 0.25); }
   button:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
-  :focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+  :focus-visible, .choices input:focus-visible + span { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+  /* Toggle buttons: checkboxes and radios drawn as buttons. */
+  .field { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+  .field > span { width: 52px; color: var(--muted); }
+  .choices { display: flex; gap: 6px; }
+  .choices label { margin: 0; }
+  .choices input { position: absolute; opacity: 0; }
+  .choices span { display: block; padding: 6px 14px; border-radius: 999px; }
+  details { margin: 10px 0; }
+  summary { cursor: pointer; color: var(--accent-strong); font-weight: 600; }
   ol { padding-left: 28px; margin: 8px 0; }
   li { cursor: pointer; margin: 2px 0; padding: 2px 8px; border-radius: 0 8px 8px 0; }
   li::marker { color: var(--muted); }
@@ -77,9 +95,9 @@
   th, td { border-bottom: 1px solid var(--border); padding: 4px 6px; text-align: right; }
   th { color: var(--muted); font-weight: 600; }
   th:first-child, td:first-child { text-align: left; }
-  #tabs { display: flex; gap: 8px; margin-top: 10px; }
+  #tabs { display: flex; gap: 8px; margin-bottom: 10px; }
   #tabs button { flex: 1; }
-  #download { display: block; width: 100%; margin-top: 10px; }
+  #download { display: block; width: 100%; }
   #status { margin: 8px 0 0; color: var(--muted); white-space: pre-wrap; }
   #status.error { color: var(--error); }
   .diagram { color: var(--text); }
@@ -89,7 +107,7 @@
     aside { width: auto; overflow: visible; }
   }
   @media (prefers-reduced-motion: reduce) {
-    button, ::file-selector-button { transition: none; }
+    button, ::file-selector-button, .choices span { transition: none; }
   }
 </style>
 </head>
@@ -97,44 +115,46 @@
 <main>
   <canvas id="canvas"></canvas>
   <div id="hint"></div>
+  <div id="banner" hidden><span id="swatch"></span><b id="instruction"></b>
+    <small>Scroll to zoom, drag to pan, drag a point to move it.</small></div>
 </main>
 <aside>
   <p class="kicker"><a href="https://crimpdeq.com">Crimpdeq</a> Grips</p>
   <h1>Fit to your hand</h1>
-  <small>Instructions: <a href="photon/fit.html">Fit to your hand</a>.</small>
-  <h2>1. Grips</h2>
-  <label><input type="radio" name="grips" value="photon" checked> Photon</label>
-  <label><input type="radio" name="grips" value="spark"> Spark</label>
-  <label><input type="radio" name="grips" value="both"> Both</label>
-  <label id="sparkFitLabel"><input type="checkbox" id="sparkFit" checked> Place Spark's rollers from the measurements
-    <small>(optional: otherwise Spark keeps its default roller positions and needs no photo)</small></label>
-  <h2>2. Hands</h2>
-  <label><input type="radio" name="hands" value="right" checked> Right hand</label>
-  <label><input type="radio" name="hands" value="left"> Left hand</label>
-  <label><input type="radio" name="hands" value="mirror"> Both hands, from a photo of one</label>
-  <label><input type="radio" name="hands" value="each"> Both hands, from a photo of each</label>
-  <div id="tabs"></div>
+  <p><small>Measure a photo of your hand and download the grips ready to print.
+    <a href="photon/fit.html">Guide</a></small></p>
+
+  <h2>What to print</h2>
+  <div class="field"><span>Grips</span>
+    <div class="choices">
+      <label><input type="checkbox" id="photon" checked><span>Photon</span></label>
+      <label><input type="checkbox" id="spark"><span>Spark</span></label>
+    </div>
+  </div>
+  <label id="sparkFitOption"><input type="checkbox" id="sparkFit" checked> Fit Spark to my hand
+    <small>Unticked, Spark keeps its standard roller positions and needs no photo.</small></label>
+  <div class="field"><span>Hands</span>
+    <div class="choices">
+      <label><input type="radio" name="hands" value="right" checked><span>Right</span></label>
+      <label><input type="radio" name="hands" value="left"><span>Left</span></label>
+      <label><input type="radio" name="hands" value="both"><span>Both</span></label>
+    </div>
+  </div>
+  <label id="separateOption"><input type="checkbox" id="separate"> A photo of each hand
+    <small>Otherwise a photo of either hand fits both.</small></label>
+
   <section id="measuring">
-    <h2>3. Photo</h2>
+    <h2>Photo</h2>
+    <div id="tabs"></div>
     <input type="file" id="file" accept="image/jpeg,image/png,image/webp">
-    <p><small>Palm up, fingers straight, ruler at palm height beside the fingers, camera parallel to the table.
-      Scroll to zoom, drag to pan, drag a point to move it, click a step to place it again.</small></p>
-    <h2>4. Points</h2>
+    <p><small>Palm up, fingers straight and slightly apart, a ruler beside the fingers at palm height,
+      phone parallel to the table. You can also drop or paste the photo.</small></p>
+
+    <h2>Points</h2>
     <!-- One finger, palm side, pointing right; the double PIP crease is clicked at its midpoint. -->
-    <svg class="diagram" viewBox="0 20 300 92" width="100%" role="img" aria-label="Finger landmarks and measured lengths">
-      <defs>
-        <marker id="arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M0 0L6 3L0 6z" fill="currentColor"/>
-        </marker>
-      </defs>
+    <svg class="diagram" viewBox="0 30 300 82" width="100%" role="img" aria-label="The four points to click on each finger">
       <path d="M0 48H262a22 22 0 0 1 0 44H0" fill="#f2c9a8" stroke="#b07a5a"/>
       <path d="M40 52V88M118 52V88M124 52V88M200 52V88" stroke="#8a5a3c" stroke-width="1.5"/>
-      <path d="M40 34V48M121 34V48M200 34V48M284 34V70" stroke="#5f7a94" stroke-dasharray="2 2"/>
-      <g stroke="currentColor" marker-start="url(#arrow)" marker-end="url(#arrow)">
-        <path d="M40 38H121"/>
-        <path d="M121 38H200"/>
-        <path d="M200 38H284"/>
-      </g>
       <g fill="none" stroke="#e74c3c" stroke-width="1.5">
         <circle cx="40" cy="70" r="4"/>
         <circle cx="121" cy="70" r="4"/>
@@ -142,32 +162,38 @@
         <circle cx="284" cy="70" r="4"/>
       </g>
       <g font-size="10" text-anchor="middle" fill="currentColor">
-        <text x="80" y="33">base → PIP</text>
-        <text x="160" y="33">PIP → DIP</text>
-        <text x="242" y="33">DIP → tip</text>
+        <text x="40" y="40">1</text>
+        <text x="121" y="40">2</text>
+        <text x="200" y="40">3</text>
+        <text x="284" y="40">4</text>
         <text x="40" y="106">base crease</text>
-        <text x="121" y="106">PIP crease</text>
-        <text x="200" y="106">DIP crease</text>
+        <text x="121" y="106">middle joint</text>
+        <text x="200" y="106">end joint</text>
         <text x="282" y="106">tip</text>
       </g>
     </svg>
-    <p><small>Click the four circled points on every finger. For Photon, the segments and how far each
-      base crease sits along the hand place the roller (Height, Depth); DIP → tip sets the blocker
-      (To_Blocker). For Spark, the base crease and the PIP crease place the roller (Height).</small></p>
-    <label>Distance between the two ruler marks (mm)
-      <input type="number" id="rulerMm" placeholder="e.g. 100" min="1" step="any"></label>
-    <p><small>Pick two ruler marks far apart that span the fingers (e.g. 0 and 10 cm), not the palm:
-      camera tilt changes the scale across the photo.
-      If a joint has a double crease, click midway between the creases.</small></p>
-    <ol id="steps"></ol>
-    <h2>5. Results (mm)</h2>
-    <div id="results"></div>
+    <p><small>Click two ruler marks far apart, then these four points on every finger, as the box over
+      the photo asks. Where a joint has two creases, click between them.</small></p>
+    <label>Distance between the two ruler marks: <input type="number" id="rulerMm" min="1" step="any"> mm</label>
+    <p id="progress"></p>
+    <details>
+      <summary>All points</summary>
+      <small>Click one to place it again.</small>
+      <ol id="steps"></ol>
+    </details>
+    <details>
+      <summary>Show measurements</summary>
+      <div id="results"></div>
+      <p><small>Photon: the segments and how far each base crease sits along the hand place the roller
+        (Height, Depth); the end joint to tip sets the blocker (To_Blocker). Spark: the base and middle
+        joint creases place the roller (Height). All relative to the pinky, in mm.</small></p>
+    </details>
   </section>
-  <h2 id="downloadTitle">6. STLs</h2>
-  <p><small>Renders every part, in its print pose, with OpenSCAD in this page (an 11 MB download,
-    about ten seconds per grip and hand) and downloads them as one zip.</small></p>
+
+  <h2>Download</h2>
   <button id="download" class="primary">Download STLs (zip)</button>
   <p id="status" role="status"></p>
+  <p><small>All parts render in your browser, about ten seconds per grip and hand.</small></p>
 </aside>
 <script>
 // Parameter names and defaults match grips/photon.scad and grips/spark.scad.
@@ -197,16 +223,16 @@ const PARTS = ['frame', 'ring_wall', 'middle_wall', 'index_wall', 'end_wall', 'p
 const SOURCES = ['photon.scad', 'spark.scad', 'common.scad', 'fonts/Inter-Bold.ttf'];
 const CLAW = 55 * Math.PI / 180;
 const LANDMARKS = [
-  ['base', 'base crease (finger meets palm)'],
+  ['base', 'base crease, where it meets the palm'],
   ['pip', 'middle joint (PIP) crease'],
   ['dip', 'end joint (DIP) crease'],
-  ['tip', 'fingertip'],
+  ['tip', 'tip'],
 ];
 const RULER = { ids: ['ruler0', 'ruler1'], color: '#f1c40f' };
 const STEPS = [
-  { id: 'ruler0', label: 'Ruler: first mark', color: RULER.color },
-  { id: 'ruler1', label: 'Ruler: second mark', color: RULER.color },
-  ...FINGERS.flatMap(f => LANDMARKS.map(([lm, text]) => ({ id: `${f.key}_${lm}`, label: `${f.name}: ${text}`, color: f.color }))),
+  { id: 'ruler0', label: 'Ruler: first mark (e.g. 0 cm)', color: RULER.color },
+  { id: 'ruler1', label: 'Ruler: second mark (e.g. 10 cm)', color: RULER.color },
+  ...FINGERS.flatMap(f => LANDMARKS.map(([lm, text]) => ({ id: `${f.key}_${lm}`, label: `${f.name} finger: ${text}`, color: f.color }))),
 ];
 const CHAINS = [RULER, ...FINGERS.map(f => ({ ids: LANDMARKS.map(([lm]) => `${f.key}_${lm}`), color: f.color }))];
 
@@ -218,7 +244,7 @@ const ctx = canvas.getContext('2d');
 const newPhoto = () => ({
   img: null,
   fileName: '',
-  rulerMm: '',
+  rulerMm: '100',
   view: { s: 1, x: 0, y: 0 }, // canvas = image * s + (x, y)
   points: {}, // step id -> image pixel coordinates
   active: 0, // STEPS index placed by the next click, -1 when all are placed
@@ -229,12 +255,13 @@ let photo = photos.one;
 let drag = null;
 let busy = false;
 
-const radio = name => document.querySelector(`[name=${name}]:checked`).value;
-const grips = () => radio('grips') === 'both' ? ['photon', 'spark'] : [radio('grips')];
+const hands = () => document.querySelector('[name=hands]:checked').value;
+const grips = () => ['photon', 'spark'].filter(grip => $(grip).checked);
 const fitSpark = () => grips().includes('spark') && $('sparkFit').checked;
 const needsPhoto = () => grips().includes('photon') || fitSpark();
-const printHands = () => ['right', 'left'].includes(radio('hands')) ? [radio('hands')] : ['left', 'right'];
-const photoKey = hand => radio('hands') === 'each' ? hand : 'one';
+const printHands = () => hands() === 'both' ? ['left', 'right'] : [hands()];
+const separatePhotos = () => hands() === 'both' && $('separate').checked;
+const photoKey = hand => separatePhotos() ? hand : 'one';
 
 const f1 = x => x.toFixed(1);
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -258,13 +285,15 @@ function loadImage(file) {
   const target = photo;
   const im = new Image();
   im.onload = () => {
-    const s = Math.min(canvas.clientWidth / im.width, canvas.clientHeight / im.height);
+    // Fit the photo below the instruction banner.
+    const top = 70;
+    const s = Math.min(canvas.clientWidth / im.width, (canvas.clientHeight - top) / im.height);
     Object.assign(target, {
       img: im,
       fileName: file.name,
       points: {},
       active: 0,
-      view: { s, x: (canvas.clientWidth - im.width * s) / 2, y: (canvas.clientHeight - im.height * s) / 2 },
+      view: { s, x: (canvas.clientWidth - im.width * s) / 2, y: top + (canvas.clientHeight - top - im.height * s) / 2 },
     });
     update();
   };
@@ -353,11 +382,12 @@ function parametersText(grip, hand, params) {
 // What is missing before the STLs can be rendered, or '' when nothing is.
 function missing() {
   if (location.protocol === 'file:') return 'Open this page from the book (mdbook serve docs): it cannot load the models from a file.';
+  if (!grips().length) return 'Choose Photon, Spark or both.';
   if (!needsPhoto()) return '';
   const unmeasured = [...new Set(printHands().map(photoKey))].filter(key => !measure(photos[key]));
   if (!unmeasured.length) return '';
-  const which = unmeasured.map(key => key === 'one' ? 'the photo' : `the ${key} hand photo`).join(' and ');
-  return `Enter the ruler distance and place every point on ${which}.`;
+  const which = unmeasured.map(key => key === 'one' ? 'the photo' : `the ${key} hand's photo`).join(' and ');
+  return `Place every point on ${which} and enter the ruler distance.`;
 }
 
 function setStatus(text, error = false) {
@@ -366,12 +396,12 @@ function setStatus(text, error = false) {
 }
 
 function update() {
-  const each = radio('hands') === 'each';
-  if (each !== (current !== 'one')) return selectPhoto(each ? 'left' : 'one');
-  $('sparkFitLabel').hidden = !grips().includes('spark');
+  const separate = separatePhotos() && needsPhoto();
+  if (separate !== (current !== 'one')) return selectPhoto(separate ? 'left' : 'one');
+  $('sparkFitOption').hidden = !grips().includes('spark');
+  $('separateOption').hidden = hands() !== 'both' || !needsPhoto();
   $('measuring').hidden = !needsPhoto();
-  $('downloadTitle').textContent = needsPhoto() ? '6. STLs' : '3. STLs';
-  $('tabs').hidden = !each || !needsPhoto();
+  $('tabs').hidden = !separate;
   $('tabs').replaceChildren(...['left', 'right'].map(key => {
     const button = document.createElement('button');
     button.textContent = `${key === 'left' ? 'Left' : 'Right'} hand${measure(photos[key]) ? ' ✓' : ''}`;
@@ -379,9 +409,16 @@ function update() {
     button.onclick = () => selectPhoto(key);
     return button;
   }));
-  $('hint').textContent = !needsPhoto() ? 'Spark at its default roller positions needs no photo'
-    : `Choose, drop, or paste a photo of ${current === 'one' ? 'either' : 'the ' + current} hand`;
+  $('hint').textContent = !grips().length ? 'Choose a grip'
+    : !needsPhoto() ? 'Spark with its standard roller positions needs no photo: download it'
+    : `Choose, drop, or paste a photo of ${current === 'one' ? 'your hand' : 'your ' + current + ' hand'}`;
   $('hint').hidden = needsPhoto() && Boolean(photo.img);
+  const step = STEPS[photo.active];
+  const placed = STEPS.filter(s => photo.points[s.id]).length;
+  $('banner').hidden = !needsPhoto() || !photo.img;
+  $('instruction').textContent = step ? `Click ${step.label}` : 'All points placed';
+  $('swatch').style.background = step ? step.color : 'transparent';
+  $('progress').textContent = photo.img ? `${placed} of ${STEPS.length} points placed.` : '';
   $('steps').replaceChildren(...STEPS.map((step, i) => {
     const li = document.createElement('li');
     li.textContent = step.label;
@@ -391,7 +428,7 @@ function update() {
     return li;
   }));
   const m = measure(photo);
-  $('results').innerHTML = m ? resultsTable(m) : '<small>Enter the ruler distance and place the ruler marks and all four fingers.</small>';
+  $('results').innerHTML = m ? resultsTable(m) : '<small>Place every point to see the measurements.</small>';
   if (!busy) {
     $('download').disabled = Boolean(missing());
     setStatus(missing());
@@ -622,13 +659,13 @@ canvas.addEventListener('wheel', e => {
 
 $('file').onchange = e => loadImage(e.target.files[0]);
 $('rulerMm').oninput = e => { photo.rulerMm = e.target.value; update(); };
-document.querySelectorAll('[name=grips], [name=hands], #sparkFit').forEach(input => { input.onchange = update; });
+document.querySelectorAll('#photon, #spark, #sparkFit, [name=hands], #separate').forEach(input => { input.onchange = update; });
 $('download').onclick = downloadStls;
 addEventListener('dragover', e => e.preventDefault());
 addEventListener('drop', e => { e.preventDefault(); loadImage(e.dataTransfer.files[0]); });
 addEventListener('paste', e => loadImage(e.clipboardData.files[0]));
 addEventListener('resize', draw);
-update();
+selectPhoto('one');
 </script>
 </body>
 </html>

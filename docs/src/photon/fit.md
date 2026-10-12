@@ -11,17 +11,19 @@ Open the [measuring page](../measure-hand.html) in Chrome, Safari or Firefox. It
 with OpenSCAD inside the page, so it has to be served with the book (`mdbook serve docs` locally,
 after `python3 scripts/fetch_openscad_wasm.py`); opened as a file it cannot load the models.
 
-- Grips: Photon, Spark or both. Placing Spark's rollers from the measurements is optional; without
-  it Spark keeps its default roller positions (those of Sisyphus v27) and needs no photo.
-- Hands: the right or left hand, or both. For both, measure one hand and use it for both (the
-  values do not depend on which hand the photo shows), or measure each hand from its own photo,
-  switching between them with the Left/Right buttons.
+- What to print: Photon, Spark or both, and the right hand, the left or both. Fitting Spark to your
+  hand is optional; untick it and Spark keeps its standard roller positions (those of Sisyphus
+  v27) and needs no photo. For both hands one photo of either hand fits both (the values do not
+  depend on which hand it shows); tick "A photo of each hand" to measure each from its own photo,
+  switching between them with the Left/Right hand buttons.
 - Photo: palm up, fingers straight and slightly apart, a millimetre ruler beside the fingers raised
   to palm height (e.g. on a book), phone parallel to the table and above the fingers. Use the
   original full-resolution JPEG or PNG, not a screenshot.
-- Enter the distance between two ruler marks far apart (e.g. 0 and 10 cm = 100 mm) and click them.
-- For each finger, from index to pinky, click the base crease, middle joint (PIP) crease, end joint
-  (DIP) crease and fingertip. Scroll to zoom, drag to pan or move a point.
+- Points: the box over the photo names the next point to click. First two ruler marks far apart
+  (e.g. 0 and 10 cm; set their distance if it is not 100 mm), then on each finger, from index to
+  pinky, the base crease, middle joint (PIP) crease, end joint (DIP) crease and fingertip. Scroll
+  to zoom, drag to pan or move a point; **All points** lists them to place one again.
+- **Show measurements** opens the measured lengths and the values below, next to the defaults.
 
 The page sets three values per finger for Photon:
 
