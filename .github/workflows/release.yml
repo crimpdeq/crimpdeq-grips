@@ -1,0 +1,79 @@
+name: Release Crimpdeq Grips
+
+on:
+    release:
+        types: [created]
+    # Dry run: build and check the release files without publishing them.
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    parts:
+        name: Build ${{ matrix.grip }} (${{ matrix.hand }} hand)
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                grip: [prometheus, sisyphus]
+                hand: [left, right]
+        env:
+            NAME: crimpdeq-grips-${{ matrix.grip }}-${{ matrix.hand }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Install OpenSCAD
+              uses: ./.github/actions/setup-openscad
+
+            - name: Export every part
+              run: python3 scripts/export.py ${{ matrix.grip }} --hand ${{ matrix.hand }} --out "$NAME"
+
+            - name: Check the STLs
+              run: |
+                  test "$(ls "$NAME"/*.stl | wc -l)" -eq 14
+                  python3 scripts/check_stl.py "$NAME"/*.stl
+
+            - name: Zip the STLs
+              run: zip -r "$NAME.zip" "$NAME"
+
+            - name: Upload the zip
+              uses: actions/upload-artifact@v6
+              with:
+                  name: ${{ env.NAME }}
+                  path: ${{ env.NAME }}.zip
+                  if-no-files-found: error
+                  compression-level: 0
+
+    publish:
+        name: Upload files to GitHub release
+        if: github.event_name == 'release'
+        runs-on: ubuntu-latest
+        needs:
+            - parts
+        permissions:
+            contents: write
+        steps:
+            - name: Download the zips
+              uses: actions/download-artifact@v7
+              with:
+                  pattern: crimpdeq-grips-*
+                  path: release-assets
+                  merge-multiple: true
+
+            - name: Verify release assets exist
+              run: |
+                  for grip in prometheus sisyphus; do
+                      for hand in left right; do
+                          test -f "release-assets/crimpdeq-grips-$grip-$hand.zip"
+                      done
+                  done
+
+            - name: Upload release assets
+              uses: svenstaro/upload-release-action@v2
+              with:
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  tag: ${{ github.ref }}
+                  file: release-assets/*.zip
+                  file_glob: true
+                  overwrite: true

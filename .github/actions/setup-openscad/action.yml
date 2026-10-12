@@ -1,0 +1,55 @@
+name: Set up OpenSCAD
+description: >
+    Install the pinned OpenSCAD development snapshot as `openscad`. Its
+    Manifold backend is far faster than the CGAL-only 2021.01 release.
+
+inputs:
+    version:
+        description: Snapshot version on files.openscad.org/snapshots
+        default: "2026.09.23"
+
+runs:
+    using: composite
+    steps:
+        - name: Cache the AppImage
+          uses: actions/cache@v6
+          with:
+              path: ${{ runner.temp }}/openscad-appimage
+              key: openscad-${{ inputs.version }}-x86_64
+
+        - name: Install OpenSCAD
+          shell: bash
+          env:
+              OPENSCAD_VERSION: ${{ inputs.version }}
+              APPIMAGE_DIR: ${{ runner.temp }}/openscad-appimage
+          run: |
+              set -euo pipefail
+              appimage="$APPIMAGE_DIR/OpenSCAD-${OPENSCAD_VERSION}-x86_64.AppImage"
+              if [[ ! -f "$appimage" ]]; then
+                  mkdir -p "$APPIMAGE_DIR"
+                  curl -fsSL --retry 3 -o "$appimage" \
+                      "https://files.openscad.org/snapshots/OpenSCAD-${OPENSCAD_VERSION}-x86_64.AppImage"
+              fi
+              chmod +x "$appimage"
+              # Extract instead of mounting: the runner has no FUSE 2.
+              cd "$RUNNER_TEMP"
+              "$appimage" --appimage-extract >/dev/null
+
+              # AppImages leave the OpenGL/EGL libraries to the host.
+              sudo apt-get update -q
+              sudo apt-get install -y -q --no-install-recommends \
+                  libegl1 libgl1 libopengl0
+
+              # Name every library still missing, not just the first one.
+              root="$RUNNER_TEMP/squashfs-root"
+              libdirs="$(find "$root" -name '*.so*' -printf '%h\n' | sort -u | paste -sd:)"
+              missing="$(LD_LIBRARY_PATH="$libdirs" ldd "$root/usr/bin/openscad" \
+                  | grep 'not found' || true)"
+              if [[ -n "$missing" ]]; then
+                  echo "::error::OpenSCAD ${OPENSCAD_VERSION} needs host libraries:"
+                  echo "$missing"
+                  exit 1
+              fi
+
+              sudo ln -sf "$root/AppRun" /usr/local/bin/openscad
+              openscad --version

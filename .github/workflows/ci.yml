@@ -1,0 +1,67 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    lint:
+        name: Lint scripts
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+            - name: Install uv
+              uses: astral-sh/setup-uv@v7
+            - name: Run ruff
+              run: uvx ruff check --line-length 120 scripts
+
+    export:
+        name: Export ${{ matrix.grip }} (${{ matrix.hand }} hand)
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                grip: [prometheus, sisyphus]
+                hand: [left, right]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+            - name: Install OpenSCAD
+              uses: ./.github/actions/setup-openscad
+            - name: Export every part
+              run: python3 scripts/export.py ${{ matrix.grip }} --hand ${{ matrix.hand }} --out stl
+            - name: Check the STLs
+              run: python3 scripts/check_stl.py stl/*.stl
+
+    step:
+        name: Compare with the STEP files
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                  # check_step.py reads the STEP files from history.
+                  fetch-depth: 0
+            - name: Install OpenSCAD
+              uses: ./.github/actions/setup-openscad
+            - name: Install uv
+              uses: astral-sh/setup-uv@v7
+            - name: Run check_step.py
+              run: uv run scripts/check_step.py
+
+    book:
+        name: Build book
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+            - name: Install mdBook
+              uses: taiki-e/install-action@v2
+              with:
+                  tool: mdbook
+            - name: Build book
+              run: mdbook build docs
