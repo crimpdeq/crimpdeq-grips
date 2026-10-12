@@ -54,8 +54,9 @@ The values of the original model's VarSet (`Original/OpenGrips_Sisyphus.FCStd` a
 The finger stops and the anchor have no counterpart in the original model and keep v27's
 dimensions.
 
-The sloped top face of the anchor bar carries an engraved `Crimpdeq Spark` in the same font as
-Photon; the model stops with a message if the text does not fit on it.
+As on Photon, the outer faces of the frame and the end wall carry an engraved `crimpdeq.com`, and
+the sloped top face of the anchor bar an engraved `Crimpdeq Spark`; the model stops with a message
+if the text does not fit between the end wall's post hole and lock or on the anchor bar.
 
 ## Checks
 
@@ -64,7 +65,7 @@ CI runs these on every pull request:
 - `uv run scripts/check_step.py` exports each part at the STEP's own values and compares it with
   the STEP solid, read from git history (needs a full clone) and tessellated with OpenCascade.
   Every part is within 0.5% of the STEP volume and within 0.1 mm of its surface at the 95th
-  percentile, except the Photon end wall (0.23 mm) because of its engraving. It fails beyond
+  percentile, except the parts engraved on their sides (up to 0.22 mm). It fails beyond
   1% or 0.6 mm.
 - `python3 scripts/check_stl.py` on the exports of both grips for both hands: each STL is one
   closed body resting on z = 0.
