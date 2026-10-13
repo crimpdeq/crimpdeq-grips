@@ -145,6 +145,11 @@ BRAND_EXTENT = [63.35, 8.77]; // [along Y, Z]
 for (f = [R:I])
   assert(seat_end(f) < LOCK_Y - STOP_SETBACK[f] - WH * tan(STOP_ANGLE[f]),
          str(FINGERS[f], " seat (Y ", seat_end(f), ") runs into its finger stop"));
+// The middle and index wall plates join the ring and index humps to the middle hump.
+for (f = [R, I])
+  assert(norm(axis(f) - axis(M)) < hump_r(f) + hump_r(M),
+         str(FINGERS[f], " wall hump misses the middle one: its Height (", HEIGHT[f],
+             ") is too far from the middle finger's (", Base_M_Height, ")"));
 assert(NAME_EXTENT[1] + 2 < norm(BAR_TOP_END - BAR_TOP_START),
        str("the anchor bar (", norm(BAR_TOP_END - BAR_TOP_START), " mm top face) is too short for ", NAME_TEXT));
 assert(NAME_EXTENT[0] + 2 < FW - 2 * EDGE_R, str("the frame (", FW, " mm wide) is too narrow for ", NAME_TEXT));

@@ -128,6 +128,7 @@ ANCHOR_BORE_R = 4;
 ANCHOR_R = ANCHOR_BORE_R + 4.4;
 ANCHOR_X0 = E + WIDTH[P]; // its 45 degree ends pass through these X at the tube top
 ANCHOR_X1 = roller_x(I) + WIDTH[I] / 2;
+ANCHOR_WEB_R = 15; // the web's top arc, from the plate top tangent to the tube
 CORD_EXIT_R = 3; // round of the bore where it breaks out of the anchor ends
 
 // Engraved on the outer faces of the frame and the end wall, as on the back of the Crimpdeq case.
@@ -159,6 +160,19 @@ for (f = [P:I])
   assert(blocker_y(f) + 2 * BLOCKER_R < LOCK_Y,
          str(FINGERS[f], " blocker (Y ", blocker_y(f), ") reaches the crossbar (Y ", LOCK_Y,
              "): the middle finger must have the largest Height + To_Blocker"));
+// The middle finger alone sets the frame depth FD, and every Depth is measured down from it.
+for (f = [P:I])
+  assert(axis_z(f) - CRADLE_SCALE * max(roller_end_radii(f)) > 0,
+         str(FINGERS[f], " roller is too deep for the frame, which the middle finger's Depth (", Base_M_Depth,
+             ") sets: its Depth (", DEPTH[f], ") must stay under ", FD - CRADLE_SCALE * max(roller_end_radii(f))));
+// The middle and index rails stand on the middle, index and end wall plates: each pole sits
+// behind the plates' rounded front corners, with its rail reaching below their top.
+for (f = [M, I])
+  assert(axis_y(f) > WALL_Y0 + EDGE_R && axis_z(f) - DIAMETER[f] / 3 < T,
+         str(FINGERS[f], " rail misses the wall plates: its Height (", HEIGHT[f], ") or Depth (", DEPTH[f],
+             ") is too far from the ring and middle fingers'"));
+assert(norm([ANCHOR_Y, ANCHOR_Z] - [FRAME_TOP, T]) < 2 * ANCHOR_WEB_R + ANCHOR_R,
+       str("the anchor web cannot reach the tube: the middle finger's Depth (", Base_M_Depth, ") is too large"));
 assert(NAME_EXTENT[1] + 2 < FRAME_TOP - LOCK_Y,
        str("the crossbar (", FRAME_TOP - LOCK_Y, " mm between walls and anchor) is too short for ", NAME_TEXT));
 assert(NAME_EXTENT[0] + 2 < FW - 2 * EDGE_R, str("the frame (", FW, " mm wide) is too narrow for ", NAME_TEXT));
@@ -430,19 +444,16 @@ module end_wall() {
 // Frame
 
 // Anchor (Y, Z) profile: the tube plus the web joining it to the frame, without the bore. The web
-// top is a radius 15 arc from the plate top tangent to the tube; its bottom an arc from the
-// plate bottom tangent to the tube's lowest point.
+// top is a radius ANCHOR_WEB_R arc from the plate top tangent to the tube; its bottom an arc from
+// the plate bottom tangent to the tube's lowest point.
 module anchor2d() {
   c = [ANCHOR_Y, ANCHOR_Z];
   base = [FRAME_TOP, T];
   bottom = [c[0], c[1] - ANCHOR_R];
   rb = ((c[0] - FRAME_TOP) ^ 2 + bottom[1] ^ 2) / (2 * bottom[1]);
-  rt = 15;
+  rt = ANCHOR_WEB_R;
   // Top arc center: rt from the plate top corner and rt + ANCHOR_R from the tube center.
-  d = norm(c - base);
-  u = (c - base) / d;
-  along = (rt ^ 2 - (rt + ANCHOR_R) ^ 2 + d ^ 2) / (2 * d);
-  ct = base + along * u + sqrt(rt ^ 2 - along ^ 2) * [-u[1], u[0]];
+  ct = circle_intersection(base, rt, c, rt + ANCHOR_R);
   difference() {
     union() {
       translate(c) circle(ANCHOR_R);
