@@ -1,6 +1,6 @@
 # Crimpdeq Grips
 
-![Assembled Photon grip](docs/src/photon/images/step-10.png)
+![Photon (left) and Spark (right), facing the rollers](docs/src/images/grips.png)
 
 3D-printed grips for isolated finger training, as parametric OpenSCAD models: each finger rests
 on its own roller. There are two grips:

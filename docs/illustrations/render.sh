@@ -1,6 +1,6 @@
 #!/bin/sh
-# Renders the illustrations in ../src/<grip>/images of both grips from the models' right-hand
-# defaults. Needs OpenSCAD 2025 or newer.
+# Renders the illustrations in ../src/<grip>/images of both grips, and ../src/images/grips.png of
+# both together, from the models' right-hand defaults. Needs OpenSCAD 2025 or newer.
 set -eu
 cd "$(dirname "$0")"
 stl=$(mktemp -d)
@@ -29,3 +29,7 @@ walls="frame ring_wall middle_wall index_wall end_wall"
 illustrate photon "$walls pinky_roller ring_roller pinky_pin ring_pin post" -75,60,10,50,0,-30,420
 illustrate spark "$walls pinky_roller ring_roller middle_roller index_roller pinky_pin ring_pin middle_pin post" \
   -80,55,10,50,0,-30,440
+
+mkdir -p ../src/images
+openscad -q --colorscheme Tomorrow -D "stl=\"$stl/\"" -o ../src/images/grips.png --imgsize 1200,480 \
+  --camera 8,62,12,55,0,0,350 grips.scad
