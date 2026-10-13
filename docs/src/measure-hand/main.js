@@ -68,7 +68,9 @@ function showImage(target, blob, fileName, keepPoints) {
   });
 }
 
+// A photo chosen while the saved state is restored replaces the restored one once restoring ends.
 async function loadImage(file) {
+  await restored;
   if (!file || !needsPhoto()) return;
   const key = current;
   if (!await showImage(photos[key], file, file.name, false)) return;
@@ -366,4 +368,4 @@ addEventListener('drop', e => { e.preventDefault(); loadImage(e.dataTransfer.fil
 addEventListener('paste', e => loadImage(e.clipboardData.files[0]));
 addEventListener('resize', () => canvas.draw());
 update();
-restore();
+const restored = restore();
