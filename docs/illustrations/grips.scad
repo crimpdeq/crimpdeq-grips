@@ -5,12 +5,15 @@
 
 stl = "/tmp/";
 
-PARTS = ["frame", "ring_wall", "middle_wall", "index_wall", "end_wall", "pinky_roller", "ring_roller",
-  "middle_roller", "index_roller", "pinky_pin", "ring_pin", "middle_pin", "index_pin", "post"];
+ROLLERS = ["pinky_roller", "ring_roller", "middle_roller", "index_roller"];
+BODY = ["frame", "ring_wall", "middle_wall", "index_wall", "end_wall", "pinky_pin", "ring_pin", "middle_pin",
+  "index_pin", "post"];
 
 module grip(name) {
-  color("gainsboro") for (p = PARTS) import(str(stl, name, "_right_", p, ".stl"));
-  color("tomato") intersection() {
+  // Near black: pure black hides the shading.
+  color([0.16, 0.16, 0.16]) for (p = BODY) import(str(stl, name, "_right_", p, ".stl"));
+  color("red") for (p = ROLLERS) import(str(stl, name, "_right_", p, ".stl"));
+  color("white") intersection() {
     import(str(stl, name, "_right_name.stl"));
     import(str(stl, name, "_right_unnamed_frame.stl"));
   }
