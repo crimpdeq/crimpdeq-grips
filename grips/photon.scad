@@ -134,12 +134,12 @@ CORD_EXIT_R = 3; // round of the bore where it breaks out of the anchor ends
 // Centered between the end wall's post hole and lock, at the same Y on the frame.
 BRAND_TEXT = "crimpdeq.com";
 BRAND_FONT = "Inter:style=Bold";
-BRAND_SIZE = 4.5;
+BRAND_SIZE = 5;
 BRAND_DEPTH = 0.8;
 BRAND_Y = (POST_Y + POST_SIZE + LOCK_Y) / 2;
 // Text extents ([along the text, across it]) at BRAND_SIZE, measured with textmetrics(), which is
 // experimental and off by default in OpenSCAD; remeasure when the text or its size changes.
-BRAND_EXTENT = [43.86, 6.07]; // [along Y, Z]
+BRAND_EXTENT = [48.73, 6.75]; // [along Y, Z]
 // Room the hand leaves for the text, 1 mm clear on each side: along Y between the end wall's post
 // hole and lock, and clear of the pinky pole wall on the frame; along Z between the plate's edge
 // rounds. The text shrinks to fit rather than refusing a hand, down to BRAND_MIN_SIZE; any

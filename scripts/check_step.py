@@ -68,6 +68,8 @@ MODELS = {
         "solids": SOLIDS | {"post": 15},
     },
 }
+# The STEP files have no engravings; empty texts leave them out of the comparison.
+NO_ENGRAVINGS = ['-DBRAND_TEXT=""', '-DNAME_TEXT=""']
 MAX_VOLUME_DIFF = 1.0  # %
 MAX_P95 = 0.6  # mm
 
@@ -125,6 +127,7 @@ def check(name, model, tmp):
                 f'-Dpart="{part}"',
                 "-Din_place=true",
                 *model["defines"],
+                *NO_ENGRAVINGS,
                 str(ROOT / "grips" / f"{name}.scad"),
             ],
             check=True,
