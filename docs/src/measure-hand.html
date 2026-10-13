@@ -57,7 +57,11 @@
   a:hover { text-decoration: underline; }
   small { color: var(--muted); }
   label { display: block; margin: 6px 0; }
-  label small { display: block; margin-left: 24px; }
+  label small { display: block; }
+  input[type=checkbox] ~ small { margin-left: 24px; }
+  ul.tips { margin: 8px 0; padding-left: 18px; color: var(--muted); font-size: 0.86em; }
+  ul.tips li { cursor: auto; margin: 3px 0; padding: 0; }
+  ul.tips li:hover { background: none; }
   input[type=number] {
     width: 80px; padding: 4px 8px; font: inherit; color: var(--text);
     background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
@@ -124,8 +128,7 @@
 <aside>
   <p class="kicker"><a href="https://crimpdeq.com">Crimpdeq</a> Grips</p>
   <h1>Fit to your hand</h1>
-  <p><small>Measure a photo of your hand and download the grips ready to print.
-    <a href="photon/fit.html">Guide</a></small></p>
+  <p><small>Measure a photo of your hand and download the grips ready to print.</small></p>
 
   <h2>What to print</h2>
   <div class="field"><span>Grips</span>
@@ -150,8 +153,13 @@
     <h2>Photo</h2>
     <div id="tabs"></div>
     <input type="file" id="file" accept="image/jpeg,image/png,image/webp">
-    <p><small>Palm up, fingers straight and slightly apart, a ruler beside the fingers at palm height,
-      phone parallel to the table. You can also drop or paste the photo.</small></p>
+    <ul class="tips">
+      <li>Palm up, fingers straight and slightly apart.</li>
+      <li>A millimetre ruler beside the fingers, raised to palm height (e.g. on a book): lower down it
+        reads lengths about 4% long.</li>
+      <li>Phone parallel to the table, right above the fingers.</li>
+      <li>The original full-resolution photo, not a screenshot. You can also drop or paste it here.</li>
+    </ul>
 
     <h2>Points</h2>
     <!-- One finger, palm side, pointing right; the double PIP crease is clicked at its midpoint. -->
@@ -175,25 +183,35 @@
         <text x="282" y="106">tip</text>
       </g>
     </svg>
-    <p><small>Click two ruler marks far apart, then these four points on every finger, in the order
-      below; the bar under the photo names the current one. Where a joint has two creases, click
-      between them.</small></p>
-    <label>Distance between the two ruler marks: <input type="number" id="rulerMm" min="1" step="any"> mm</label>
+    <ul class="tips">
+      <li>First two ruler marks far apart beside the fingers, e.g. 0 and 10 cm: camera tilt changes the
+        scale across the photo, so avoid marks next to the palm.</li>
+      <li>Then these four points on every finger, in the order below; the bar under the photo names
+        the current one.</li>
+      <li>Where a joint has two creases, click between them.</li>
+    </ul>
+    <label>Distance between the two ruler marks: <input type="number" id="rulerMm" min="1" step="any"> mm
+      <small>It must match the marks you click: 1 cm entered as 100 mm makes every value ten times too large.</small></label>
     <p><small>Click a point in the list to place it again.</small></p>
     <ol id="steps"></ol>
     <details>
       <summary>Show measurements</summary>
       <div id="results"></div>
-      <p><small>Photon: the segments and how far each base crease sits along the hand place the roller
-        (Height, Depth); the end joint to tip sets the blocker (To_Blocker). Spark: the base and middle
-        joint creases place the roller (Height). All relative to the pinky, in mm.</small></p>
+      <p><small>Values relative to the pinky, in mm. <a href="photon/fit.html">How they are computed</a>.</small></p>
     </details>
   </section>
 
   <h2>Download</h2>
   <button id="download" class="primary">Download STLs (zip)</button>
   <p id="status" role="status"></p>
-  <p><small>All parts render in your browser, about ten seconds per grip and hand.</small></p>
+  <ul class="tips">
+    <li>All parts render in your browser, about ten seconds per grip and hand.</li>
+    <li>The zip has a folder per grip and hand with its 14 parts, already oriented for printing, and
+      a <code>parameters.txt</code> with the values they were made with.</li>
+    <li>Print them with the <a href="photon/printing.html">Printing</a> settings, then put them
+      together as in <a href="photon/assembly.html">Assembly</a>.</li>
+    <li>The fit has only been checked digitally: adjust after a test print.</li>
+  </ul>
 </aside>
 <script>
 // Parameter names and defaults match grips/photon.scad and grips/spark.scad.

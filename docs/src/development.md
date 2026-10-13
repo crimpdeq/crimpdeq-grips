@@ -30,7 +30,12 @@ instead of their print pose.
 OpenSCAD, which `scripts/fetch_openscad_wasm.py` downloads to `docs/src/openscad/` (pinned and
 checked, not in git; the CI book build runs it). It loads the models from `docs/src/grips`, a link
 to `grips/`, so the book carries the models it renders. Each part renders in its own instance, in
-up to three web workers, and the page zips the STLs itself.
+up to three web workers, and the page zips the STLs itself. To run it locally:
+
+```sh
+python3 scripts/fetch_openscad_wasm.py
+mdbook serve docs   # then open /measure-hand.html; opened as a file it cannot load the models
+```
 
 CGAL fails in WebAssembly, so the models avoid `minkowski()` of non-convex solids, which needs it
 and falls back to minutes per part: `along_x_ball_swept()` builds the ball-swept extrusions of the
