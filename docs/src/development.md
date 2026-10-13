@@ -120,9 +120,9 @@ right-hand defaults. Rerun it when the model changes.
 
 ## Website
 
-Every push to `main` builds this book with the measuring page and the WebAssembly OpenSCAD and
-deploys it to [grips.crimpdeq.com](https://grips.crimpdeq.com) (Cloudflare Pages project
-`crimpdeq-grips`) from the `book` job of `.github/workflows/ci.yml`.
+Every push to `main` builds this book with the measuring page and the WebAssembly OpenSCAD and,
+once every check of `.github/workflows/ci.yml` passes, its `deploy` job publishes it to
+[grips.crimpdeq.com](https://grips.crimpdeq.com) (Cloudflare Pages project `crimpdeq-grips`).
 
 ## Releases
 

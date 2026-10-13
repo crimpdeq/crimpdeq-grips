@@ -32,9 +32,9 @@ rerun them.
   there, not copied into the page. It needs serving (`mdbook serve docs`), not `file://`. `illustrations/render.sh` regenerates `src/photon/images`
   from the right-hand defaults (`export.py --in-place`, then `illustrations/photon.scad`); rerun it
   when the model changes. Spark chapters and illustrations are not written yet.
-- `.github/workflows/`: `ci.yml` runs the checks below on pull requests and, on pushes to `main`,
-  deploys `docs/book/` to the Cloudflare Pages project `crimpdeq-grips` (grips.crimpdeq.com,
-  org secret `CLOUDFLARE_API_TOKEN`); `release.yml` exports
+- `.github/workflows/`: `ci.yml` runs the checks below on pull requests and, on pushes to `main`
+  that pass them, deploys `docs/book/` to the Cloudflare Pages project `crimpdeq-grips`
+  (grips.crimpdeq.com, org secret `CLOUDFLARE_API_TOKEN`); `release.yml` exports
   both grips for both hands and attaches one zip of STLs and one 3MF project per grip and hand to
   the release. `actions/setup-bambu-studio` pins the Bambu Studio AppImage (as in
   `crimpdeq-platform`).
