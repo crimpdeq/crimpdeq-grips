@@ -2,8 +2,11 @@
 
 // The models and their font: docs/src/grips links to the repository's grips/.
 const SOURCES = ['photon.scad', 'spark.scad', 'common.scad', 'fonts/Inter-Bold.ttf'];
-// A frame needs about 400 MB, so at most this many render at once.
-const WORKERS = 3;
+// Parts rendered at once. A frame needs about 300 MB of WebAssembly memory, the other parts up to
+// 100 MB: phones and tablets render one part at a time, other devices one per 2 GB of memory
+// (navigator.deviceMemory, reported by Chromium only), at most three.
+const WORKERS = matchMedia('(pointer: coarse)').matches ? 1
+  : Math.max(1, Math.min(3, Math.floor((navigator.deviceMemory ?? 8) / 2)));
 const newWorker = () => new Worker(new URL('worker.js', import.meta.url), { type: 'module' });
 
 async function fetchBytes(url) {

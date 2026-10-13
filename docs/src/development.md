@@ -35,7 +35,7 @@ to `grips/`, so the book carries the models it renders. Its script is in `docs/s
 |---|---|
 | `hand.js` | Points → finger lengths → grip parameters, plausibility warnings, `parameters.txt` |
 | `photo-canvas.js` | The photo: drawing, zoom and pan (wheel or pinch), placing and moving points, the magnifier |
-| `render.js`, `worker.js` | OpenSCAD in web workers: every part in its own instance, up to three at once, and the check of the parameters |
+| `render.js`, `worker.js` | OpenSCAD in web workers: every part in its own instance, up to three at once (one on phones and tablets), and the check of the parameters |
 | `zip.js` | The zip of the STLs |
 | `saved.js` | Choices, photos and points kept in the browser's IndexedDB |
 | `main.js` | The page: choices, the point grid, undo, the download |
