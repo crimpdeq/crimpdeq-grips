@@ -32,9 +32,9 @@ rerun them.
   rendering the post (the models' assertions are top level): keep model limits as assertions
   there, not copied into the page. It needs serving (`mdbook serve docs`), not `file://`. `illustrations/render.sh` regenerates `src/photon/images`
   and `src/spark/images` from the right-hand defaults (`export.py --in-place`, then
-  `illustrations/grip.scad`), and the README's `src/images/grips.png` of both grips
-  (`illustrations/grips.scad`, orthographic: in perspective the off-axis names lean); rerun it
-  when a model changes.
+  `illustrations/grip.scad`), and `src/images/grips.png` of both grips for the README and the
+  introduction (`illustrations/grips.scad`, orthographic: in perspective the off-axis names
+  lean); rerun it when a model changes.
 - `.github/workflows/`: `ci.yml` runs the checks below on pull requests and, on pushes to `main`
   that pass them, deploys `docs/book/` to the Cloudflare Pages project `crimpdeq-grips`
   (grips.crimpdeq.com, org secret `CLOUDFLARE_API_TOKEN`); `release.yml` exports
