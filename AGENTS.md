@@ -9,9 +9,9 @@ rerun them.
   every part in assembly coordinates plus a print pose; `part`/`hand` select the output, the hidden
   `in_place` skips the pose. Shared helpers (extrusion and edge rounding, pins, post, lock slot,
   bore exit round) are in `common.scad`. `fonts/` bundles Inter Bold for the engravings
-  (Photon: `crimpdeq.com` on the frame and end wall outer faces, `Crimpdeq Photon` on the
-  crossbar front; Spark: `Crimpdeq Spark` on the anchor bar's sloped top face), the font of
-  `crimpdeq-case`.
+  (both grips: `crimpdeq.com` on the frame and end wall outer faces; Photon: `Crimpdeq Photon` on
+  the crossbar front; Spark: `Crimpdeq Spark` on the anchor bar's sloped top face), the font of
+  `crimpdeq-case`. Engraved texts are `BRAND_TEXT` and `NAME_TEXT`, which `check_step.py` empties.
 - `scripts/export.py`: all parts of one hand (stdlib only); parameter file of `Name = value` lines,
   unknown names rejected.
 - `scripts/check_step.py`: compares every part with its STEP solid (`uv run`, inline dependencies;
