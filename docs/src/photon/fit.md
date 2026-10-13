@@ -3,7 +3,8 @@
 The [measuring page](../measure-hand.html) fits the grips to your hand: it measures a photo of it
 and downloads print-ready STLs of Photon, Spark or both, for one hand or both, in one zip. Its
 steps are on the page. This chapter explains the values it computes and how to export the same
-parts yourself.
+parts yourself. To print the STLs of the zip as they are, skip it and go to
+[Printing](printing.md).
 
 ## Values
 
