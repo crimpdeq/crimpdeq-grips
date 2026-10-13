@@ -2,3 +2,4 @@ docs/book/
 __pycache__/
 .ruff_cache/
 .DS_Store
+docs/src/openscad/

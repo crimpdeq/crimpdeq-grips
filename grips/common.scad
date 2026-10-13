@@ -46,6 +46,22 @@ module ball(r) {
   scale(1 / cos(180 / 48)) sphere(r, $fn = 48);
 }
 
+// minkowski() of a (Y, Z) profile extruded over [x0, x1] with a ball of radius r, built from
+// extrusions of the profile offset by the ball's section in layers of LAYER_HEIGHT beyond each
+// end, a print layer high. minkowski() of non-convex solids needs CGAL, which fails in the
+// WebAssembly OpenSCAD of measure-hand.html and leaves a slow Nef fallback (minutes per part).
+LAYER_HEIGHT = 0.2;
+module along_x_ball_swept(x0, x1, r) {
+  n = ceil(r / LAYER_HEIGHT);
+  along_x(x0, x1) offset(r) children();
+  for (k = [0:n - 1]) {
+    // Section at the layer's middle; layers overlap by eps.
+    rho = sqrt(r * r - ((k + 0.5) * r / n) ^ 2);
+    along_x(x1 + k * r / n - eps, x1 + (k + 1) * r / n) offset(rho) children();
+    along_x(x0 - (k + 1) * r / n, x0 - k * r / n + eps) offset(rho) children();
+  }
+}
+
 // Extrude a (Y, Z) profile along X with the perimeter edges of one end face rounded by r
 // (side = 1: the face at x1, side = -1: at x0). children(1), if given, is a larger profile
 // whose extra area keeps the edges it covers sharp; it must reach r past those edges.
@@ -59,11 +75,8 @@ module along_x_rounded(x0, x1, r, side) {
     union() {
       if (side > 0) along_x(x0 - 1, x1 - r - t / 2) children($children - 1);
       else along_x(x0 + r + t / 2, x1 + 1) children($children - 1);
-      minkowski() {
-        along_x(min(face - side * r, face - side * (r + t)), max(face - side * r, face - side * (r + t)))
-          offset(-r) children($children - 1);
-        ball(r);
-      }
+      along_x_ball_swept(min(face - side * r, face - side * (r + t)), max(face - side * r, face - side * (r + t)), r)
+        offset(-r) children($children - 1);
     }
   }
 }

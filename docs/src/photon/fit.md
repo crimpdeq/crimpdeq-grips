@@ -1,27 +1,13 @@
 # Fit to your hand
 
-Photon places each roller from three values per finger, relative to the pinky. The
-[measuring page](../measure-hand.html) computes them from a photo of your hand, and
-`scripts/export.py` turns them into print-ready STLs.
+The [measuring page](../measure-hand.html) fits the grips to your hand: it measures a photo of it
+and downloads print-ready STLs of Photon, Spark or both, for one hand or both, in one zip. Its
+steps are on the page. This chapter explains the values it computes and how to export the same
+parts yourself.
 
-## 1. Measure
+## Values
 
-Open the [measuring page](../measure-hand.html) in Chrome or Safari. It is a single HTML file
-(`docs/src/measure-hand.html`) and also works offline.
-
-- Hands: measure one hand and use it for both (the values do not depend on which hand the photo
-  shows), or measure each hand from its own photo, switching between them with the Left/Right
-  buttons.
-- Photo: palm up, fingers straight and slightly apart, a millimetre ruler beside the fingers raised
-  to palm height (e.g. on a book), phone parallel to the table and above the fingers. Use the
-  original full-resolution JPEG or PNG, not a screenshot.
-- Enter the distance between two ruler marks far apart (e.g. 0 and 10 cm = 100 mm) and click them.
-- For each finger, from index to pinky, click the base crease, middle joint (PIP) crease, end joint
-  (DIP) crease and fingertip. Scroll to zoom, drag to pan or move a point.
-- Copy the text block into a file, e.g. `my-right-hand.txt`; when measuring each hand, one file per
-  hand. Its first line says which `--hand` to export it with.
-
-The page sets three values per finger:
+Photon places each roller from three values per finger, relative to the pinky:
 
 | Value | Meaning | Computed from |
 |---|---|---|
@@ -33,35 +19,35 @@ The original OpenGrips instructions set `Height` to the full finger length minus
 rule ignores that the pinky starts lower on the hand, which put the rollers 8–14 mm too low on the
 measured example hand.
 
-Two things skew the values:
+Photon's frame length follows the middle finger, so no other finger's `Height + To_Blocker` may
+reach much past the middle finger's. Once every point is placed, the page checks the values against
+the model itself and shows its message when a grip cannot be made from them.
 
-- The ruler distance must match the clicked marks: a 1 cm span entered as 100 mm gives values ten
-  times too large.
-- Camera tilt changes the scale along the photo (about 10% seen); use widely spaced ruler marks
-  beside the fingers. A ruler lying below the palm reads lengths about 4% long; raise it to palm
-  height.
+Fitting Spark is optional; without it Spark keeps the roller positions of Sisyphus v27. Fitted, the
+page sets `Height`, the position of each roller top, relative to the pinky. In the original
+Sisyphus grip the proximal phalanx is vertical against the roller and the DIP joint rests on its
+top; the page puts the PIP joint at the roller axis, so each roller top sits half its diameter past
+the PIP crease, including how far each base crease sits along the hand.
 
-## 2. Export
+The values do not depend on which hand the photo shows, so one photo can fit both hands; the model
+is a left-hand grip and the right hand is its mirror.
 
-With [OpenSCAD](https://openscad.org) 2025 or newer installed, from the repository root:
+## Exporting yourself
+
+Each folder of the zip holds `parameters.txt`, the values the parts were rendered with, and the
+clicked points. With [OpenSCAD](https://openscad.org) 2025 or newer installed, `scripts/export.py`
+exports the same STLs from it, e.g. after editing a value:
 
 ```sh
-python3 scripts/export.py photon my-right-hand.txt --hand right --out my-right-hand
+python3 scripts/export.py photon crimpdeq-grips-photon-right/parameters.txt --hand right --out my-right-hand
 ```
 
-This writes one STL per part to `my-right-hand/`, already oriented for printing. The model is a
-left-hand grip; `--hand right` mirrors it. The frame length follows the middle finger, so its
-`Base_M_Height + Base_M_To_Blocker` must be the largest of the four; the export stops with a
-message if not.
-
-For a Bambu Lab A1, `scripts/export_bambu_project.py` turns these STLs into a Bambu Studio project
-with all parts on one plate and the settings of [Printing](printing.md):
+For a Bambu Lab A1, `scripts/export_bambu_project.py` turns a folder of STLs into a Bambu Studio
+project with all parts on one plate and the settings of [Printing](printing.md):
 
 ```sh
-python3 scripts/export_bambu_project.py my-right-hand --output my-right-hand.3mf
+python3 scripts/export_bambu_project.py crimpdeq-grips-photon-right --output my-right-hand.3mf
 ```
 
 It needs [Bambu Studio](https://bambulab.com/en/download/studio) installed and slices the project
 to check it.
-
-The fit has only been checked digitally; adjust the values after a test print.

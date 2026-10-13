@@ -128,6 +128,7 @@ ANCHOR_BORE_R = 4;
 ANCHOR_R = ANCHOR_BORE_R + 4.4;
 ANCHOR_X0 = E + WIDTH[P]; // its 45 degree ends pass through these X at the tube top
 ANCHOR_X1 = roller_x(I) + WIDTH[I] / 2;
+ANCHOR_WEB_R = 15; // the web's top arc, from the plate top tangent to the tube
 CORD_EXIT_R = 3; // round of the bore where it breaks out of the anchor ends
 
 // Engraved on the outer faces of the frame and the end wall, as on the back of the Crimpdeq case.
@@ -137,9 +138,17 @@ BRAND_FONT = "Inter:style=Bold";
 BRAND_SIZE = 5;
 BRAND_DEPTH = 0.8;
 BRAND_Y = (POST_Y + POST_SIZE + LOCK_Y) / 2;
-// Text extents ([along the text, across it]) measured with textmetrics(), which is experimental
-// and off by default in OpenSCAD; remeasure when the text or its size changes.
+// Text extents ([along the text, across it]) at BRAND_SIZE, measured with textmetrics(), which is
+// experimental and off by default in OpenSCAD; remeasure when the text or its size changes.
 BRAND_EXTENT = [48.73, 6.75]; // [along Y, Z]
+// Room the hand leaves for the text, 1 mm clear on each side: along Y between the end wall's post
+// hole and lock, and clear of the pinky pole wall on the frame; along Z between the plate's edge
+// rounds. The text shrinks to fit rather than refusing a hand, down to BRAND_MIN_SIZE; any
+// smaller would not print legibly, so it is left out.
+BRAND_ROOM = [min(LOCK_Y - POST_Y - POST_SIZE, 2 * (BRAND_Y - (axis_y(P) + DIAMETER[P] / 4 + POLE))) - 2,
+              T - 2 * EDGE_R - 2];
+BRAND_FIT = min(1, BRAND_ROOM[0] / BRAND_EXTENT[0], BRAND_ROOM[1] / BRAND_EXTENT[1]);
+BRAND_MIN_SIZE = 2.5;
 
 // Engraved on the front face of the crossbar, between the walls and the anchor, centered across
 // the grip; it reads from the front with the anchor up.
@@ -151,13 +160,24 @@ for (f = [P:I])
   assert(blocker_y(f) + 2 * BLOCKER_R < LOCK_Y,
          str(FINGERS[f], " blocker (Y ", blocker_y(f), ") reaches the crossbar (Y ", LOCK_Y,
              "): the middle finger must have the largest Height + To_Blocker"));
-assert(BRAND_EXTENT[0] + 2 < LOCK_Y - POST_Y - POST_SIZE,
-       str("the end wall (", LOCK_Y - POST_Y - POST_SIZE, " mm between post hole and lock) is too short for ",
-           BRAND_TEXT));
-assert(BRAND_Y - BRAND_EXTENT[0] / 2 > axis_y(P) + DIAMETER[P] / 4 + POLE,
-       str(BRAND_TEXT, " reaches the pinky pole wall on the frame"));
-assert(BRAND_EXTENT[1] + 1 < T - 2 * EDGE_R,
-       str("the frame (", T, " mm thick) is too thin for ", BRAND_TEXT));
+// The middle finger alone sets the frame depth FD, and every Depth is measured down from it.
+for (f = [P:I])
+  assert(axis_z(f) - CRADLE_SCALE * max(roller_end_radii(f)) > 0,
+         str(FINGERS[f], " roller is too deep for the frame, which the middle finger's Depth (", Base_M_Depth,
+             ") sets: its Depth (", DEPTH[f], ") must stay under ", FD - CRADLE_SCALE * max(roller_end_radii(f))));
+// The middle and index rails stand on the middle, index and end wall plates: each pole sits
+// behind the plates' rounded front corners, with its rail reaching below their top.
+for (f = [M, I])
+  assert(axis_y(f) > WALL_Y0 + EDGE_R && axis_z(f) - DIAMETER[f] / 3 < T,
+         str(FINGERS[f], " rail misses the wall plates: its Height (", HEIGHT[f], ") or Depth (", DEPTH[f],
+             ") is too far from the ring and middle fingers'"));
+// The post runs under the pinky roller, through the frame and every wall, and follows the walls'
+// front, which the ring finger sets: it must pass behind the roller, clear of its largest radius.
+assert(POST_Y > axis_y(P) && norm([POST_Y, POST_Z + POST_SIZE] - axis(P)) > DIAMETER[P] / 2,
+       str("the post (Y ", POST_Y, ") does not pass behind the pinky roller: the ring finger's Height (",
+           Base_R_Height, ") is too small"));
+assert(norm([ANCHOR_Y, ANCHOR_Z] - [FRAME_TOP, T]) < 2 * ANCHOR_WEB_R + ANCHOR_R,
+       str("the anchor web cannot reach the tube: the middle finger's Depth (", Base_M_Depth, ") is too large"));
 assert(NAME_EXTENT[1] + 2 < FRAME_TOP - LOCK_Y,
        str("the crossbar (", FRAME_TOP - LOCK_Y, " mm between walls and anchor) is too short for ", NAME_TEXT));
 assert(NAME_EXTENT[0] + 2 < FW - 2 * EDGE_R, str("the frame (", FW, " mm wide) is too narrow for ", NAME_TEXT));
@@ -247,13 +267,15 @@ module lock() {
 }
 
 // BRAND_TEXT engraved into the outer side face at x (side: its outward direction along X),
-// centered on (BRAND_Y, T / 2). Seen from +X the text runs along +Y, so it is flipped on the -X
-// face and again for the right hand, where hand_mirror mirrors the part.
+// centered on (BRAND_Y, T / 2) and scaled by BRAND_FIT. Seen from +X the text runs along +Y, so it
+// is flipped on the -X face and again for the right hand, where hand_mirror mirrors the part.
 module brand(x, side) {
+  size = BRAND_SIZE * BRAND_FIT;
   flip = (side < 0) != (hand == "right");
-  along_x(side > 0 ? x - BRAND_DEPTH : x - 1, side > 0 ? x + 1 : x + BRAND_DEPTH)
-    translate([BRAND_Y, T / 2]) mirror([flip ? 1 : 0, 0])
-      text(BRAND_TEXT, size = BRAND_SIZE, font = BRAND_FONT, halign = "center", valign = "center");
+  if (size >= BRAND_MIN_SIZE)
+    along_x(side > 0 ? x - BRAND_DEPTH : x - 1, side > 0 ? x + 1 : x + BRAND_DEPTH)
+      translate([BRAND_Y, T / 2]) mirror([flip ? 1 : 0, 0])
+        text(BRAND_TEXT, size = size, font = BRAND_FONT, halign = "center", valign = "center");
 }
 
 // NAME_TEXT engraved into the crossbar's front face (z = T); flipped for the right hand, where
@@ -283,10 +305,7 @@ module blocker2d(f, inset = 0) {
 // Blocker of finger f over [x0, x1] with every exposed edge rounded by BLOCKER_R.
 module blocker(f, x0, x1) {
   intersection() {
-    minkowski() {
-      along_x(x0 + BLOCKER_R, x1 - BLOCKER_R) blocker2d(f, BLOCKER_R);
-      ball(BLOCKER_R);
-    }
+    along_x_ball_swept(x0 + BLOCKER_R, x1 - BLOCKER_R, BLOCKER_R) blocker2d(f, BLOCKER_R);
     translate([x0, 0, 0]) cube([x1 - x0, LOCK_Y, 100]);
   }
 }
@@ -430,19 +449,16 @@ module end_wall() {
 // Frame
 
 // Anchor (Y, Z) profile: the tube plus the web joining it to the frame, without the bore. The web
-// top is a radius 15 arc from the plate top tangent to the tube; its bottom an arc from the
-// plate bottom tangent to the tube's lowest point.
+// top is a radius ANCHOR_WEB_R arc from the plate top tangent to the tube; its bottom an arc from
+// the plate bottom tangent to the tube's lowest point.
 module anchor2d() {
   c = [ANCHOR_Y, ANCHOR_Z];
   base = [FRAME_TOP, T];
   bottom = [c[0], c[1] - ANCHOR_R];
   rb = ((c[0] - FRAME_TOP) ^ 2 + bottom[1] ^ 2) / (2 * bottom[1]);
-  rt = 15;
+  rt = ANCHOR_WEB_R;
   // Top arc center: rt from the plate top corner and rt + ANCHOR_R from the tube center.
-  d = norm(c - base);
-  u = (c - base) / d;
-  along = (rt ^ 2 - (rt + ANCHOR_R) ^ 2 + d ^ 2) / (2 * d);
-  ct = base + along * u + sqrt(rt ^ 2 - along ^ 2) * [-u[1], u[0]];
+  ct = circle_intersection(base, rt, c, rt + ANCHOR_R);
   difference() {
     union() {
       translate(c) circle(ANCHOR_R);

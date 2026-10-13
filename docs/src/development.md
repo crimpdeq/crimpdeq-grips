@@ -19,10 +19,39 @@ python3 scripts/export.py photon my-right-hand.txt --hand right --out my-right-h
 python3 scripts/export.py spark --hand left --out spark-left
 ```
 
-The parameter file is optional and uses the format the [measuring page](measure-hand.html) writes
-(`Name = value` lines, `#` comments); names that are not parameters of the model are rejected. The
-STLs are named `<model>_<hand>_<part>.stl`. `--in-place` keeps the parts in assembly coordinates
+The parameter file is optional and uses the format of the `parameters.txt` files the
+[measuring page](measure-hand.html) puts in its zip (`Name = value` lines, `#` comments); names
+that are not parameters of the model are rejected. The STLs are named `<model>_<hand>_<part>.stl`. `--in-place` keeps the parts in assembly coordinates
 instead of their print pose.
+
+## Measuring page
+
+`docs/src/measure-hand.html` renders the STLs in the browser with the official WebAssembly build of
+OpenSCAD, which `scripts/fetch_openscad_wasm.py` downloads to `docs/src/openscad/` (pinned and
+checked, not in git; the CI book build runs it). It loads the models from `docs/src/grips`, a link
+to `grips/`, so the book carries the models it renders. Its script is in `docs/src/measure-hand/`:
+
+| Module | Role |
+|---|---|
+| `hand.js` | Points → finger lengths → grip parameters, plausibility warnings, `parameters.txt` |
+| `photo-canvas.js` | The photo: drawing, zoom and pan (wheel or pinch), placing and moving points, the magnifier |
+| `render.js`, `worker.js` | OpenSCAD in web workers: every part in its own instance, up to three at once (one on phones and tablets), and the check of the parameters |
+| `zip.js` | The zip of the STLs |
+| `saved.js` | Choices, photos and points kept in the browser's IndexedDB |
+| `main.js` | The page: choices, the point grid, undo, the download |
+
+Once every point is placed, the page renders the post with the measured parameters: the models'
+assertions run for any part, so the model itself says whether it can be made, before the download.
+To run the page locally:
+
+```sh
+python3 scripts/fetch_openscad_wasm.py
+mdbook serve docs   # then open /measure-hand.html; opened as a file it cannot load the models
+```
+
+CGAL fails in WebAssembly, so the models avoid `minkowski()` of non-convex solids, which needs it
+and falls back to minutes per part: `along_x_ball_swept()` builds the ball-swept extrusions of the
+rounded edges from offset profiles in 0.2 mm layers, the print layer height.
 
 ## Parameters
 
@@ -35,8 +64,10 @@ the v43 values for comparison; the roller and frame sizes are the VarSet's.
 
 The outer faces of the frame and the end wall carry an engraved `crimpdeq.com` in Inter Bold, as
 on the Crimpdeq case, and the front of the crossbar an engraved `Crimpdeq Photon`; the font is
-bundled in `grips/fonts/` (SIL Open Font License). The model stops with a message if the text does
-not fit between the end wall's post hole and lock or on the crossbar.
+bundled in `grips/fonts/` (SIL Open Font License). The space for `crimpdeq.com` depends on the hand:
+when it is short, the text shrinks to fit, and below a 2.5 mm text size it is left out, so the
+engraving never rules a hand out. `Crimpdeq Photon` has a fixed space; the model stops with a
+message if it does not fit.
 
 ### Spark
 
@@ -55,8 +86,9 @@ The finger stops and the anchor have no counterpart in the original model and ke
 dimensions.
 
 As on Photon, the outer faces of the frame and the end wall carry an engraved `crimpdeq.com`, and
-the sloped top face of the anchor bar an engraved `Crimpdeq Spark`; the model stops with a message
-if the text does not fit between the end wall's post hole and lock or on the anchor bar.
+the sloped top face of the anchor bar an engraved `Crimpdeq Spark`. Their space depends on the
+roller diameters and the frame length, not on the hand, so the model stops with a message if the
+text does not fit between the end wall's post hole and lock or on the anchor bar.
 
 ## Checks
 
@@ -65,10 +97,11 @@ CI runs these on every pull request:
 - `uv run scripts/check_step.py` exports each part at the STEP's own values and compares it with
   the STEP solid, read from git history (needs a full clone) and tessellated with OpenCascade.
   The engravings, absent from the STEP files, are left out. Every part is within 0.5% of the STEP
-  volume and within 0.1 mm of its surface at the 95th percentile. It fails beyond 1% or 0.6 mm.
+  volume and within about 0.1 mm of its surface at the 95th percentile. It fails beyond 1% or 0.6 mm.
 - `python3 scripts/check_stl.py` on the exports of both grips for both hands: each STL is one
   closed body resting on z = 0.
-- `uvx ruff check --line-length 120 scripts` and `mdbook build docs`.
+- `uvx ruff check --line-length 120 scripts` and `mdbook build docs`, after
+  `python3 scripts/fetch_openscad_wasm.py`.
 
 Known differences from the STEP files:
 

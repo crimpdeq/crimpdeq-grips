@@ -6,11 +6,11 @@ Crimpdeq Grips are 3D-printed grips for isolated finger training: each finger re
 roller, under a block that holds its last joint. There are two designs, both parametric OpenSCAD
 models:
 
-- **Photon**, fitted to your hand: [measure a photo of it](photon/fit.md) and export parts
+- **Photon**, fitted to your hand: [measure a photo of it](measure-hand.html) and download parts
   that place every roller under its fingertip.
-- **Spark**, with larger rollers (22 to 40 mm). Its chapters are still to come; its parts export
-  like Photon's (see [Models and checks](development.md)) and go together in the same order
-  (see [Assembly](photon/assembly.md)).
+- **Spark**, with larger rollers (22 to 40 mm). Its chapters are still to come; the same
+  [measuring page](measure-hand.html) downloads its parts, with the rollers placed from your photo or
+  at their defaults, and they go together in the same order (see [Assembly](photon/assembly.md)).
 
 Every part, pins included, prints in the same plastic: no metal rods, screws or TPU. The only
 extra is a cord through the anchor.
@@ -19,8 +19,8 @@ extra is a cord through the anchor.
 
 Each [release](https://github.com/crimpdeq/crimpdeq-grips/releases) attaches the STLs of both grips
 for both hands, at the models' defaults, and a Bambu Studio project of each for the Bambu Lab A1;
-Photon defaults to one measured right hand. To fit Photon to your own hand, export the parts
-yourself as described in [Fit to your hand](photon/fit.md).
+Photon defaults to one measured right hand. To fit the grips to your own hand, download the parts
+from the [measuring page](measure-hand.html).
 
 ## Credits
 

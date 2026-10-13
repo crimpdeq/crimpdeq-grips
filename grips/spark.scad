@@ -142,9 +142,19 @@ BRAND_SIZE = 6.5;
 BRAND_Y = (POST_Y + POST_SIZE + LOCK_Y) / 2;
 BRAND_EXTENT = [63.35, 8.77]; // [along Y, Z]
 
-for (f = [R:I])
+// Each seat runs from the wall front (y = 0) to seat_end(f); below EDGE_R its front rounds erase it.
+for (f = [R:I]) {
   assert(seat_end(f) < LOCK_Y - STOP_SETBACK[f] - WH * tan(STOP_ANGLE[f]),
          str(FINGERS[f], " seat (Y ", seat_end(f), ") runs into its finger stop"));
+  assert(seat_end(f) > EDGE_R,
+         str(FINGERS[f], " seat (Y ", seat_end(f), ") ends at the wall front: its Height (", HEIGHT[f],
+             ") is too far below the pinky's"));
+}
+// The middle and index wall plates join the ring and index humps to the middle hump.
+for (f = [R, I])
+  assert(norm(axis(f) - axis(M)) < hump_r(f) + hump_r(M),
+         str(FINGERS[f], " wall hump misses the middle one: its Height (", HEIGHT[f],
+             ") is too far from the middle finger's (", Base_M_Height, ")"));
 assert(NAME_EXTENT[1] + 2 < norm(BAR_TOP_END - BAR_TOP_START),
        str("the anchor bar (", norm(BAR_TOP_END - BAR_TOP_START), " mm top face) is too short for ", NAME_TEXT));
 assert(NAME_EXTENT[0] + 2 < FW - 2 * EDGE_R, str("the frame (", FW, " mm wide) is too narrow for ", NAME_TEXT));
