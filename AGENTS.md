@@ -12,6 +12,7 @@ rerun them.
   (both grips: `crimpdeq.com` on the frame and end wall outer faces; Photon: `Crimpdeq Photon` on
   the crossbar front; Spark: `Crimpdeq Spark` on the anchor bar's sloped top face), the font of
   `crimpdeq-case`. Engraved texts are `BRAND_TEXT` and `NAME_TEXT`, which `check_step.py` empties.
+  The part `name` (not in the part list) is the name engraving's cut, which `grips.png` fills in.
 - `scripts/export.py`: all parts of one hand (stdlib only); parameter file of `Name = value` lines,
   unknown names rejected.
 - `scripts/check_step.py`: compares every part with its STEP solid (`uv run`, inline dependencies;
@@ -32,7 +33,8 @@ rerun them.
   there, not copied into the page. It needs serving (`mdbook serve docs`), not `file://`. `illustrations/render.sh` regenerates `src/photon/images`
   and `src/spark/images` from the right-hand defaults (`export.py --in-place`, then
   `illustrations/grip.scad`), and the README's `src/images/grips.png` of both grips
-  (`illustrations/grips.scad`); rerun it when a model changes.
+  (`illustrations/grips.scad`, orthographic: in perspective the off-axis names lean); rerun it
+  when a model changes.
 - `.github/workflows/`: `ci.yml` runs the checks below on pull requests and, on pushes to `main`
   that pass them, deploys `docs/book/` to the Cloudflare Pages project `crimpdeq-grips`
   (grips.crimpdeq.com, org secret `CLOUDFLARE_API_TOKEN`); `release.yml` exports
