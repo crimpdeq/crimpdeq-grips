@@ -24,8 +24,8 @@ function fields(...list) {
   return new Uint8Array(out.buffer);
 }
 
-// files: [[path, bytes]] -> zip Blob.
-export async function zip(files) {
+// files: [[path, bytes]] -> zip Blob; rejects with signal's reason when it aborts.
+export async function zip(files, signal) {
   const now = new Date();
   const time = now.getHours() << 11 | now.getMinutes() << 5 | now.getSeconds() >> 1;
   const date = (now.getFullYear() - 1980) << 9 | (now.getMonth() + 1) << 5 | now.getDate();
@@ -33,6 +33,7 @@ export async function zip(files) {
   const central = [];
   let offset = 0;
   for (const [path, bytes] of files) {
+    signal.throwIfAborted();
     const name = new TextEncoder().encode(path);
     const packed = new Uint8Array(await new Response(
       new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());

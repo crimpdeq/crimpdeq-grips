@@ -267,11 +267,13 @@ function update() {
 // ---------------------------------------------------------------------------------------------
 // Download
 
+// The choices are read once: changing them while rendering affects the next download only.
 async function downloadStls() {
+  const selected = grips();
   const hands = printHands();
   const files = [];
   const jobs = [];
-  for (const grip of grips()) {
+  for (const grip of selected) {
     for (const hand of hands) {
       const source = photos[photoKey(hand)];
       const params = gripParams(grip, needsPhoto() ? measure(source, unit()) : null, fitSpark());
@@ -296,12 +298,14 @@ async function downloadStls() {
     files.push(...jobs.map(job => [job.name, job.stl]));
     setStatus('Zipping…');
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(await zip(files));
-    link.download = `crimpdeq-grips-${[...grips(), ...hands].join('-')}.zip`;
+    const archive = await zip(files, rendering.signal);
+    rendering.signal.throwIfAborted();
+    link.href = URL.createObjectURL(archive);
+    link.download = `crimpdeq-grips-${[...selected, ...hands].join('-')}.zip`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 60000);
     setStatus(`Downloaded ${link.download}: ${jobs.length} STLs and their parameters.`);
-    $('sparkNote').hidden = !grips().includes('spark');
+    $('sparkNote').hidden = !selected.includes('spark');
     $('nextSteps').hidden = false;
     $('nextSteps').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (e) {
