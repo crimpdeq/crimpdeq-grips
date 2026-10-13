@@ -118,6 +118,12 @@ The checks are geometric only; fit, strength and comfort still need a test print
 `docs/illustrations/render.sh` renders the Photon part and assembly pictures from the
 right-hand defaults. Rerun it when the model changes.
 
+## Website
+
+Every push to `main` builds this book with the measuring page and the WebAssembly OpenSCAD and,
+once every check of `.github/workflows/ci.yml` passes, its `deploy` job publishes it to
+[grips.crimpdeq.com](https://grips.crimpdeq.com) (Cloudflare Pages project `crimpdeq-grips`).
+
 ## Releases
 
 Creating a GitHub release runs `.github/workflows/release.yml`, which exports both grips for both
