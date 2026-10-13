@@ -24,10 +24,12 @@ rerun them.
   `mdbook build docs`.
 - `docs/`: mdBook (the website). `src/measure-hand.html` is the hand measuring page, served as-is:
   photo → zip of the STLs of Photon, Spark or both, for one or both hands, with a `parameters.txt`
-  per grip and hand for `export.py`. Formulas live in `measure()`; parameter names, defaults and the
-  part list match the models and `export.py`. It renders with the WebAssembly OpenSCAD in web
-  workers and loads the models through `src/grips`, a symlink to `grips/`; it needs serving
-  (`mdbook serve docs`), not `file://`. `illustrations/render.sh` regenerates `src/photon/images`
+  per grip and hand for `export.py`. Its ES modules are in `src/measure-hand/` (roles in
+  `development.md`); formulas live in `hand.js` `measure()`, parameter names, defaults and the part
+  list match the models and `export.py`. It renders with the WebAssembly OpenSCAD in web workers,
+  loads the models through `src/grips`, a symlink to `grips/`, and checks measured parameters by
+  rendering the post (the models' assertions are top level): keep model limits as assertions
+  there, not copied into the page. It needs serving (`mdbook serve docs`), not `file://`. `illustrations/render.sh` regenerates `src/photon/images`
   from the right-hand defaults (`export.py --in-place`, then `illustrations/photon.scad`); rerun it
   when the model changes. Spark chapters and illustrations are not written yet.
 - `.github/workflows/`: `ci.yml` runs the checks below on pull requests; `release.yml` exports

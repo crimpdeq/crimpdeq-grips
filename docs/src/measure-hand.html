@@ -4,131 +4,46 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Crimpdeq Grips: fit to your hand</title>
-<style>
-  /* Theme of crimpdeq.com (crimpdeq-web/web/index.html). */
-  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap");
-  :root {
-    --bg: #0b1118;
-    --bg-soft: #101a26;
-    --panel: #162333;
-    --text: #ecf2f8;
-    --muted: #9eb1c5;
-    --accent: #4fc3f7;
-    --accent-strong: #7cd6ff;
-    --error: #ff8a80;
-    --border: #2b3f53;
-    --shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
-    color-scheme: dark;
-    accent-color: var(--accent);
-  }
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  body {
-    margin: 0; display: flex; gap: 16px; height: 100vh; padding: 16px;
-    font: 14px/1.5 "Space Grotesk", system-ui, sans-serif; color: var(--text);
-    background:
-      radial-gradient(1200px 450px at 20% -10%, rgba(79, 195, 247, 0.18), transparent 55%),
-      radial-gradient(700px 380px at 85% 15%, rgba(124, 214, 255, 0.14), transparent 60%),
-      linear-gradient(180deg, #0b1118 0%, #070c12 100%);
-  }
-  main, aside { border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); }
-  main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-soft); }
-  #photo { flex: 1; position: relative; }
-  canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
-  #hint { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); pointer-events: none; }
-  /* The current step, below the photo. */
-  #banner {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 12px 16px;
-    background: var(--panel); border-top: 1px solid var(--border);
-  }
-  #banner b { font-size: 1.05rem; }
-  #swatch { width: 12px; height: 12px; border-radius: 50%; }
-  aside {
-    width: 380px; overflow: auto; padding: 22px; counter-reset: step;
-    background: linear-gradient(180deg, rgba(22, 35, 51, 0.95), rgba(12, 19, 29, 0.94));
-  }
-  .kicker { margin: 0; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.78rem; font-weight: 600; }
-  h1 { margin: 4px 0 6px; font: 800 1.6rem/1.1 Inter, sans-serif; }
-  /* Numbered by CSS: hidden sections drop out of the numbering. */
-  h2 { margin: 24px 0 10px; font-size: 1.05rem; }
-  h2::before { counter-increment: step; content: counter(step) ". "; color: var(--accent); }
-  p { margin: 8px 0; }
-  a { color: var(--accent-strong); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  small { color: var(--muted); }
-  label { display: block; margin: 6px 0; }
-  label small { display: block; }
-  input[type=checkbox] ~ small { margin-left: 24px; }
-  ul.tips { margin: 8px 0; padding-left: 18px; color: var(--muted); font-size: 0.86em; }
-  ul.tips li { cursor: auto; margin: 3px 0; padding: 0; }
-  ul.tips li:hover { background: none; }
-  input[type=number] {
-    width: 80px; padding: 4px 8px; font: inherit; color: var(--text);
-    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
-  }
-  #file { max-width: 100%; color: var(--muted); }
-  button, ::file-selector-button, .choices span {
-    padding: 8px 14px; font: 600 14px "Space Grotesk", system-ui, sans-serif; color: var(--text); cursor: pointer;
-    background: rgba(16, 26, 38, 0.9); border: 1px solid var(--border); border-radius: 12px;
-    transition: background 160ms ease, box-shadow 160ms ease;
-  }
-  ::file-selector-button { margin-right: 10px; }
-  button:hover, ::file-selector-button:hover, .choices span:hover { background: var(--panel); }
-  button.primary, .choices input:checked + span {
-    color: #00111c; border-color: transparent;
-    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  }
-  button.primary { box-shadow: 0 10px 25px rgba(79, 195, 247, 0.25); }
-  button:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
-  :focus-visible, .choices input:focus-visible + span { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
-  /* Toggle buttons: checkboxes and radios drawn as buttons. */
-  .field { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
-  .field > span { width: 52px; color: var(--muted); }
-  .choices { display: flex; gap: 6px; }
-  .choices label { margin: 0; }
-  .choices input { position: absolute; opacity: 0; }
-  .choices span { display: block; padding: 6px 14px; border-radius: 999px; }
-  details { margin: 10px 0; }
-  summary { cursor: pointer; color: var(--accent-strong); font-weight: 600; }
-  ol { padding-left: 28px; margin: 8px 0; }
-  li { cursor: pointer; margin: 2px 0; padding: 2px 8px; border-radius: 0 8px 8px 0; }
-  li::marker { color: var(--muted); }
-  li:hover { background: rgba(79, 195, 247, 0.08); }
-  li.done { color: var(--muted); }
-  li.active { background: rgba(79, 195, 247, 0.18); color: var(--accent-strong); font-weight: 600; }
-  table { border-collapse: collapse; width: 100%; margin: 4px 0; font-variant-numeric: tabular-nums; }
-  th, td { border-bottom: 1px solid var(--border); padding: 4px 6px; text-align: right; }
-  th { color: var(--muted); font-weight: 600; }
-  th:first-child, td:first-child { text-align: left; }
-  #tabs { display: flex; gap: 8px; margin-bottom: 10px; }
-  #tabs button { flex: 1; }
-  #download { display: block; width: 100%; }
-  #status { margin: 8px 0 0; color: var(--muted); white-space: pre-wrap; }
-  #status.error { color: var(--error); }
-  .diagram { color: var(--text); }
-  @media (max-width: 800px) {
-    body { flex-direction: column; height: auto; min-height: 100vh; }
-    main { flex: none; height: 70vh; }
-    aside { width: auto; overflow: visible; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    button, ::file-selector-button, .choices span { transition: none; }
-  }
-</style>
+<!-- The script and its modules are in measure-hand/; the page needs serving (mdbook serve docs). -->
+<link rel="stylesheet" href="measure-hand/style.css">
+<script type="module" src="measure-hand/main.js"></script>
 </head>
 <body>
 <main>
   <div id="photo">
     <canvas id="canvas"></canvas>
-    <div id="hint"></div>
+    <canvas id="loupe" hidden></canvas>
+    <div id="hint">
+      <div>
+        <p id="hintText"></p>
+        <div id="photoPrompt">
+          <button id="choosePhoto" class="primary">Choose photo</button>
+          <ul class="tips">
+            <li>Palm up, fingers straight and slightly apart.</li>
+            <li>A ruler in centimetres or inches beside the fingers, raised to palm height (e.g. on a book):
+              lower down it reads lengths about 4% long.</li>
+            <li>Phone parallel to the table, right above the fingers.</li>
+            <li>The original full-resolution photo, not a screenshot.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
-  <div id="banner" hidden><span id="swatch"></span><b id="instruction"></b><span id="progress"></span>
-    <small>Scroll to zoom, drag to pan, drag a point to move it.</small></div>
+  <div id="banner" hidden>
+    <span id="swatch"></span><b id="instruction"></b><span id="progress"></span>
+    <small id="gestures"></small>
+    <span class="actions">
+      <button id="undo" title="Undo (Backspace)">Undo</button>
+      <button id="changePhoto">Change photo</button>
+    </span>
+  </div>
+  <input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden>
 </main>
 <aside>
   <p class="kicker"><a href="https://crimpdeq.com">Crimpdeq</a> Grips</p>
   <h1>Fit to your hand</h1>
-  <p><small>Measure a photo of your hand and download the grips ready to print.</small></p>
+  <p><small>Measure a photo of your hand and download the grips ready to print. Your choices, photo
+    and points stay in this browser.</small></p>
 
   <h2>What to print</h2>
   <div class="field"><span>Grips</span>
@@ -136,6 +51,16 @@
       <label><input type="checkbox" id="photon" checked><span>Photon</span></label>
       <label><input type="checkbox" id="spark"><span>Spark</span></label>
     </div>
+    <button id="gripsHelp" class="help" aria-expanded="false" aria-controls="gripsInfo"
+      aria-label="What are Photon and Spark?" title="What are Photon and Spark?">?</button>
+  </div>
+  <div id="gripsInfo" class="info" hidden>
+    <p><b>Photon</b> trains the FDP, the deep flexor that bends the end joint: a claw grip with the
+      fingertips pulling on the rollers and a blocker at each end joint that keeps it from becoming a
+      crimp. Fitted to your hand from a photo.</p>
+    <p><b>Spark</b> trains the FDS, the superficial flexor that bends the middle joint: the fingers hang
+      over larger free-spinning rollers with the end joint on top. Its standard roller positions fit
+      most hands; fitting it is optional.</p>
   </div>
   <label id="sparkFitOption"><input type="checkbox" id="sparkFit" checked> Fit Spark to my hand
     <small>Unticked, Spark keeps its standard roller positions and needs no photo.</small></label>
@@ -150,50 +75,27 @@
     <small>Otherwise a photo of either hand fits both.</small></label>
 
   <section id="measuring">
-    <h2>Photo</h2>
-    <div id="tabs"></div>
-    <input type="file" id="file" accept="image/jpeg,image/png,image/webp">
-    <ul class="tips">
-      <li>Palm up, fingers straight and slightly apart.</li>
-      <li>A millimetre ruler beside the fingers, raised to palm height (e.g. on a book): lower down it
-        reads lengths about 4% long.</li>
-      <li>Phone parallel to the table, right above the fingers.</li>
-      <li>The original full-resolution photo, not a screenshot. You can also drop or paste it here.</li>
-    </ul>
-
     <h2>Points</h2>
-    <!-- One finger, palm side, pointing right; the double PIP crease is clicked at its midpoint. -->
-    <svg class="diagram" viewBox="0 30 300 82" width="100%" role="img" aria-label="The four points to click on each finger">
-      <path d="M0 48H262a22 22 0 0 1 0 44H0" fill="#f2c9a8" stroke="#b07a5a"/>
-      <path d="M40 52V88M118 52V88M124 52V88M200 52V88" stroke="#8a5a3c" stroke-width="1.5"/>
-      <g fill="none" stroke="#e74c3c" stroke-width="1.5">
-        <circle cx="40" cy="70" r="4"/>
-        <circle cx="121" cy="70" r="4"/>
-        <circle cx="200" cy="70" r="4"/>
-        <circle cx="284" cy="70" r="4"/>
-      </g>
-      <g font-size="10" text-anchor="middle" fill="currentColor">
-        <text x="40" y="40">1</text>
-        <text x="121" y="40">2</text>
-        <text x="200" y="40">3</text>
-        <text x="284" y="40">4</text>
-        <text x="40" y="106">base crease</text>
-        <text x="121" y="106">middle joint</text>
-        <text x="200" y="106">end joint</text>
-        <text x="282" y="106">tip</text>
-      </g>
-    </svg>
+    <div id="tabs"></div>
     <ul class="tips">
-      <li>First two ruler marks far apart beside the fingers, e.g. 0 and 10 cm: camera tilt changes the
-        scale across the photo, so avoid marks next to the palm.</li>
-      <li>Then these four points on every finger, in the order below; the bar under the photo names
-        the current one.</li>
-      <li>Where a joint has two creases, click between them.</li>
+      <li>First two ruler marks far apart beside the fingers, e.g. 0 and 10 cm or 0 and 4 in: camera
+        tilt changes the scale across the photo, so avoid marks next to the palm.</li>
+      <li>Then the four points of every finger, as the bar under the photo asks. Where a joint has
+        two creases, click between them.</li>
     </ul>
-    <label>Distance between the two ruler marks: <input type="number" id="rulerMm" min="1" step="any"> mm
-      <small>It must match the marks you click: 1 cm entered as 100 mm makes every value ten times too large.</small></label>
-    <p><small>Click a point in the list to place it again.</small></p>
-    <ol id="steps"></ol>
+    <label for="ruler">Distance between the two ruler marks</label>
+    <div class="field">
+      <input type="number" id="ruler" min="0" step="any">
+      <div class="choices">
+        <label><input type="radio" name="unit" value="cm" checked><span>cm</span></label>
+        <label><input type="radio" name="unit" value="in"><span>in</span></label>
+      </div>
+    </div>
+    <p><small>It must match the marks you click: a 1 cm span entered as 10 cm makes every value ten
+      times too large.</small></p>
+    <table id="grid"></table>
+    <p><small>Click a cell to place that point again.</small></p>
+    <ul id="warnings" class="warnings" hidden></ul>
     <details>
       <summary>Show measurements</summary>
       <div id="results"></div>
@@ -203,487 +105,30 @@
 
   <h2>Download</h2>
   <button id="download" class="primary">Download STLs (zip)</button>
+  <div id="rendering" hidden>
+    <progress id="renderProgress" value="0"></progress>
+    <button id="cancel">Cancel</button>
+  </div>
+  <p id="missing"></p>
   <p id="status" role="status"></p>
+  <div id="nextSteps" class="next" hidden>
+    <p><b>Next: print it and put it together</b></p>
+    <ol>
+      <li><a href="photon/printing.html">Printing</a>: plastic, slicer settings and the brims that keep
+        the tall parts on the plate.</li>
+      <li><a href="photon/parts.html">Parts</a>: how to tell the 14 parts apart.</li>
+      <li><a href="photon/assembly.html">Assembly</a>: rollers, pins and walls, step by step.</li>
+    </ol>
+    <p id="sparkNote"><small>Spark prints and goes together the same way; its own chapters are still
+      to come.</small></p>
+    <p><small>The fit has only been checked digitally: adjust it after a test print.</small></p>
+    <a class="button primary" href="photon/printing.html">Open the printing guide</a>
+  </div>
   <ul class="tips">
     <li>All parts render in your browser, about ten seconds per grip and hand.</li>
     <li>The zip has a folder per grip and hand with its 14 parts, already oriented for printing, and
       a <code>parameters.txt</code> with the values they were made with.</li>
-    <li>Print them with the <a href="photon/printing.html">Printing</a> settings, then put them
-      together as in <a href="photon/assembly.html">Assembly</a>.</li>
-    <li>The fit has only been checked digitally: adjust after a test print.</li>
   </ul>
 </aside>
-<script>
-// Parameter names and defaults match grips/photon.scad and grips/spark.scad.
-// Photon: Height and Depth place each fingertip in the claw grip of Original/Open_Grips.pdf
-// (commit f14f3e9; proximal phalanx vertical, PIP and DIP flexed 55 deg), relative to the pinky;
-// the base crease offset along the middle finger stands in for the knuckle offset.
-// To_Blocker = DIP-tip / tan(angle), with the angles of the OpenGrips instructions.
-// Spark: the same PDF's Sisyphus grip has the proximal phalanx vertical against the roller and
-// the DIP joint on the roller top; with the PIP joint at the roller axis, Height places each
-// roller top D / 2 past the PIP crease, relative to the pinky, with Spark's default diameters D.
-const FINGERS = [
-  { key: 'I', name: 'Index', angle: 57, color: '#e74c3c',
-    photon: { Height: 23.5, Depth: 4.2, To_Blocker: 13.8 }, spark: { Height: 21, Diameter: 30 } },
-  { key: 'M', name: 'Middle', angle: 60, color: '#2ecc71',
-    photon: { Height: 32.1, Depth: 6.7, To_Blocker: 12.0 }, spark: { Height: 29, Diameter: 40 } },
-  { key: 'R', name: 'Ring', angle: 60, color: '#3498db',
-    photon: { Height: 22.0, Depth: 8.4, To_Blocker: 13.2 }, spark: { Height: 21, Diameter: 38 } },
-  { key: 'P', name: 'Pinky', angle: 55, color: '#c56cf0',
-    photon: { Height: 0, Depth: 0, To_Blocker: 13.9 }, spark: { Height: 0, Diameter: 22 } },
-];
-const PHOTON_PARAMS = ['Height', 'Depth', 'To_Blocker'];
-const GRIP_NAMES = { photon: 'Photon', spark: 'Spark' };
-// The parts of scripts/export.py.
-const PARTS = ['frame', 'ring_wall', 'middle_wall', 'index_wall', 'end_wall', 'pinky_roller', 'ring_roller',
-  'middle_roller', 'index_roller', 'pinky_pin', 'ring_pin', 'middle_pin', 'index_pin', 'post'];
-// The models and their font: docs/src/grips links to the repository's grips/.
-const SOURCES = ['photon.scad', 'spark.scad', 'common.scad', 'fonts/Inter-Bold.ttf'];
-const CLAW = 55 * Math.PI / 180;
-const LANDMARKS = [
-  ['base', 'base crease, where it meets the palm'],
-  ['pip', 'middle joint (PIP) crease'],
-  ['dip', 'end joint (DIP) crease'],
-  ['tip', 'tip'],
-];
-const RULER = { ids: ['ruler0', 'ruler1'], color: '#f1c40f' };
-const STEPS = [
-  { id: 'ruler0', label: 'Ruler: first mark (e.g. 0 cm)', color: RULER.color },
-  { id: 'ruler1', label: 'Ruler: second mark (e.g. 10 cm)', color: RULER.color },
-  ...FINGERS.flatMap(f => LANDMARKS.map(([lm, text]) => ({ id: `${f.key}_${lm}`, label: `${f.name} finger: ${text}`, color: f.color }))),
-];
-const CHAINS = [RULER, ...FINGERS.map(f => ({ ids: LANDMARKS.map(([lm]) => `${f.key}_${lm}`), color: f.color }))];
-
-const $ = id => document.getElementById(id);
-const canvas = $('canvas');
-const ctx = canvas.getContext('2d');
-
-// The measurements are mirror-invariant: photos.one serves every hand unless each hand has its own.
-const newPhoto = () => ({
-  img: null,
-  fileName: '',
-  rulerMm: '100',
-  view: { s: 1, x: 0, y: 0 }, // canvas = image * s + (x, y)
-  points: {}, // step id -> image pixel coordinates
-  active: 0, // STEPS index placed by the next click, -1 when all are placed
-});
-const photos = { one: newPhoto(), left: newPhoto(), right: newPhoto() };
-let current = 'one';
-let photo = photos.one;
-let drag = null;
-let busy = false;
-
-const hands = () => document.querySelector('[name=hands]:checked').value;
-const grips = () => ['photon', 'spark'].filter(grip => $(grip).checked);
-const fitSpark = () => grips().includes('spark') && $('sparkFit').checked;
-const needsPhoto = () => grips().includes('photon') || fitSpark();
-const printHands = () => hands() === 'both' ? ['left', 'right'] : [hands()];
-const separatePhotos = () => hands() === 'both' && $('separate').checked;
-const photoKey = hand => separatePhotos() ? hand : 'one';
-
-const f1 = x => x.toFixed(1);
-const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-const toScreen = p => ({ x: p.x * photo.view.s + photo.view.x, y: p.y * photo.view.s + photo.view.y });
-const toImage = p => ({ x: (p.x - photo.view.x) / photo.view.s, y: (p.y - photo.view.y) / photo.view.s });
-function canvasPos(e) {
-  const r = canvas.getBoundingClientRect();
-  return { x: e.clientX - r.left, y: e.clientY - r.top };
-}
-
-function selectPhoto(key) {
-  current = key;
-  photo = photos[key];
-  $('rulerMm').value = photo.rulerMm;
-  $('file').value = '';
-  update();
-}
-
-function loadImage(file) {
-  if (!file || !needsPhoto()) return;
-  const target = photo;
-  const im = new Image();
-  im.onload = () => {
-    // Show the step bar first: it takes its height from the canvas the photo is fitted to.
-    $('banner').hidden = false;
-    const s = Math.min(canvas.clientWidth / im.width, canvas.clientHeight / im.height);
-    Object.assign(target, {
-      img: im,
-      fileName: file.name,
-      points: {},
-      active: 0,
-      view: { s, x: (canvas.clientWidth - im.width * s) / 2, y: (canvas.clientHeight - im.height * s) / 2 },
-    });
-    update();
-  };
-  im.onerror = () => alert(`Cannot decode ${file.name}; export it as JPEG or PNG.`);
-  im.src = URL.createObjectURL(file);
-}
-
-function measure({ rulerMm, points }) {
-  const mm = Number(rulerMm);
-  if (!points.ruler0 || !points.ruler1 || !(mm > 0)) return null;
-  const mmPerPx = mm / dist(points.ruler0, points.ruler1);
-  const marks = FINGERS.map(f => LANDMARKS.map(([lm]) => points[`${f.key}_${lm}`]));
-  if (marks.flat().some(p => !p)) return null;
-  // Hand axis: the middle finger (anatomical long axis of the hand), base -> tip.
-  const [middleBase, , , middleTip] = marks[FINGERS.findIndex(f => f.key === 'M')];
-  const middleLength = dist(middleBase, middleTip);
-  const axis = { x: (middleTip.x - middleBase.x) / middleLength, y: (middleTip.y - middleBase.y) / middleLength };
-  const fingers = {};
-  FINGERS.forEach((f, i) => {
-    const [base, pip, dip, tip] = marks[i];
-    fingers[f.key] = {
-      basePip: dist(base, pip) * mmPerPx,
-      pipDip: dist(pip, dip) * mmPerPx,
-      dipTip: dist(dip, tip) * mmPerPx,
-      base: (base.x * axis.x + base.y * axis.y) * mmPerPx,
-    };
-  });
-  const reach = r => r.base + r.basePip + r.pipDip * Math.cos(CLAW) + r.dipTip * Math.cos(2 * CLAW);
-  const depth = r => r.pipDip * Math.sin(CLAW) + r.dipTip * Math.sin(2 * CLAW);
-  const rollerTop = f => fingers[f.key].base + fingers[f.key].basePip + f.spark.Diameter / 2;
-  const pinky = fingers.P;
-  const pinkyFinger = FINGERS.find(f => f.key === 'P');
-  for (const r of Object.values(fingers)) r.stagger = r.base - pinky.base;
-  const photon = Object.fromEntries(FINGERS.map(f => [f.key, {
-    Height: reach(fingers[f.key]) - reach(pinky),
-    Depth: depth(fingers[f.key]) - depth(pinky),
-    To_Blocker: fingers[f.key].dipTip / Math.tan(f.angle * Math.PI / 180),
-  }]));
-  const spark = Object.fromEntries(FINGERS.map(f => [f.key, { Height: rollerTop(f) - rollerTop(pinkyFinger) }]));
-  return { mmPerPx, fingers, photon, spark };
-}
-
-// Parameters passed to the model: none keeps its defaults.
-function gripParams(grip, m) {
-  if (grip === 'photon')
-    return Object.fromEntries(FINGERS.flatMap(f => PHOTON_PARAMS.map(p => [`Base_${f.key}_${p}`, f1(m.photon[f.key][p])])));
-  if (!fitSpark()) return {};
-  return Object.fromEntries(FINGERS.map(f => [`Base_${f.key}_Height`, f1(m.spark[f.key].Height)]));
-}
-
-function resultsTable(m) {
-  const row = (label, cell) => `<tr><td>${label}</td>${FINGERS.map(f => `<td>${cell(f)}</td>`).join('')}</tr>`;
-  const param = (grip, p) => row(`${GRIP_NAMES[grip]} ${p} <small>(default)</small>`,
-    f => `${f1(m[grip][f.key][p])} <small>(${f[grip][p]})</small>`);
-  return `<table>
-    <tr><th></th>${FINGERS.map(f => `<th>${f.name}</th>`).join('')}</tr>
-    ${row('Base → PIP', f => f1(m.fingers[f.key].basePip))}
-    ${row('PIP → DIP', f => f1(m.fingers[f.key].pipDip))}
-    ${row('DIP → tip', f => f1(m.fingers[f.key].dipTip))}
-    ${row('Base offset', f => f1(m.fingers[f.key].stagger))}
-    ${grips().includes('photon') ? PHOTON_PARAMS.map(p => param('photon', p)).join('') : ''}
-    ${fitSpark() ? param('spark', 'Height') : ''}
-  </table><small>Scale ${f1(1 / m.mmPerPx)} px/mm</small>`;
-}
-
-// The parameter file of one grip and hand, in the format of scripts/export.py.
-function parametersText(grip, hand, params) {
-  const lines = [`# ${GRIP_NAMES[grip]} parameters (mm) for the ${hand} hand; export the STLs again with`,
-    `#   python3 scripts/export.py ${grip} parameters.txt --hand ${hand}`];
-  if (!Object.keys(params).length) return [...lines, '# none: the defaults of grips/spark.scad'].join('\n');
-  const p = photos[photoKey(hand)];
-  const m = measure(p);
-  const rounded = Object.fromEntries(Object.entries(p.points).map(([id, q]) => [id, [Math.round(q.x), Math.round(q.y)]]));
-  return [
-    ...lines,
-    `# from ${p.fileName}, ruler ${p.rulerMm} mm, ${f1(1 / m.mmPerPx)} px/mm`,
-    ...FINGERS.map(f => {
-      const r = m.fingers[f.key];
-      return `# ${f.name}: base-PIP ${f1(r.basePip)}, PIP-DIP ${f1(r.pipDip)}, DIP-tip ${f1(r.dipTip)}, base offset ${f1(r.stagger)}`;
-    }),
-    `# points ${JSON.stringify(rounded)}`,
-    ...Object.entries(params).map(([name, value]) => `${name} = ${value}`),
-  ].join('\n');
-}
-
-// What is missing before the STLs can be rendered, or '' when nothing is.
-function missing() {
-  if (location.protocol === 'file:') return 'Open this page from the book (mdbook serve docs): it cannot load the models from a file.';
-  if (!grips().length) return 'Choose Photon, Spark or both.';
-  if (!needsPhoto()) return '';
-  const unmeasured = [...new Set(printHands().map(photoKey))].filter(key => !measure(photos[key]));
-  if (!unmeasured.length) return '';
-  const which = unmeasured.map(key => key === 'one' ? 'the photo' : `the ${key} hand's photo`).join(' and ');
-  return `Place every point on ${which} and enter the ruler distance.`;
-}
-
-function setStatus(text, error = false) {
-  $('status').textContent = text;
-  $('status').className = error ? 'error' : '';
-}
-
-function update() {
-  const separate = separatePhotos() && needsPhoto();
-  if (separate !== (current !== 'one')) return selectPhoto(separate ? 'left' : 'one');
-  $('sparkFitOption').hidden = !grips().includes('spark');
-  $('separateOption').hidden = hands() !== 'both' || !needsPhoto();
-  $('measuring').hidden = !needsPhoto();
-  $('tabs').hidden = !separate;
-  $('tabs').replaceChildren(...['left', 'right'].map(key => {
-    const button = document.createElement('button');
-    button.textContent = `${key === 'left' ? 'Left' : 'Right'} hand${measure(photos[key]) ? ' ✓' : ''}`;
-    button.className = key === current ? 'primary' : '';
-    button.onclick = () => selectPhoto(key);
-    return button;
-  }));
-  $('hint').textContent = !grips().length ? 'Choose a grip'
-    : !needsPhoto() ? 'Spark with its standard roller positions needs no photo: download it'
-    : `Choose, drop, or paste a photo of ${current === 'one' ? 'your hand' : 'your ' + current + ' hand'}`;
-  $('hint').hidden = needsPhoto() && Boolean(photo.img);
-  const step = STEPS[photo.active];
-  const placed = STEPS.filter(s => photo.points[s.id]).length;
-  $('banner').hidden = !needsPhoto() || !photo.img;
-  $('instruction').textContent = step ? `Click ${step.label}` : 'All points placed';
-  $('swatch').style.background = step ? step.color : 'transparent';
-  $('progress').textContent = `(${placed} of ${STEPS.length})`;
-  $('steps').replaceChildren(...STEPS.map((step, i) => {
-    const li = document.createElement('li');
-    li.textContent = step.label;
-    li.className = i === photo.active ? 'active' : photo.points[step.id] ? 'done' : '';
-    li.style.borderLeft = `4px solid ${step.color}`;
-    li.onclick = () => { photo.active = i; update(); };
-    return li;
-  }));
-  const m = measure(photo);
-  $('results').innerHTML = m ? resultsTable(m) : '<small>Place every point to see the measurements.</small>';
-  if (!busy) {
-    $('download').disabled = Boolean(missing());
-    setStatus(missing());
-  }
-  draw();
-}
-
-function draw() {
-  const dpr = devicePixelRatio;
-  canvas.width = canvas.clientWidth * dpr;
-  canvas.height = canvas.clientHeight * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const { img, view, points } = photo;
-  if (!img || !needsPhoto()) return;
-  ctx.drawImage(img, view.x, view.y, img.width * view.s, img.height * view.s);
-  ctx.lineWidth = 1.5;
-  for (const { ids, color } of CHAINS) {
-    const ps = ids.map(id => points[id]).filter(Boolean).map(toScreen);
-    ctx.strokeStyle = color;
-    ctx.beginPath();
-    ps.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
-    ctx.stroke();
-  }
-  // Hollow markers keep the clicked crease visible.
-  for (const step of STEPS) {
-    if (!points[step.id]) continue;
-    const { x, y } = toScreen(points[step.id]);
-    ctx.strokeStyle = step.color;
-    ctx.beginPath();
-    ctx.arc(x, y, 6, 0, 2 * Math.PI);
-    ctx.stroke();
-    ctx.fillStyle = step.color;
-    ctx.fillRect(x - 1, y - 1, 2, 2);
-  }
-}
-
-// ---------------------------------------------------------------------------------------------
-// STLs: each part is rendered by OpenSCAD compiled to WebAssembly (docs/src/openscad, from
-// scripts/fetch_openscad_wasm.py) in a pool of workers, then zipped.
-
-// Renders one part per message ({ module: compiled openscad.wasm, sources: [[path, bytes]], args })
-// and answers { stl } or { error }.
-const WORKER = `
-import OpenSCAD from '${new URL('openscad/openscad.js', location.href)}';
-onmessage = async ({ data: { module, sources, args } }) => {
-  const log = [];
-  try {
-    const openscad = await OpenSCAD({
-      noInitialRun: true,
-      print: line => log.push(line),
-      printErr: line => log.push(line),
-      instantiateWasm: (imports, receive) => {
-        WebAssembly.instantiate(module, imports).then(instance => receive(instance, module));
-        return {};
-      },
-    });
-    openscad.FS.mkdir('/grips');
-    openscad.FS.mkdir('/grips/fonts');
-    for (const [path, bytes] of sources) openscad.FS.writeFile('/grips/' + path, bytes);
-    const code = openscad.callMain([...args, '--backend=manifold', '--export-format=binstl', '-o', '/out.stl']);
-    const errors = log.filter(line => /^(ERROR|WARNING)/.test(line));
-    if (code || errors.length) throw new Error((errors.length ? errors : log.slice(-5)).join('\\n'));
-    const stl = openscad.FS.readFile('/out.stl');
-    postMessage({ stl }, [stl.buffer]);
-  } catch (e) {
-    postMessage({ error: String(e?.message ?? e) });
-  }
-};
-`;
-
-async function fetchBytes(url) {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`${url}: ${response.status}`);
-  return new Uint8Array(await response.arrayBuffer());
-}
-
-function runJob(worker, job, module, sources) {
-  return new Promise((resolve, reject) => {
-    worker.onmessage = ({ data }) => data.error ? reject(new Error(`${job.name}:\n${data.error}`)) : resolve(data.stl);
-    worker.onerror = e => reject(new Error(`${job.name}: ${e.message || 'the OpenSCAD worker failed to start'}`));
-    worker.postMessage({ module, sources, args: job.args });
-  });
-}
-
-// Sets job.stl on every job; a frame needs about 400 MB, so at most three run at once.
-async function renderJobs(jobs, onDone) {
-  const module = await WebAssembly.compile(await fetchBytes('openscad/openscad.wasm'));
-  const sources = await Promise.all(SOURCES.map(async path => [path, await fetchBytes(`grips/${path}`)]));
-  const url = URL.createObjectURL(new Blob([WORKER], { type: 'text/javascript' }));
-  const workers = Array.from({ length: Math.min(3, navigator.hardwareConcurrency || 1, jobs.length) },
-    () => new Worker(url, { type: 'module' }));
-  let next = 0;
-  try {
-    await Promise.all(workers.map(async worker => {
-      while (next < jobs.length) {
-        const job = jobs[next++];
-        job.stl = await runJob(worker, job, module, sources);
-        onDone(job);
-      }
-    }));
-  } finally {
-    workers.forEach(worker => worker.terminate());
-    URL.revokeObjectURL(url);
-  }
-}
-
-// ZIP archive (PKWARE APPNOTE 6.3): each file deflated after its local header, then the central
-// directory and its end record.
-const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
-  for (let k = 0; k < 8; k++) n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1;
-  return n >>> 0;
-});
-function crc32(bytes) {
-  let c = ~0;
-  for (const b of bytes) c = CRC_TABLE[(c ^ b) & 0xff] ^ (c >>> 8);
-  return ~c >>> 0;
-}
-// Little-endian [value, size in bytes] fields.
-function fields(...list) {
-  const out = new DataView(new ArrayBuffer(list.reduce((n, [, size]) => n + size, 0)));
-  let at = 0;
-  for (const [value, size] of list) {
-    if (size === 2) out.setUint16(at, value, true);
-    else out.setUint32(at, value, true);
-    at += size;
-  }
-  return new Uint8Array(out.buffer);
-}
-async function zip(files) {
-  const now = new Date();
-  const time = now.getHours() << 11 | now.getMinutes() << 5 | now.getSeconds() >> 1;
-  const date = (now.getFullYear() - 1980) << 9 | (now.getMonth() + 1) << 5 | now.getDate();
-  const chunks = [];
-  const central = [];
-  let offset = 0;
-  for (const [path, bytes] of files) {
-    const name = new TextEncoder().encode(path);
-    const packed = new Uint8Array(await new Response(
-      new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());
-    // version 2.0, UTF-8 names, deflate
-    const common = [[20, 2], [0x800, 2], [8, 2], [time, 2], [date, 2], [crc32(bytes), 4], [packed.length, 4],
-      [bytes.length, 4], [name.length, 2], [0, 2]];
-    const local = fields([0x04034b50, 4], ...common);
-    chunks.push(local, name, packed);
-    central.push(fields([0x02014b50, 4], [20, 2], ...common, [0, 2], [0, 2], [0, 2], [0, 4], [offset, 4]), name);
-    offset += local.length + name.length + packed.length;
-  }
-  const size = central.reduce((n, chunk) => n + chunk.length, 0);
-  const end = fields([0x06054b50, 4], [0, 2], [0, 2], [files.length, 2], [files.length, 2], [size, 4], [offset, 4], [0, 2]);
-  return new Blob([...chunks, ...central, end], { type: 'application/zip' });
-}
-
-async function downloadStls() {
-  const hands = printHands();
-  const files = [];
-  const jobs = [];
-  for (const grip of grips()) {
-    for (const hand of hands) {
-      const params = gripParams(grip, needsPhoto() ? measure(photos[photoKey(hand)]) : null);
-      const dir = `crimpdeq-grips-${grip}-${hand}`;
-      files.push([`${dir}/parameters.txt`, new TextEncoder().encode(parametersText(grip, hand, params) + '\n')]);
-      const defines = Object.entries(params).map(([name, value]) => `-D${name}=${value}`);
-      for (const part of PARTS)
-        jobs.push({ name: `${dir}/${grip}_${hand}_${part}.stl`,
-          args: [`/grips/${grip}.scad`, ...defines, `-Dpart="${part}"`, `-Dhand="${hand}"`] });
-    }
-  }
-  busy = true;
-  $('download').disabled = true;
-  setStatus(`Rendering ${jobs.length} parts…`);
-  try {
-    let done = 0;
-    await renderJobs(jobs, job => setStatus(`Rendered ${++done} of ${jobs.length} parts: ${job.name.split('/')[1]}`));
-    files.push(...jobs.map(job => [job.name, job.stl]));
-    setStatus('Zipping…');
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(await zip(files));
-    link.download = `crimpdeq-grips-${[...grips(), ...hands].join('-')}.zip`;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(link.href), 60000);
-    setStatus(`Downloaded ${link.download}: ${jobs.length} STLs and their parameters.`);
-  } catch (e) {
-    setStatus(e.message, true);
-  } finally {
-    busy = false;
-    $('download').disabled = Boolean(missing());
-  }
-}
-
-canvas.addEventListener('pointerdown', e => {
-  if (!photo.img || !needsPhoto()) return;
-  const at = canvasPos(e);
-  const hit = STEPS.find(s => photo.points[s.id] && dist(toScreen(photo.points[s.id]), at) < 8);
-  drag = { at, view: { ...photo.view }, id: hit?.id, moved: false };
-  canvas.setPointerCapture(e.pointerId);
-});
-canvas.addEventListener('pointermove', e => {
-  if (!drag) return;
-  const at = canvasPos(e);
-  drag.moved ||= dist(at, drag.at) > 3;
-  if (!drag.moved) return;
-  if (drag.id) {
-    photo.points[drag.id] = toImage(at);
-    update();
-  } else {
-    photo.view = { ...drag.view, x: drag.view.x + at.x - drag.at.x, y: drag.view.y + at.y - drag.at.y };
-    draw();
-  }
-});
-canvas.addEventListener('pointerup', e => {
-  if (!drag) return;
-  if (!drag.moved && photo.active >= 0) {
-    photo.points[STEPS[photo.active].id] = toImage(canvasPos(e));
-    photo.active = STEPS.findIndex(s => !photo.points[s.id]);
-  }
-  drag = null;
-  update();
-});
-canvas.addEventListener('wheel', e => {
-  if (!photo.img || !needsPhoto()) return;
-  e.preventDefault();
-  const at = canvasPos(e);
-  const k = Math.exp(-e.deltaY * 0.002);
-  const { view } = photo;
-  photo.view = { s: view.s * k, x: at.x - (at.x - view.x) * k, y: at.y - (at.y - view.y) * k };
-  draw();
-}, { passive: false });
-
-$('file').onchange = e => loadImage(e.target.files[0]);
-$('rulerMm').oninput = e => { photo.rulerMm = e.target.value; update(); };
-document.querySelectorAll('#photon, #spark, #sparkFit, [name=hands], #separate').forEach(input => { input.onchange = update; });
-$('download').onclick = downloadStls;
-addEventListener('dragover', e => e.preventDefault());
-addEventListener('drop', e => { e.preventDefault(); loadImage(e.dataTransfer.files[0]); });
-addEventListener('paste', e => loadImage(e.clipboardData.files[0]));
-addEventListener('resize', draw);
-selectPhoto('one');
-</script>
 </body>
 </html>

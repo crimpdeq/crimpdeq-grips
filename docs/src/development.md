@@ -29,8 +29,20 @@ instead of their print pose.
 `docs/src/measure-hand.html` renders the STLs in the browser with the official WebAssembly build of
 OpenSCAD, which `scripts/fetch_openscad_wasm.py` downloads to `docs/src/openscad/` (pinned and
 checked, not in git; the CI book build runs it). It loads the models from `docs/src/grips`, a link
-to `grips/`, so the book carries the models it renders. Each part renders in its own instance, in
-up to three web workers, and the page zips the STLs itself. To run it locally:
+to `grips/`, so the book carries the models it renders. Its script is in `docs/src/measure-hand/`:
+
+| Module | Role |
+|---|---|
+| `hand.js` | Points → finger lengths → grip parameters, plausibility warnings, `parameters.txt` |
+| `photo-canvas.js` | The photo: drawing, zoom and pan (wheel or pinch), placing and moving points, the magnifier |
+| `render.js`, `worker.js` | OpenSCAD in web workers: every part in its own instance, up to three at once, and the check of the parameters |
+| `zip.js` | The zip of the STLs |
+| `saved.js` | Choices, photos and points kept in the browser's IndexedDB |
+| `main.js` | The page: choices, the point grid, undo, the download |
+
+Once every point is placed, the page renders the post with the measured parameters: the models'
+assertions run for any part, so the model itself says whether it can be made, before the download.
+To run the page locally:
 
 ```sh
 python3 scripts/fetch_openscad_wasm.py

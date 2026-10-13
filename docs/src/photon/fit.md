@@ -19,8 +19,9 @@ The original OpenGrips instructions set `Height` to the full finger length minus
 rule ignores that the pinky starts lower on the hand, which put the rollers 8–14 mm too low on the
 measured example hand.
 
-Photon's frame length follows the middle finger, so its `Base_M_Height + Base_M_To_Blocker` must be
-the largest of the four; the page shows the model's message if not.
+Photon's frame length follows the middle finger, so no other finger's `Height + To_Blocker` may
+reach much past the middle finger's. Once every point is placed, the page checks the values against
+the model itself and shows its message when a grip cannot be made from them.
 
 Fitting Spark is optional; without it Spark keeps the roller positions of Sisyphus v27. Fitted, the
 page sets `Height`, the position of each roller top, relative to the pinky. In the original
