@@ -142,9 +142,14 @@ BRAND_SIZE = 6.5;
 BRAND_Y = (POST_Y + POST_SIZE + LOCK_Y) / 2;
 BRAND_EXTENT = [63.35, 8.77]; // [along Y, Z]
 
-for (f = [R:I])
+// Each seat runs from the wall front (y = 0) to seat_end(f); below EDGE_R its front rounds erase it.
+for (f = [R:I]) {
   assert(seat_end(f) < LOCK_Y - STOP_SETBACK[f] - WH * tan(STOP_ANGLE[f]),
          str(FINGERS[f], " seat (Y ", seat_end(f), ") runs into its finger stop"));
+  assert(seat_end(f) > EDGE_R,
+         str(FINGERS[f], " seat (Y ", seat_end(f), ") ends at the wall front: its Height (", HEIGHT[f],
+             ") is too far below the pinky's"));
+}
 // The middle and index wall plates join the ring and index humps to the middle hump.
 for (f = [R, I])
   assert(norm(axis(f) - axis(M)) < hump_r(f) + hump_r(M),
