@@ -1,16 +1,17 @@
 # Crimpdeq Grips
 
-![Assembled Photon grip](photon/images/step-10.png)
-
 Crimpdeq Grips are 3D-printed grips for isolated finger training: each finger rests on its own
-roller, under a block that holds its last joint. There are two designs, both parametric OpenSCAD
-models:
+roller. There are two designs, both parametric OpenSCAD models:
 
-- **Photon**, fitted to your hand: [measure a photo of it](measure-hand.html) and download parts
-  that place every roller under its fingertip.
-- **Spark**, with larger rollers (22 to 40 mm). Its chapters are still to come; the same
-  [measuring page](measure-hand.html) downloads its parts, with the rollers placed from your photo or
-  at their defaults, and they go together in the same order (see [Assembly](photon/assembly.md)).
+- **Photon**: crafted specifically for your unique hand anatomy and optimized for targeted FDP
+  training. In a claw grip, each fingertip rests on its roller under a block that holds its last
+  joint.
+- **Spark**: crafted specifically for your unique hand anatomy and optimized for targeted FDS
+  training. Each finger bends over a larger roller (22 to 40 mm), the middle joint level with its
+  axis and the end joint on its top.
+
+[Measure a photo of your hand](measure-hand.html) to download parts that place every roller for
+your fingers.
 
 Every part, pins included, prints in the same plastic: no metal rods, screws or TPU. The only
 extra is a cord through the anchor.

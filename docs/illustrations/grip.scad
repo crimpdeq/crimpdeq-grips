@@ -1,5 +1,5 @@
-// Illustrations of the Photon parts and assembly steps, from the STLs of
-// ../../scripts/export.py --in-place.
+// Illustrations of the parts and assembly steps of either grip, from the STLs of
+// ../../scripts/export.py --in-place; both go together in the same order.
 // render.sh sets stl and either part (one part alone) or step (1 to 9, 10 the finished grip).
 
 stl = "/tmp/photon_in_place/photon_right_";
