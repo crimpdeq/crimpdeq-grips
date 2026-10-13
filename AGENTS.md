@@ -30,8 +30,8 @@ rerun them.
   loads the models through `src/grips`, a symlink to `grips/`, and checks measured parameters by
   rendering the post (the models' assertions are top level): keep model limits as assertions
   there, not copied into the page. It needs serving (`mdbook serve docs`), not `file://`. `illustrations/render.sh` regenerates `src/photon/images`
-  from the right-hand defaults (`export.py --in-place`, then `illustrations/photon.scad`); rerun it
-  when the model changes. Spark chapters and illustrations are not written yet.
+  and `src/spark/images` from the right-hand defaults (`export.py --in-place`, then
+  `illustrations/grip.scad`); rerun it when a model changes.
 - `.github/workflows/`: `ci.yml` runs the checks below on pull requests and, on pushes to `main`
   that pass them, deploys `docs/book/` to the Cloudflare Pages project `crimpdeq-grips`
   (grips.crimpdeq.com, org secret `CLOUDFLARE_API_TOKEN`); `release.yml` exports
@@ -85,7 +85,7 @@ rerun them.
 1. `uvx ruff check --line-length 120 scripts`.
 2. Model changes: `uv run scripts/check_step.py` passes (each part within 1% volume and 0.6 mm at
    p95), and `scripts/export.py` for both grips and both hands passes `scripts/check_stl.py`.
-3. Photon model changes: rerun `docs/illustrations/render.sh`.
+3. Model changes: rerun `docs/illustrations/render.sh`.
 4. Measuring page or model changes: `scripts/fetch_openscad_wasm.py`, `mdbook serve docs`, load
    the measuring page, place all points, download the zip, confirm no console errors and that its
    STLs pass `scripts/check_stl.py`.
@@ -97,7 +97,8 @@ Digital checks do not validate fit, strength or comfort; report the test print a
 
 `scripts/export_bambu_project.py` flattens the system presets (machine `Bambu Lab A1 0.4 nozzle`,
 filament `Bambu PETG HF @BBL A1`, process `0.20mm Standard @BBL A1` with the overrides of
-`docs/src/photon/printing.md`), so keep its settings and that page in sync. Facts it relies on:
+`docs/src/photon/printing.md`, repeated in `docs/src/spark/printing.md`), so keep its settings and
+those pages in sync. Facts it relies on:
 
 - Only the renamed process gets `from: User`; on the machine or filament the CLI reports the
   process as incompatible. The plate's `curr_bed_type` must be Textured PEI: the default Cool

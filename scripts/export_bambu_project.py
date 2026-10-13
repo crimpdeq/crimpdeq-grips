@@ -5,7 +5,7 @@ Usage:
 
 STL_DIR holds the 14 STLs of one grip and hand as scripts/export.py names them. The parts are laid
 out in rows on one plate, far enough apart for their brims; the Bambu Studio CLI assembles the
-project with the print settings of docs/src/photon/printing.md and slices it to confirm that
+project with the print settings of docs/src/<grip>/printing.md and slices it to confirm that
 the plate prints without errors or warnings.
 
 BAMBU_STUDIO names the Bambu Studio executable (default: bambu-studio on PATH, then the macOS
@@ -33,7 +33,7 @@ PROCESS = "0.20mm Standard @BBL A1"
 FILAMENT = "Bambu PETG HF @BBL A1"
 BED_TYPE = "Textured PEI Plate"
 
-# The settings table in docs/src/photon/printing.md.
+# The settings table in docs/src/photon/printing.md and docs/src/spark/printing.md.
 PROCESS_OVERRIDES = {
     "layer_height": "0.2",
     "wall_loops": "5",

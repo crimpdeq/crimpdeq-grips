@@ -115,8 +115,8 @@ The checks are geometric only; fit, strength and comfort still need a test print
 
 ## Illustrations
 
-`docs/illustrations/render.sh` renders the Photon part and assembly pictures from the
-right-hand defaults. Rerun it when the model changes.
+`docs/illustrations/render.sh` renders the part and assembly pictures of both grips from the
+right-hand defaults. Rerun it when a model changes.
 
 ## Website
 
@@ -132,8 +132,8 @@ Run the workflow manually for a dry run.
 
 `scripts/export_bambu_project.py` builds the project from the STLs of one grip and hand: it lays
 the parts out in rows on the A1 plate, far enough apart for their brims, assembles the project with
-the Bambu Studio CLI and the settings of [Printing](photon/printing.md) (for Spark too,
-untested in print), and fails if slicing it gives an error or a warning, such as a floating
-cantilever. The release workflow installs the pinned Bambu Studio AppImage with
+the Bambu Studio CLI and the settings of Printing ([Photon](photon/printing.md),
+[Spark](spark/printing.md), untested in print), and fails if slicing it gives an error or a
+warning, such as a floating cantilever. The release workflow installs the pinned Bambu Studio AppImage with
 `.github/actions/setup-bambu-studio`; locally, set `BAMBU_STUDIO` if `bambu-studio` is not on the
 `PATH` or is a wrapper script.
