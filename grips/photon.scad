@@ -137,9 +137,17 @@ BRAND_FONT = "Inter:style=Bold";
 BRAND_SIZE = 4.5;
 BRAND_DEPTH = 0.8;
 BRAND_Y = (POST_Y + POST_SIZE + LOCK_Y) / 2;
-// Text extents ([along the text, across it]) measured with textmetrics(), which is experimental
-// and off by default in OpenSCAD; remeasure when the text or its size changes.
+// Text extents ([along the text, across it]) at BRAND_SIZE, measured with textmetrics(), which is
+// experimental and off by default in OpenSCAD; remeasure when the text or its size changes.
 BRAND_EXTENT = [43.86, 6.07]; // [along Y, Z]
+// Room the hand leaves for the text, 1 mm clear on each side: along Y between the end wall's post
+// hole and lock, and clear of the pinky pole wall on the frame; along Z between the plate's edge
+// rounds. The text shrinks to fit rather than refusing a hand, down to BRAND_MIN_SIZE; any
+// smaller would not print legibly, so it is left out.
+BRAND_ROOM = [min(LOCK_Y - POST_Y - POST_SIZE, 2 * (BRAND_Y - (axis_y(P) + DIAMETER[P] / 4 + POLE))) - 2,
+              T - 2 * EDGE_R - 2];
+BRAND_FIT = min(1, BRAND_ROOM[0] / BRAND_EXTENT[0], BRAND_ROOM[1] / BRAND_EXTENT[1]);
+BRAND_MIN_SIZE = 2.5;
 
 // Engraved on the front face of the crossbar, between the walls and the anchor, centered across
 // the grip; it reads from the front with the anchor up.
@@ -151,13 +159,6 @@ for (f = [P:I])
   assert(blocker_y(f) + 2 * BLOCKER_R < LOCK_Y,
          str(FINGERS[f], " blocker (Y ", blocker_y(f), ") reaches the crossbar (Y ", LOCK_Y,
              "): the middle finger must have the largest Height + To_Blocker"));
-assert(BRAND_EXTENT[0] + 2 < LOCK_Y - POST_Y - POST_SIZE,
-       str("the end wall (", LOCK_Y - POST_Y - POST_SIZE, " mm between post hole and lock) is too short for ",
-           BRAND_TEXT));
-assert(BRAND_Y - BRAND_EXTENT[0] / 2 > axis_y(P) + DIAMETER[P] / 4 + POLE,
-       str(BRAND_TEXT, " reaches the pinky pole wall on the frame"));
-assert(BRAND_EXTENT[1] + 1 < T - 2 * EDGE_R,
-       str("the frame (", T, " mm thick) is too thin for ", BRAND_TEXT));
 assert(NAME_EXTENT[1] + 2 < FRAME_TOP - LOCK_Y,
        str("the crossbar (", FRAME_TOP - LOCK_Y, " mm between walls and anchor) is too short for ", NAME_TEXT));
 assert(NAME_EXTENT[0] + 2 < FW - 2 * EDGE_R, str("the frame (", FW, " mm wide) is too narrow for ", NAME_TEXT));
@@ -247,13 +248,15 @@ module lock() {
 }
 
 // BRAND_TEXT engraved into the outer side face at x (side: its outward direction along X),
-// centered on (BRAND_Y, T / 2). Seen from +X the text runs along +Y, so it is flipped on the -X
-// face and again for the right hand, where hand_mirror mirrors the part.
+// centered on (BRAND_Y, T / 2) and scaled by BRAND_FIT. Seen from +X the text runs along +Y, so it
+// is flipped on the -X face and again for the right hand, where hand_mirror mirrors the part.
 module brand(x, side) {
+  size = BRAND_SIZE * BRAND_FIT;
   flip = (side < 0) != (hand == "right");
-  along_x(side > 0 ? x - BRAND_DEPTH : x - 1, side > 0 ? x + 1 : x + BRAND_DEPTH)
-    translate([BRAND_Y, T / 2]) mirror([flip ? 1 : 0, 0])
-      text(BRAND_TEXT, size = BRAND_SIZE, font = BRAND_FONT, halign = "center", valign = "center");
+  if (size >= BRAND_MIN_SIZE)
+    along_x(side > 0 ? x - BRAND_DEPTH : x - 1, side > 0 ? x + 1 : x + BRAND_DEPTH)
+      translate([BRAND_Y, T / 2]) mirror([flip ? 1 : 0, 0])
+        text(BRAND_TEXT, size = size, font = BRAND_FONT, halign = "center", valign = "center");
 }
 
 // NAME_TEXT engraved into the crossbar's front face (z = T); flipped for the right hand, where

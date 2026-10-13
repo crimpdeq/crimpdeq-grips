@@ -52,8 +52,10 @@ the v43 values for comparison; the roller and frame sizes are the VarSet's.
 
 The outer faces of the frame and the end wall carry an engraved `crimpdeq.com` in Inter Bold, as
 on the Crimpdeq case, and the front of the crossbar an engraved `Crimpdeq Photon`; the font is
-bundled in `grips/fonts/` (SIL Open Font License). The model stops with a message if the text does
-not fit between the end wall's post hole and lock or on the crossbar.
+bundled in `grips/fonts/` (SIL Open Font License). The space for `crimpdeq.com` depends on the hand:
+when it is short, the text shrinks to fit, and below a 2.5 mm text size it is left out, so the
+engraving never rules a hand out. `Crimpdeq Photon` has a fixed space; the model stops with a
+message if it does not fit.
 
 ### Spark
 
