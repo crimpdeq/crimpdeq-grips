@@ -171,6 +171,11 @@ for (f = [M, I])
   assert(axis_y(f) > WALL_Y0 + EDGE_R && axis_z(f) - DIAMETER[f] / 3 < T,
          str(FINGERS[f], " rail misses the wall plates: its Height (", HEIGHT[f], ") or Depth (", DEPTH[f],
              ") is too far from the ring and middle fingers'"));
+// The post runs under the pinky roller, through the frame and every wall, and follows the walls'
+// front, which the ring finger sets: it must pass behind the roller, clear of its largest radius.
+assert(POST_Y > axis_y(P) && norm([POST_Y, POST_Z + POST_SIZE] - axis(P)) > DIAMETER[P] / 2,
+       str("the post (Y ", POST_Y, ") does not pass behind the pinky roller: the ring finger's Height (",
+           Base_R_Height, ") is too small"));
 assert(norm([ANCHOR_Y, ANCHOR_Z] - [FRAME_TOP, T]) < 2 * ANCHOR_WEB_R + ANCHOR_R,
        str("the anchor web cannot reach the tube: the middle finger's Depth (", Base_M_Depth, ") is too large"));
 assert(NAME_EXTENT[1] + 2 < FRAME_TOP - LOCK_Y,
