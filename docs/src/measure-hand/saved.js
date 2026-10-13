@@ -4,20 +4,25 @@
 const DB = 'crimpdeq-grips';
 const STORE = 'measure-hand';
 
-function request(mode, use) {
+// Runs use(store) in one transaction and resolves with the result of the request it returns.
+function transaction(mode, use) {
   return new Promise((resolve, reject) => {
     const open = indexedDB.open(DB, 1);
     open.onupgradeneeded = () => open.result.createObjectStore(STORE);
     open.onerror = () => reject(open.error);
     open.onsuccess = () => {
       const db = open.result;
-      const req = use(db.transaction(STORE, mode).objectStore(STORE));
-      req.onsuccess = () => { db.close(); resolve(req.result); };
-      req.onerror = () => { db.close(); reject(req.error); };
+      const tx = db.transaction(STORE, mode);
+      const req = use(tx.objectStore(STORE));
+      tx.oncomplete = () => { db.close(); resolve(req?.result); };
+      tx.onerror = tx.onabort = () => { db.close(); reject(tx.error); };
     };
   });
 }
 
 // The value saved under key, or undefined.
-export const load = key => request('readonly', store => store.get(key));
-export const save = (key, value) => request('readwrite', store => store.put(value, key));
+export const load = key => transaction('readonly', store => store.get(key));
+// Saves [[key, value]]: all of them or, when it fails, none.
+export const save = entries => transaction('readwrite', store => {
+  for (const [key, value] of entries) store.put(value, key);
+});

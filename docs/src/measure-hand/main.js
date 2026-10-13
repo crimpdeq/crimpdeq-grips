@@ -76,7 +76,9 @@ async function loadImage(file) {
   const img = await decode(file, file.name);
   if (!img || chosen[key] !== file) return;
   Object.assign(photos[key], { file, fileName: file.name, img, view: null, points: {}, active: 0, history: [] });
-  if (saving === 'ok') save(`photo-${key}`, { file, fileName: file.name }).catch(() => { saving = 'failed'; });
+  // With its cleared points: saved apart, a reload in between would restore the old points on it.
+  if (saving === 'ok')
+    save([[`photo-${key}`, { file, fileName: file.name }], ['state', pageState()]]).catch(() => { saving = 'failed'; });
   update();
 }
 
@@ -103,7 +105,7 @@ let saveTimer;
 function saveState() {
   if (saving !== 'ok') return;
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => save('state', pageState()).catch(() => { saving = 'failed'; }), 200);
+  saveTimer = setTimeout(() => save([['state', pageState()]]).catch(() => { saving = 'failed'; }), 200);
 }
 
 async function restore() {
