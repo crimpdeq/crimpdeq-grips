@@ -1,6 +1,6 @@
 #!/bin/sh
 # Renders the illustrations in ../src/<grip>/images of both grips, and ../src/images/grips.png of
-# both together, from the models' right-hand defaults. Needs OpenSCAD 2025 or newer.
+# both together, from the models' right-hand defaults. Needs OpenSCAD 2025 or newer and ImageMagick.
 set -eu
 cd "$(dirname "$0")"
 stl=$(mktemp -d)
@@ -41,3 +41,6 @@ mkdir -p ../src/images
 # Orthographic: in perspective the names, off the view axis, lean like italics.
 openscad -q --render --backend Manifold --colorscheme Tomorrow -D "stl=\"$stl/\"" -o ../src/images/grips.png \
   --imgsize 1200,620 --projection ortho --camera 7,64,20,15,0,0,400 grips.scad
+# OpenSCAD has no transparent background: clear the Tomorrow scheme's flat one, which the grips
+# never show.
+magick ../src/images/grips.png -transparent "#f8f8f8" ../src/images/grips.png
