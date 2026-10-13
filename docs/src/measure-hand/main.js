@@ -51,6 +51,19 @@ function selectPhoto(key) {
   update();
 }
 
+// Restored photos are decoded once shown, not all at once while restoring.
+const decoding = new Set();
+async function decodeRestored(target) {
+  if (decoding.has(target)) return;
+  decoding.add(target);
+  const { file, fileName } = target;
+  const img = await decode(file, fileName);
+  decoding.delete(target);
+  if (target.file !== file) return; // replaced meanwhile
+  Object.assign(target, img ? { img, view: null } : { file: null, fileName: '' });
+  update();
+}
+
 // blob -> its decoded image, or null once the user is told it cannot be decoded.
 function decode(blob, fileName) {
   return new Promise(resolve => {
@@ -120,8 +133,7 @@ async function restore() {
       await Promise.all(Object.entries(state.photos).map(async ([key, saved]) => {
         Object.assign(photos[key], saved);
         const image = await load(`photo-${key}`);
-        const img = image && await decode(image.file, image.fileName);
-        if (img) Object.assign(photos[key], { file: image.file, fileName: image.fileName, img, view: null });
+        if (image) Object.assign(photos[key], { file: image.file, fileName: image.fileName });
       }));
     }
     saving = 'ok';
@@ -220,6 +232,7 @@ function setStatus(text, error = false) {
 function update() {
   const separate = separatePhotos() && needsPhoto();
   if (separate !== (current !== 'one')) return selectPhoto(separate ? 'left' : 'one');
+  if (photo.file && !photo.img) decodeRestored(photo);
   $('sparkFitOption').hidden = !grips().includes('spark');
   $('separateOption').hidden = hands() !== 'both' || !needsPhoto();
   $('measuring').hidden = !needsPhoto();
@@ -237,7 +250,7 @@ function update() {
   $('hintText').textContent = !grips().length ? 'Choose a grip'
     : !needsPhoto() ? 'Spark with its standard roller positions needs no photo: download it'
     : `Choose, drop, or paste a photo of ${current === 'one' ? 'your hand' : 'your ' + current + ' hand'}`;
-  $('hint').hidden = needsPhoto() && Boolean(photo.img);
+  $('hint').hidden = needsPhoto() && Boolean(photo.file);
   const step = STEPS[photo.active];
   $('banner').hidden = !needsPhoto() || !photo.img;
   $('instruction').textContent = step ? `${matchMedia('(pointer: coarse)').matches ? 'Place' : 'Click'} ${step.label}` : 'All points placed';
