@@ -51,29 +51,31 @@ function selectPhoto(key) {
   update();
 }
 
-// Shows blob in photo; points are kept when restoring them with it.
-function showImage(target, blob, fileName, keepPoints) {
+// blob -> its decoded image, or null once the user is told it cannot be decoded.
+function decode(blob, fileName) {
   return new Promise(resolve => {
     const img = new Image();
-    img.onload = () => {
-      Object.assign(target, { file: blob, fileName, img, view: null });
-      if (!keepPoints) Object.assign(target, { points: {}, active: 0, history: [] });
-      resolve(true);
-    };
+    img.onload = () => resolve(img);
     img.onerror = () => {
       alert(`Cannot decode ${fileName}; export it as JPEG or PNG.`);
-      resolve(false);
+      resolve(null);
     };
     img.src = URL.createObjectURL(blob);
   });
 }
+
+// photos key -> the file chosen last for it; an earlier one that finishes decoding later is dropped.
+const chosen = {};
 
 // A photo chosen while the saved state is restored replaces the restored one once restoring ends.
 async function loadImage(file) {
   await restored;
   if (!file || !needsPhoto()) return;
   const key = current;
-  if (!await showImage(photos[key], file, file.name, false)) return;
+  chosen[key] = file;
+  const img = await decode(file, file.name);
+  if (!img || chosen[key] !== file) return;
+  Object.assign(photos[key], { file, fileName: file.name, img, view: null, points: {}, active: 0, history: [] });
   if (saving === 'ok') save(`photo-${key}`, { file, fileName: file.name }).catch(() => { saving = 'failed'; });
   update();
 }
@@ -115,7 +117,8 @@ async function restore() {
       await Promise.all(Object.entries(state.photos).map(async ([key, saved]) => {
         Object.assign(photos[key], saved);
         const image = await load(`photo-${key}`);
-        if (image) await showImage(photos[key], image.file, image.fileName, true);
+        const img = image && await decode(image.file, image.fileName);
+        if (img) Object.assign(photos[key], { file: image.file, fileName: image.fileName, img, view: null });
       }));
     }
     saving = 'ok';
