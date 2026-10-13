@@ -6,14 +6,17 @@ import OpenSCAD from '../openscad/openscad.js';
 onmessage = async ({ data: { module, sources, args } }) => {
   const log = [];
   try {
-    const openscad = await OpenSCAD({
-      noInitialRun: true,
-      print: line => log.push(line),
-      printErr: line => log.push(line),
-      instantiateWasm: (imports, receive) => {
-        WebAssembly.instantiate(module, imports).then(instance => receive(instance, module));
-        return {};
-      },
+    // Emscripten has no way to fail instantiateWasm, so its failure (e.g. out of memory) rejects here.
+    const openscad = await new Promise((resolve, reject) => {
+      OpenSCAD({
+        noInitialRun: true,
+        print: line => log.push(line),
+        printErr: line => log.push(line),
+        instantiateWasm: (imports, receive) => {
+          WebAssembly.instantiate(module, imports).then(instance => receive(instance, module), reject);
+          return {};
+        },
+      }).then(resolve, reject);
     });
     openscad.FS.mkdir('/grips');
     openscad.FS.mkdir('/grips/fonts');
