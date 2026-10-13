@@ -32,13 +32,14 @@
       linear-gradient(180deg, #0b1118 0%, #070c12 100%);
   }
   main, aside { border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); }
-  main { flex: 1; position: relative; overflow: hidden; background: var(--bg-soft); }
+  main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-soft); }
+  #photo { flex: 1; position: relative; }
   canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
   #hint { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); pointer-events: none; }
-  /* The next point to click, over the photo. */
+  /* The current step, below the photo. */
   #banner {
-    position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px;
-    padding: 10px 14px; pointer-events: none; background: rgba(11, 17, 24, 0.85); border: 1px solid var(--border); border-radius: 14px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 12px 16px;
+    background: var(--panel); border-top: 1px solid var(--border);
   }
   #banner b { font-size: 1.05rem; }
   #swatch { width: 12px; height: 12px; border-radius: 50%; }
@@ -113,9 +114,11 @@
 </head>
 <body>
 <main>
-  <canvas id="canvas"></canvas>
-  <div id="hint"></div>
-  <div id="banner" hidden><span id="swatch"></span><b id="instruction"></b>
+  <div id="photo">
+    <canvas id="canvas"></canvas>
+    <div id="hint"></div>
+  </div>
+  <div id="banner" hidden><span id="swatch"></span><b id="instruction"></b><span id="progress"></span>
     <small>Scroll to zoom, drag to pan, drag a point to move it.</small></div>
 </main>
 <aside>
@@ -172,15 +175,12 @@
         <text x="282" y="106">tip</text>
       </g>
     </svg>
-    <p><small>Click two ruler marks far apart, then these four points on every finger, as the box over
-      the photo asks. Where a joint has two creases, click between them.</small></p>
+    <p><small>Click two ruler marks far apart, then these four points on every finger, in the order
+      below; the bar under the photo names the current one. Where a joint has two creases, click
+      between them.</small></p>
     <label>Distance between the two ruler marks: <input type="number" id="rulerMm" min="1" step="any"> mm</label>
-    <p id="progress"></p>
-    <details>
-      <summary>All points</summary>
-      <small>Click one to place it again.</small>
-      <ol id="steps"></ol>
-    </details>
+    <p><small>Click a point in the list to place it again.</small></p>
+    <ol id="steps"></ol>
     <details>
       <summary>Show measurements</summary>
       <div id="results"></div>
@@ -285,15 +285,15 @@ function loadImage(file) {
   const target = photo;
   const im = new Image();
   im.onload = () => {
-    // Fit the photo below the instruction banner.
-    const top = 70;
-    const s = Math.min(canvas.clientWidth / im.width, (canvas.clientHeight - top) / im.height);
+    // Show the step bar first: it takes its height from the canvas the photo is fitted to.
+    $('banner').hidden = false;
+    const s = Math.min(canvas.clientWidth / im.width, canvas.clientHeight / im.height);
     Object.assign(target, {
       img: im,
       fileName: file.name,
       points: {},
       active: 0,
-      view: { s, x: (canvas.clientWidth - im.width * s) / 2, y: top + (canvas.clientHeight - top - im.height * s) / 2 },
+      view: { s, x: (canvas.clientWidth - im.width * s) / 2, y: (canvas.clientHeight - im.height * s) / 2 },
     });
     update();
   };
@@ -418,7 +418,7 @@ function update() {
   $('banner').hidden = !needsPhoto() || !photo.img;
   $('instruction').textContent = step ? `Click ${step.label}` : 'All points placed';
   $('swatch').style.background = step ? step.color : 'transparent';
-  $('progress').textContent = photo.img ? `${placed} of ${STEPS.length} points placed.` : '';
+  $('progress').textContent = `(${placed} of ${STEPS.length})`;
   $('steps').replaceChildren(...STEPS.map((step, i) => {
     const li = document.createElement('li');
     li.textContent = step.label;

@@ -19,10 +19,11 @@ after `python3 scripts/fetch_openscad_wasm.py`); opened as a file it cannot load
 - Photo: palm up, fingers straight and slightly apart, a millimetre ruler beside the fingers raised
   to palm height (e.g. on a book), phone parallel to the table and above the fingers. Use the
   original full-resolution JPEG or PNG, not a screenshot.
-- Points: the box over the photo names the next point to click. First two ruler marks far apart
-  (e.g. 0 and 10 cm; set their distance if it is not 100 mm), then on each finger, from index to
-  pinky, the base crease, middle joint (PIP) crease, end joint (DIP) crease and fingertip. Scroll
-  to zoom, drag to pan or move a point; **All points** lists them to place one again.
+- Points: the bar below the photo names the next point to click, and the list beside it shows
+  them all. First two ruler marks far apart (e.g. 0 and 10 cm; set their distance if it is not
+  100 mm), then on each finger, from index to pinky, the base crease, middle joint (PIP) crease,
+  end joint (DIP) crease and fingertip. Scroll to zoom, drag to pan or move a point; click a point
+  in the list to place it again.
 - **Show measurements** opens the measured lengths and the values below, next to the defaults.
 
 The page sets three values per finger for Photon:
