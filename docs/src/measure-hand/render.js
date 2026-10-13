@@ -62,7 +62,8 @@ export async function renderParts(jobs, onDone, signal) {
 let checker = null;
 let checks = Promise.resolve();
 
-// '' when the model accepts params, else its assertion message.
+// '' when the model accepts params, else its assertion message. Rejects when the check itself
+// fails (loading, the worker, OpenSCAD); the next check starts a new worker.
 export function checkModel(grip, params) {
   const run = async () => {
     const [module, sources] = await loadAssets();
@@ -71,7 +72,11 @@ export function checkModel(grip, params) {
       await runJob(checker, { name: grip, args: modelArgs(grip, params, 'post', 'left') }, module, sources);
       return '';
     } catch (e) {
-      return e.message.match(/Assertion .* failed: "(.*)"/)?.[1] ?? e.message;
+      const assertion = e.message.match(/Assertion .* failed: "(.*)"/);
+      if (assertion) return assertion[1];
+      checker.terminate();
+      checker = null;
+      throw e;
     }
   };
   checks = checks.then(run, run);

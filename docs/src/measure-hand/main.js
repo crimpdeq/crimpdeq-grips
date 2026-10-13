@@ -131,7 +131,7 @@ async function restore() {
 // grip and parameters -> '' when the model accepts them, its message otherwise, undefined while checking.
 const verdicts = new Map();
 const verdictKey = (grip, params) => `${grip} ${JSON.stringify(params)}`;
-let loadError = ''; // why OpenSCAD or the models failed to load; checks wait for a reload
+let checkError = ''; // why a check failed (loading OpenSCAD or the models, its worker); checks wait for a reload
 
 // [{ grip, key: photo key, params }] the download needs; defaults need no check.
 function needed() {
@@ -152,7 +152,7 @@ function requestChecks() {
       const key = verdictKey(grip, params);
       if (verdicts.has(key)) continue;
       verdicts.set(key, undefined);
-      checkModel(grip, params).then(message => verdicts.set(key, message), e => { loadError = e.message; }).then(update);
+      checkModel(grip, params).then(message => verdicts.set(key, message), e => { checkError = e.message; }).then(update);
     }
   }, 300);
 }
@@ -199,7 +199,7 @@ function missing() {
     if (!measure(photos[key], unit())) return `Place every point on ${which(key)} and enter the ruler distance.`;
   for (const { grip, key, params } of needed()) {
     const verdict = verdicts.get(verdictKey(grip, params));
-    if (verdict === undefined) return loadError ? `Cannot load the models (${loadError}): reload the page to try again.`
+    if (verdict === undefined) return checkError ? `Cannot check the measurements (${checkError}): reload the page to try again.`
       : 'Checking the measurements against the model…';
     if (verdict) return `${GRIP_NAMES[grip]} cannot be made from ${which(key)}: see the warning under Points.`;
   }
