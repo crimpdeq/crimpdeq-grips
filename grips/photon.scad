@@ -619,6 +619,9 @@ module print_pose(p) {
 // render() keeps previews (F5) fast: OpenCSG cannot normalize the frame's CSG tree.
 if (part == "assembly") {
   hand_mirror(hand) for (p = PARTS) color([for (c = COLORS) if (c[0] == p[1]) c[1]][0]) render() part_in_place(p);
+} else if (part == "name") {
+  // The cut of the name engraving, in place, for ../docs/illustrations/grips.scad.
+  hand_mirror(hand) grip_name();
 } else {
   p = [for (q = PARTS) if (q[0] == part) q][0];
   assert(p != undef, str("unknown part: ", part));

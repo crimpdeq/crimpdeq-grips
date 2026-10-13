@@ -1,6 +1,6 @@
 #!/bin/sh
-# Renders the illustrations in ../src/<grip>/images of both grips from the models' right-hand
-# defaults. Needs OpenSCAD 2025 or newer.
+# Renders the illustrations in ../src/<grip>/images of both grips, and ../src/images/grips.png of
+# both together, from the models' right-hand defaults. Needs OpenSCAD 2025 or newer and ImageMagick.
 set -eu
 cd "$(dirname "$0")"
 stl=$(mktemp -d)
@@ -29,3 +29,20 @@ walls="frame ring_wall middle_wall index_wall end_wall"
 illustrate photon "$walls pinky_roller ring_roller pinky_pin ring_pin post" -75,60,10,50,0,-30,420
 illustrate spark "$walls pinky_roller ring_roller middle_roller index_roller pinky_pin ring_pin middle_pin post" \
   -80,55,10,50,0,-30,440
+
+# Each grip's name engraving (part "name") and its frame without the name, to fill the name in.
+for grip in photon spark; do
+  model="../../grips/$grip.scad"
+  openscad -q --backend Manifold -D 'part="name"' -D 'hand="right"' -o "$stl/${grip}_right_name.stl" "$model"
+  openscad -q --backend Manifold -D 'part="frame"' -D 'hand="right"' -D in_place=true -D 'NAME_TEXT=""' \
+    -o "$stl/${grip}_right_unnamed_frame.stl" "$model"
+done
+mkdir -p ../src/images
+# Orthographic: in perspective the names, off the view axis, lean like italics.
+openscad -q --render --backend Manifold --colorscheme Tomorrow -D "stl=\"$stl/\"" -o ../src/images/grips.png \
+  --imgsize 1200,620 --projection ortho --camera 7,64,20,15,0,0,400 grips.scad
+# OpenSCAD has no transparent background: clear the Tomorrow scheme's flat one, which the grips
+# never show. A white outline keeps the near-black grips visible on dark themes.
+magick ../src/images/grips.png -transparent "#f8f8f8" \
+  \( +clone -alpha extract -morphology Dilate Disk:3 -background white -alpha shape \) +swap -composite \
+  ../src/images/grips.png

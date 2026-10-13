@@ -1,5 +1,7 @@
 # Crimpdeq Grips
 
+![Photon (left) and Spark (right), facing the rollers](images/grips.png)
+
 Crimpdeq Grips are 3D-printed grips for isolated finger training: each finger rests on its own
 roller. There are two designs, both parametric OpenSCAD models:
 

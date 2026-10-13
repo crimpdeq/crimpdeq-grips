@@ -1,10 +1,18 @@
 # Crimpdeq Grips
 
-![Assembled Photon grip](docs/src/photon/images/step-10.png)
+![Photon (left) and Spark (right), facing the rollers](docs/src/images/grips.png)
 
 3D-printed grips for isolated finger training, as parametric OpenSCAD models: each finger rests
-on its own roller. Photon is fitted to your hand from a photo; Spark has larger rollers.
-Every part prints in plastic, pins included; the only extra is a cord.
+on its own roller. There are two grips:
+
+- **Photon** targets the deep flexor (FDP), which bends the fingertip joint. In a claw grip,
+  each fingertip rests on its roller under a block that holds its last joint.
+- **Spark** targets the superficial flexor (FDS), which bends the middle joint. Each finger bends
+  over a larger roller (22 to 40 mm), the middle joint level with its axis and the end joint on
+  its top.
+
+Both are fitted to your hand from a photo (optional for Spark). Every part prints in plastic, pins
+included; the only extra is a cord.
 
 - Book: fitting, printing and assembly at [grips.crimpdeq.com](https://grips.crimpdeq.com), source in
   [`docs/`](docs/src/SUMMARY.md) (`mdbook serve docs`).
