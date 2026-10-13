@@ -134,12 +134,12 @@ CORD_EXIT_R = 3; // round of the bore where it breaks out of the anchor ends
 // Centered between the end wall's post hole and lock, at the same Y on the frame.
 BRAND_TEXT = "crimpdeq.com";
 BRAND_FONT = "Inter:style=Bold";
-BRAND_SIZE = 4.5;
+BRAND_SIZE = 5;
 BRAND_DEPTH = 0.8;
 BRAND_Y = (POST_Y + POST_SIZE + LOCK_Y) / 2;
 // Text extents ([along the text, across it]) measured with textmetrics(), which is experimental
 // and off by default in OpenSCAD; remeasure when the text or its size changes.
-BRAND_EXTENT = [43.86, 6.07]; // [along Y, Z]
+BRAND_EXTENT = [48.73, 6.75]; // [along Y, Z]
 
 // Engraved on the front face of the crossbar, between the walls and the anchor, centered across
 // the grip; it reads from the front with the anchor up.

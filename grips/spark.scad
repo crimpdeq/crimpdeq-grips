@@ -123,16 +123,24 @@ CORD_EXIT_R = 3;
 BAR_TOP_START = [ANCHOR_Y - ANCHOR_Z + WH - ANCHOR_R * sqrt(2), WH];
 BAR_TOP_END = [ANCHOR_Y, ANCHOR_Z] + ANCHOR_R / sqrt(2) * [-1, 1];
 
+// Engravings. Text extents ([along the text, across it]) measured with textmetrics(), which is
+// experimental and off by default in OpenSCAD; remeasure when the text or its size changes.
+TEXT_FONT = "Inter:style=Bold";
+TEXT_DEPTH = 0.8;
+
 // Engraved on the bar's top face, which faces the fingers, centered on it and across the grip;
 // it reads from the front with the anchor up.
 NAME_TEXT = "Crimpdeq Spark";
-NAME_FONT = "Inter:style=Bold";
 NAME_SIZE = 7;
-NAME_DEPTH = 0.8;
-// Text extents ([along the text, across it]) measured with textmetrics(), which is experimental
-// and off by default in OpenSCAD; remeasure when the text or its size changes.
 NAME_EXTENT = [76.68, 9.45]; // [along X, along the bar]
 NAME_TOP_Y = (BAR_TOP_START[0] + BAR_TOP_END[0] + NAME_EXTENT[1] / sqrt(2)) / 2;
+
+// Engraved on the outer faces of the frame and the end wall, as on Photon. Centered between the
+// end wall's post hole and lock, at the same Y on the frame.
+BRAND_TEXT = "crimpdeq.com";
+BRAND_SIZE = 6.5;
+BRAND_Y = (POST_Y + POST_SIZE + LOCK_Y) / 2;
+BRAND_EXTENT = [63.35, 8.77]; // [along Y, Z]
 
 for (f = [R:I])
   assert(seat_end(f) < LOCK_Y - STOP_SETBACK[f] - WH * tan(STOP_ANGLE[f]),
@@ -142,6 +150,10 @@ assert(NAME_EXTENT[1] + 2 < norm(BAR_TOP_END - BAR_TOP_START),
 assert(NAME_EXTENT[0] + 2 < FW - 2 * EDGE_R, str("the frame (", FW, " mm wide) is too narrow for ", NAME_TEXT));
 assert(FW / 2 - NAME_EXTENT[0] / 2 > ANCHOR_X0 - (ANCHOR_Y + ANCHOR_R - NAME_TOP_Y) + 1,
        str(NAME_TEXT, " reaches the pinky-side end of the anchor bar"));
+assert(BRAND_EXTENT[0] + 2 < LOCK_Y - POST_Y - POST_SIZE,
+       str("the end wall (", LOCK_Y - POST_Y - POST_SIZE, " mm between post hole and lock) is too short for ",
+           BRAND_TEXT));
+assert(BRAND_EXTENT[1] + 1 < WH - 2 * EDGE_R, str("the walls (", WH, " mm high) are too low for ", BRAND_TEXT));
 
 // ---------------------------------------------------------------------------------------------
 // Rollers, pins, post
@@ -209,9 +221,19 @@ module lock() {
 // hand_mirror mirrors the part.
 module grip_name() {
   c = (BAR_TOP_START + BAR_TOP_END) / 2;
-  translate([FW / 2, c[0], c[1]]) rotate([45, 0, 0]) translate([0, 0, -NAME_DEPTH]) linear_extrude(NAME_DEPTH + 1)
+  translate([FW / 2, c[0], c[1]]) rotate([45, 0, 0]) translate([0, 0, -TEXT_DEPTH]) linear_extrude(TEXT_DEPTH + 1)
     mirror([hand == "right" ? 1 : 0, 0])
-      text(NAME_TEXT, size = NAME_SIZE, font = NAME_FONT, halign = "center", valign = "center");
+      text(NAME_TEXT, size = NAME_SIZE, font = TEXT_FONT, halign = "center", valign = "center");
+}
+
+// BRAND_TEXT engraved into the outer side face at x (side: its outward direction along X),
+// centered on (BRAND_Y, WH / 2). Seen from +X the text runs along +Y, so it is flipped on the -X
+// face and again for the right hand, where hand_mirror mirrors the part.
+module brand(x, side) {
+  flip = (side < 0) != (hand == "right");
+  along_x(side > 0 ? x - TEXT_DEPTH : x - 1, side > 0 ? x + 1 : x + TEXT_DEPTH)
+    translate([BRAND_Y, WH / 2]) mirror([flip ? 1 : 0, 0])
+      text(BRAND_TEXT, size = BRAND_SIZE, font = TEXT_FONT, halign = "center", valign = "center");
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -377,6 +399,7 @@ module end_wall() {
     }
     pole_holes(I);
     post_hole(x0, FW);
+    brand(FW, 1);
   }
 }
 
@@ -498,6 +521,7 @@ module frame() {
     post_hole(POST_X0, x1);
     along_x(x1, FW + 1) lock();
     cord_path();
+    brand(0, -1);
     grip_name();
   }
 }
