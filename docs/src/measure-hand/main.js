@@ -67,12 +67,13 @@ function decode(blob, fileName) {
 // photos key -> the file chosen last for it; an earlier one that finishes decoding later is dropped.
 const chosen = {};
 
-// A photo chosen while the saved state is restored replaces the restored one once restoring ends.
+// The photo goes to the one shown when it is chosen. Chosen while the saved state is restored, it
+// replaces the restored one once restoring ends.
 async function loadImage(file) {
-  await restored;
   if (!file || !needsPhoto()) return;
   const key = current;
   chosen[key] = file;
+  await restored;
   const img = await decode(file, file.name);
   if (!img || chosen[key] !== file) return;
   Object.assign(photos[key], { file, fileName: file.name, img, view: null, points: {}, active: 0, history: [] });
