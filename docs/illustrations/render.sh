@@ -42,5 +42,7 @@ mkdir -p ../src/images
 openscad -q --render --backend Manifold --colorscheme Tomorrow -D "stl=\"$stl/\"" -o ../src/images/grips.png \
   --imgsize 1200,620 --projection ortho --camera 7,64,20,15,0,0,400 grips.scad
 # OpenSCAD has no transparent background: clear the Tomorrow scheme's flat one, which the grips
-# never show.
-magick ../src/images/grips.png -transparent "#f8f8f8" ../src/images/grips.png
+# never show. A white outline keeps the near-black grips visible on dark themes.
+magick ../src/images/grips.png -transparent "#f8f8f8" \
+  \( +clone -alpha extract -morphology Dilate Disk:3 -background white -alpha shape \) +swap -composite \
+  ../src/images/grips.png
