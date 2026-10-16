@@ -7,7 +7,7 @@ Usage:
 
 PARAMS (optional) holds `Name = value` lines, `#` lines ignored, e.g. a parameters.txt from the
 zip of ../docs/src/measure-hand.html; names must be parameters of the model. The STLs, named
-<model>_<hand>_<part>.stl, go to --out, by default next to PARAMS (or the current directory).
+<model>_<hand>_<part>.stl, go to --out, by default exports/<model>-<hand> (ignored by git).
 --in-place keeps every part where it sits in the assembly instead of its print pose.
 """
 
@@ -19,7 +19,9 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-GRIPS = Path(__file__).resolve().parent.parent / "grips"
+ROOT = Path(__file__).resolve().parent.parent
+GRIPS = ROOT / "grips"
+EXPORTS = ROOT / "exports"
 PARTS = [
     "frame",
     "ring_wall",
@@ -88,7 +90,7 @@ def main():
         sys.exit("openscad not found; install OpenSCAD (2025 or newer, for the Manifold backend)")
     scad = GRIPS / f"{args.model}.scad"
     params = read_params(args.params, model_parameters(scad)) if args.params else {}
-    out = args.out or (args.params.parent if args.params else Path.cwd())
+    out = args.out or EXPORTS / f"{args.model}-{args.hand}"
     out.mkdir(parents=True, exist_ok=True)
     with ThreadPoolExecutor() as pool:
         jobs = [

@@ -1,12 +1,13 @@
 """Build a ready-to-print Bambu Studio project (Bambu Lab A1) from the STLs of one grip and hand.
 
 Usage:
-    python3 scripts/export_bambu_project.py STL_DIR --output FILE.3mf [--skip-slice]
+    python3 scripts/export_bambu_project.py STL_DIR [--output FILE.3mf] [--skip-slice]
 
 STL_DIR holds the 14 STLs of one grip and hand as scripts/export.py names them. The parts are laid
 out in rows on one plate, far enough apart for their brims; the Bambu Studio CLI assembles the
 project with the print settings of docs/src/<grip>/printing.md and slices it to confirm that
-the plate prints without errors or warnings.
+the plate prints without errors or warnings. The project goes to --output, by default
+exports/<grip>-<hand>.3mf (ignored by git).
 
 BAMBU_STUDIO names the Bambu Studio executable (default: bambu-studio on PATH, then the macOS
 application); BAMBU_STUDIO_PROFILES its profiles directory (default: found next to the executable).
@@ -24,7 +25,7 @@ import zipfile
 from pathlib import Path
 
 from check_stl import read_triangles
-from export import PARTS
+from export import EXPORTS, PARTS
 
 MACOS_APP = Path("/Applications/BambuStudio.app/Contents/MacOS/BambuStudio")
 
@@ -186,13 +187,14 @@ def run_bambu(bambu_studio, args, out_dir):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("stl_dir", type=Path)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
     parser.add_argument("--skip-slice", action="store_true", help="don't slice the project to check it")
     args = parser.parse_args()
 
     bambu_studio = find_bambu_studio()
     profiles = find_profiles(bambu_studio)
     grip, hand, parts = read_parts(args.stl_dir)
+    output = args.output or EXPORTS / f"{grip}-{hand}.3mf"
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
         presets = write_presets(profiles, grip, work)
@@ -213,7 +215,7 @@ def main():
         }
         (work / "assemble.json").write_text(json.dumps(assemble_list, indent=4))
 
-        project = work / "project" / args.output.name
+        project = work / "project" / output.name
         run_bambu(
             bambu_studio,
             [
@@ -236,9 +238,9 @@ def main():
             if warnings:
                 sys.exit("Bambu Studio sliced the plate with warnings:\n  " + "\n  ".join(warnings))
             print("Sliced the plate without warnings")
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(project, args.output)
-    print(f"Exported {args.output}")
+        output.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(project, output)
+    print(f"Exported {output}")
 
 
 if __name__ == "__main__":

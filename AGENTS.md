@@ -41,7 +41,8 @@ rerun them.
   both grips for both hands and attaches one zip of STLs and one 3MF project per grip and hand to
   the release. `actions/setup-bambu-studio` pins the Bambu Studio AppImage (as in
   `crimpdeq-platform`).
-- Generated files (STLs, 3MF projects, `docs/book/`) do not go in git; releases carry them.
+- Generated files (STLs, 3MF projects, `docs/book/`) do not go in git; releases carry them. Local
+  exports default to `exports/` (`exports/<grip>-<hand>/` STLs, `exports/<grip>-<hand>.3mf`).
 
 ## Origins
 

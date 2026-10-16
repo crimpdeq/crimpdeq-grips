@@ -34,15 +34,15 @@ clicked points. With [OpenSCAD](https://openscad.org) 2025 or newer installed, `
 exports the same STLs from it, e.g. after editing a value:
 
 ```sh
-python3 scripts/export.py photon crimpdeq-grips-photon-right/parameters.txt --hand right --out my-right-hand
+python3 scripts/export.py photon crimpdeq-grips-photon-right/parameters.txt --hand right
 ```
 
 For a Bambu Lab A1, `scripts/export_bambu_project.py` turns a folder of STLs into a Bambu Studio
 project with all parts on one plate and the settings of [Printing](printing.md):
 
 ```sh
-python3 scripts/export_bambu_project.py crimpdeq-grips-photon-right --output my-right-hand.3mf
+python3 scripts/export_bambu_project.py exports/photon-right
 ```
 
-It needs [Bambu Studio](https://bambulab.com/en/download/studio) installed and slices the project
-to check it.
+The STLs go to `exports/photon-right/` and the project to `exports/photon-right.3mf`. It needs
+[Bambu Studio](https://bambulab.com/en/download/studio) installed and slices the project to check it.

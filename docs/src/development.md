@@ -15,13 +15,14 @@ it takes about a minute.
 `scripts/export.py` exports all 14 parts of one hand at once:
 
 ```sh
-python3 scripts/export.py photon my-right-hand.txt --hand right --out my-right-hand
-python3 scripts/export.py spark --hand left --out spark-left
+python3 scripts/export.py photon my-right-hand.txt --hand right
+python3 scripts/export.py spark --hand left
 ```
 
 The parameter file is optional and uses the format of the `parameters.txt` files the
 [measuring page](measure-hand.html) puts in its zip (`Name = value` lines, `#` comments); names
-that are not parameters of the model are rejected. The STLs are named `<model>_<hand>_<part>.stl`. `--in-place` keeps the parts in assembly coordinates
+that are not parameters of the model are rejected. The STLs are named `<model>_<hand>_<part>.stl` and go to
+`exports/<model>-<hand>/` (ignored by git) unless `--out` names another folder. `--in-place` keeps the parts in assembly coordinates
 instead of their print pose.
 
 ## Measuring page
@@ -134,6 +135,7 @@ Run the workflow manually for a dry run.
 the parts out in rows on the A1 plate, far enough apart for their brims, assembles the project with
 the Bambu Studio CLI and the settings of Printing ([Photon](photon/printing.md),
 [Spark](spark/printing.md), untested in print), and fails if slicing it gives an error or a
-warning, such as a floating cantilever. The release workflow installs the pinned Bambu Studio AppImage with
+warning, such as a floating cantilever. The project goes to `exports/<grip>-<hand>.3mf` unless
+`--output` names another file. The release workflow installs the pinned Bambu Studio AppImage with
 `.github/actions/setup-bambu-studio`; locally, set `BAMBU_STUDIO` if `bambu-studio` is not on the
 `PATH` or is a wrapper script.
