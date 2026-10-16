@@ -26,13 +26,13 @@ and the wall sits against the roller.
 
 ## 3. Ring roller and pin
 
-Lay the ring roller in the ring wall's cradle and push the ring pin, the shortest one, through it
-into the wall.
-
 > [!WARNING]
 > The ring and middle rollers look almost the same: the ring roller is 38 mm across and 18.5 mm
 > long, the middle roller 40 mm across and 19.5 mm long. Measure them before putting one in.
 > Swapped, the middle roller jams in the ring wall's narrower gap and neither roller rolls.
+
+Lay the ring roller in the ring wall's cradle and push the ring pin, the shortest one, through it
+into the wall.
 
 ![Step 3](images/step-3.png)
 
