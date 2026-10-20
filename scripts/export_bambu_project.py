@@ -3,11 +3,11 @@
 Usage:
     python3 scripts/export_bambu_project.py STL_DIR [--output FILE.3mf] [--skip-slice]
 
-STL_DIR holds the 14 STLs of one grip and hand, or Mico's mico.stl, as scripts/export.py names
-them. The parts are laid out in rows on one plate, far enough apart for their brims; the Bambu
+STL_DIR holds the 14 STLs of one grip and hand, or the one STL of Mico or Quark, as
+scripts/export.py names them. The parts are laid out in rows on one plate, far enough apart for their brims; the Bambu
 Studio CLI assembles the project with the print settings of docs/src/<grip>/printing.md and slices
 it to confirm that the plate prints without errors or warnings. The project goes to --output, by
-default exports/<grip>-<hand>.3mf, or exports/mico.3mf (ignored by git).
+default exports/<grip>-<hand>.3mf, or exports/<model>.3mf for Mico and Quark (ignored by git).
 
 BAMBU_STUDIO names the Bambu Studio executable (default: bambu-studio on PATH, then the macOS
 application); BAMBU_STUDIO_PROFILES its profiles directory (default: found next to the executable).
@@ -25,7 +25,7 @@ import zipfile
 from pathlib import Path
 
 from check_stl import read_triangles
-from export import EXPORTS, PARTS
+from export import EXPORTS, ONE_PIECE, PARTS
 
 MACOS_APP = Path("/Applications/BambuStudio.app/Contents/MacOS/BambuStudio")
 
@@ -34,7 +34,7 @@ PROCESS = "0.20mm Standard @BBL A1"
 FILAMENT = "Bambu PETG HF @BBL A1"
 BED_TYPE = "Textured PEI Plate"
 
-# The settings table in docs/src/<grip>/printing.md of Photon and Spark.
+# The settings table in docs/src/<grip>/printing.md of Photon, Spark and Quark.
 PROCESS_OVERRIDES = {
     "layer_height": "0.2",
     "wall_loops": "5",
@@ -54,6 +54,8 @@ PART_SETTINGS = {
     "ring_wall": BRIM,
     "middle_wall": BRIM,
     "index_wall": BRIM,
+    # It stands on an end face, 115 mm tall on a footprint of thin walls.
+    "quark": BRIM,
 }
 # Between the bounding boxes of two parts: both brims, each 0.1 mm off its part (brim_object_gap),
 # and over 2 mm between them, or the brims can merge.
@@ -114,12 +116,13 @@ def write_presets(profiles, grip, work):
 
 
 def read_parts(stl_dir):
-    """The STLs of STL_DIR by part name, and their grip and hand (None for Mico)."""
+    """The STLs of STL_DIR by part name, and their grip and hand (None for one-piece models)."""
     names = sorted(p.name for p in stl_dir.glob("*.stl"))
     if not names:
         sys.exit(f"{stl_dir}: no STLs")
-    if names == ["mico.stl"]:
-        return "mico", None, {"mico": stl_dir / "mico.stl"}
+    for model in ONE_PIECE:
+        if names == [f"{model}.stl"]:
+            return model, None, {model: stl_dir / f"{model}.stl"}
     grip, hand = names[0].split("_")[:2]
     expected = sorted(f"{grip}_{hand}_{part}.stl" for part in PARTS)
     if names != expected:

@@ -1,6 +1,7 @@
 #!/bin/sh
 # Renders the illustrations in ../src/<grip>/images of both grips, and ../src/images/grips.png of
-# both together, from the models' right-hand defaults, and ../src/mico/images/mico.png of Mico.
+# both together, from the models' right-hand defaults, and ../src/<model>/images/<model>.png of Mico
+# and Quark.
 # Needs OpenSCAD 2025 or newer and ImageMagick.
 set -eu
 cd "$(dirname "$0")"
@@ -36,6 +37,12 @@ python3 ../../scripts/export.py mico --out "$stl" >/dev/null
 mkdir -p ../src/mico/images
 openscad -q --colorscheme Tomorrow -D "stl=\"$stl/\"" -D 'part="mico"' -o ../src/mico/images/mico.png \
   --imgsize 600,450 --viewall --autocenter --camera 0,0,0,60,0,180,300 grip.scad
+
+# Quark, standing on its end in the STL: turned long arms up, the name engraving toward the camera.
+python3 ../../scripts/export.py quark --out "$stl" >/dev/null
+mkdir -p ../src/quark/images
+openscad -q --colorscheme Tomorrow -D "stl=\"$stl/\"" -D 'part="quark"' -o ../src/quark/images/quark.png \
+  --imgsize 600,450 --viewall --autocenter --camera 0,0,0,-15,55,90,330 grip.scad
 
 # Each grip's name engraving (part "name") and its frame without the name, to fill the name in.
 for grip in photon spark; do

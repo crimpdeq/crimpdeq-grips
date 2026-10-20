@@ -17,13 +17,19 @@ rerun them.
   `Crimpdeq Mico` over `crimpdeq.com` around the back. Letters are placed one by one from the
   font's advance widths (`ADVANCES`; add any new character there). Keep engravings on walls: on
   the top face, the name at the size that fit the nose (2.8) closed up in a test print.
-- `scripts/export.py`: all parts of one hand, or Mico's one STL (`mico`, no hand) (stdlib only);
-  parameter file of `Name = value` lines, unknown names rejected.
+  `quark.scad` is a one-piece four-pinch block in its print pose (standing on an end face), no
+  hand or parts: a hollow profile 90 mm across the heads, with the cord through the head cells and
+  wave-shaped grip ridges cut into the long arms' outer faces (vertical in the print pose). `Crimpdeq Quark` and
+  `crimpdeq.com` are engraved on the stop lugs' outer faces, sized to fill their flat from Inter
+  Bold's glyph height and advance widths (`ADVANCES`): the CI snapshot has `textmetrics()` only
+  as a disabled experimental feature.
+- `scripts/export.py`: all parts of one hand, or the one STL of Mico or Quark (`ONE_PIECE`, no
+  hand) (stdlib only); parameter file of `Name = value` lines, unknown names rejected.
 - `scripts/check_step.py`: compares every part with its STEP solid (`uv run`, inline dependencies;
   reads the STEP files from git history at `STEP_COMMIT` and tessellates them with OCP).
 - `scripts/check_stl.py`: each exported STL is one closed body resting on z = 0 (stdlib only).
-- `scripts/export_bambu_project.py`: the Bambu Lab A1 project of one grip and hand, or of Mico,
-  from its STLs (stdlib plus the Bambu Studio CLI); lays the parts out itself, slices to check.
+- `scripts/export_bambu_project.py`: the Bambu Lab A1 project of one grip and hand, or of Mico or
+  Quark, from its STLs (stdlib plus the Bambu Studio CLI); lays the parts out itself, slices to check.
 - `scripts/fetch_openscad_wasm.py`: the pinned official WebAssembly OpenSCAD (sha256-checked) into
   `docs/src/openscad/` (not in git), which the measuring page renders with; CI runs it before
   `mdbook build docs`.
@@ -38,16 +44,18 @@ rerun them.
   and `src/spark/images` from the right-hand defaults (`export.py --in-place`, then
   `illustrations/grip.scad`), and `src/images/grips.png` of both grips for the README and the
   introduction (`illustrations/grips.scad`, orthographic: in perspective the off-axis names
-  lean), and `src/mico/images/mico.png`; rerun it when a model changes.
+  lean), and `src/mico/images/mico.png` and `src/quark/images/quark.png`; rerun it when a model
+  changes.
 - `.github/workflows/`: `ci.yml` runs the checks below on pull requests and, on pushes to `main`
   that pass them, deploys `docs/book/` to the Cloudflare Pages project `crimpdeq-grips`
   (grips.crimpdeq.com, org secret `CLOUDFLARE_API_TOKEN`); `release.yml` exports
   both grips for both hands and attaches one zip of STLs and one 3MF project per grip and hand to
-  the release, plus `crimpdeq-grips-mico.stl` and `crimpdeq-grips-mico.3mf`. `actions/setup-bambu-studio` pins the Bambu Studio AppImage (as in
+  the release, plus `crimpdeq-grips-<model>.stl` and `crimpdeq-grips-<model>.3mf` of Mico and
+  Quark. `actions/setup-bambu-studio` pins the Bambu Studio AppImage (as in
   `crimpdeq-platform`).
 - Generated files (STLs, 3MF projects, `docs/book/`) do not go in git; releases carry them. Local
   exports default to `exports/` (`exports/<grip>-<hand>/` STLs, `exports/<grip>-<hand>.3mf`;
-  `exports/mico/mico.stl`, `exports/mico.3mf`).
+  `exports/<model>/<model>.stl`, `exports/<model>.3mf` for Mico and Quark).
 
 ## Origins
 
@@ -93,7 +101,7 @@ rerun them.
 
 1. `uvx ruff check --line-length 120 scripts`.
 2. Model changes: `uv run scripts/check_step.py` passes (each part within 1% volume and 0.6 mm at
-   p95), and `scripts/export.py` for both grips and both hands and for Mico passes
+   p95), and `scripts/export.py` for both grips and both hands and for Mico and Quark passes
    `scripts/check_stl.py`.
 3. Model changes: rerun `docs/illustrations/render.sh`.
 4. Measuring page or model changes: `scripts/fetch_openscad_wasm.py`, `mdbook serve docs`, load
@@ -108,7 +116,8 @@ Digital checks do not validate fit, strength or comfort; report the test print a
 `scripts/export_bambu_project.py` flattens the system presets (machine `Bambu Lab A1 0.4 nozzle`,
 filament `Bambu PETG HF @BBL A1`, process `0.20mm Standard @BBL A1` with the overrides of
 `docs/src/photon/printing.md`, repeated in `docs/src/spark/printing.md`; Mico: filament
-`Bambu PLA Basic @BBL A1` and 7 walls, `docs/src/mico/printing.md`), so keep its settings and
+`Bambu PLA Basic @BBL A1` and 7 walls, `docs/src/mico/printing.md`; Quark: those of Photon plus a
+brim, `docs/src/quark/printing.md`), so keep its settings and
 those pages in sync. Facts it relies on:
 
 - Only the renamed process gets `from: User`; on the machine or filament the CLI reports the
@@ -124,6 +133,6 @@ those pages in sync. Facts it relies on:
   the CLI writes to its working directory; the script runs it in a temporary directory. Neither
   grip has a floating cantilever without supports; the walls need none (original instructions),
   and the frame, with the largest overhangs, keeps its support. Mico slices without warnings with
-  neither supports nor a brim.
+  neither supports nor a brim; Quark with a brim and no supports.
 - Locally on Linux, `bambu-studio` may be a wrapper script: set `BAMBU_STUDIO` to the AppImage's
   `AppRun` so the profiles are found next to it.

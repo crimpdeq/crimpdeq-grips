@@ -5,12 +5,14 @@ Usage:
     python3 scripts/export.py spark --hand left --out DIR
     python3 scripts/export.py photon PARAMS --hand right --in-place --out DIR
     python3 scripts/export.py mico PARAMS --out DIR
+    python3 scripts/export.py quark PARAMS --out DIR
 
 PARAMS (optional) holds `Name = value` lines, `#` lines ignored, e.g. a parameters.txt from the
 zip of ../docs/src/measure-hand.html; names must be parameters of the model. The STLs, named
 <model>_<hand>_<part>.stl, go to --out, by default exports/<model>-<hand> (ignored by git).
 --in-place keeps every part where it sits in the assembly instead of its print pose.
-Mico is one part with no hand, modelled in its print pose: mico.stl, by default in exports/mico.
+Mico and Quark are one part each with no hand, modelled in its print pose: <model>.stl, by default
+in exports/<model>.
 """
 
 import argparse
@@ -40,6 +42,8 @@ PARTS = [
     "index_pin",
     "post",
 ]
+# Models of one part with no hand, in their print pose.
+ONE_PIECE = ("mico", "quark")
 
 
 def model_parameters(scad):
@@ -79,15 +83,15 @@ def export(openscad, scad, values, path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("model", choices=("photon", "spark", "mico"))
+    parser.add_argument("model", choices=("photon", "spark", *ONE_PIECE))
     parser.add_argument("params", type=Path, nargs="?")
     parser.add_argument("--hand", choices=("left", "right"), help="required for photon and spark")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--in-place", action="store_true", help="assembly coordinates instead of print pose")
     args = parser.parse_args()
-    if args.model == "mico" and (args.hand or args.in_place):
-        parser.error("mico has no hand and no assembly: drop --hand and --in-place")
-    if args.model != "mico" and not args.hand:
+    if args.model in ONE_PIECE and (args.hand or args.in_place):
+        parser.error(f"{args.model} has no hand and no assembly: drop --hand and --in-place")
+    if args.model not in ONE_PIECE and not args.hand:
         parser.error(f"{args.model} needs --hand")
 
     openscad = shutil.which("openscad") or "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
@@ -95,9 +99,9 @@ def main():
         sys.exit("openscad not found; install OpenSCAD (2025 or newer, for the Manifold backend)")
     scad = GRIPS / f"{args.model}.scad"
     params = read_params(args.params, model_parameters(scad)) if args.params else {}
-    if args.model == "mico":
-        out = args.out or EXPORTS / "mico"
-        stls = {out / "mico.stl": params}
+    if args.model in ONE_PIECE:
+        out = args.out or EXPORTS / args.model
+        stls = {out / f"{args.model}.stl": params}
     else:
         out = args.out or EXPORTS / f"{args.model}-{args.hand}"
         pose = {"hand": f'"{args.hand}"', "in_place": str(args.in_place).lower()}

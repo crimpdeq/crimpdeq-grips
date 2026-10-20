@@ -53,11 +53,15 @@ jobs:
                   if-no-files-found: error
                   compression-level: 0
 
-    mico:
-        name: Build mico
+    one-piece:
+        name: Build ${{ matrix.model }}
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                model: [mico, quark]
         env:
-            NAME: crimpdeq-grips-mico
+            MODEL: ${{ matrix.model }}
+            NAME: crimpdeq-grips-${{ matrix.model }}
         steps:
             - name: Checkout
               uses: actions/checkout@v6
@@ -65,13 +69,13 @@ jobs:
             - name: Install OpenSCAD
               uses: ./.github/actions/setup-openscad
 
-            - name: Export Mico
-              run: python3 scripts/export.py mico --out "$NAME"
+            - name: Export the part
+              run: python3 scripts/export.py "$MODEL" --out "$NAME"
 
             - name: Check the STL
               run: |
-                  python3 scripts/check_stl.py "$NAME/mico.stl"
-                  cp "$NAME/mico.stl" "$NAME.stl"
+                  python3 scripts/check_stl.py "$NAME/$MODEL.stl"
+                  cp "$NAME/$MODEL.stl" "$NAME.stl"
 
             - name: Install Bambu Studio
               uses: ./.github/actions/setup-bambu-studio
@@ -95,7 +99,7 @@ jobs:
         runs-on: ubuntu-latest
         needs:
             - parts
-            - mico
+            - one-piece
         permissions:
             contents: write
         steps:
@@ -114,8 +118,10 @@ jobs:
                           test -f "release-assets/crimpdeq-grips-$grip-$hand.3mf"
                       done
                   done
-                  test -f release-assets/crimpdeq-grips-mico.stl
-                  test -f release-assets/crimpdeq-grips-mico.3mf
+                  for model in mico quark; do
+                      test -f "release-assets/crimpdeq-grips-$model.stl"
+                      test -f "release-assets/crimpdeq-grips-$model.3mf"
+                  done
 
             - name: Upload release assets
               uses: svenstaro/upload-release-action@v2
