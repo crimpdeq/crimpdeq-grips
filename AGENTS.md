@@ -13,6 +13,11 @@ rerun them.
   the crossbar front; Spark: `Crimpdeq Spark` on the anchor bar's sloped top face), the font of
   `crimpdeq-case`. Engraved texts are `BRAND_TEXT` and `NAME_TEXT`, which `check_step.py` empties.
   The part `name` (not in the part list) is the name engraving's cut, which `grips.png` fills in.
+  `mico.scad` is a one-piece mono training loop in its print pose, no hand or parts, engraved
+  `Crimpdeq Mico` in two arcs on the top face and `crimpdeq.com` around the back. Letters are
+  placed one by one from the font's advance widths (`ADVANCES`; add any new character there). Not wired into the
+  export, check, release or book workflows: export it with `openscad -o FILE.stl
+  grips/mico.scad`.
 - `scripts/export.py`: all parts of one hand (stdlib only); parameter file of `Name = value` lines,
   unknown names rejected.
 - `scripts/check_step.py`: compares every part with its STEP solid (`uv run`, inline dependencies;

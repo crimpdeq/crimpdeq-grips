@@ -22,6 +22,8 @@ included; the only extra is a cord.
   `python3 scripts/fetch_openscad_wasm.py`, then `mdbook serve docs`).
 - Models: [`grips/`](grips/); export all parts of one hand with
   `python3 scripts/export.py photon PARAMS --hand right --out DIR`.
+- Mico, a one-piece loop for mono (single finger) training engraved "Crimpdeq Mico":
+  [`grips/mico.scad`](grips/mico.scad); export it with `openscad -o mico.stl grips/mico.scad`.
 - STLs and Bambu Lab A1 projects (3MF) of both grips for both hands: attached to every
   [release](https://github.com/crimpdeq/crimpdeq-grips/releases); build a project from your own
   STLs with `python3 scripts/export_bambu_project.py DIR --output FILE.3mf`.
