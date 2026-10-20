@@ -106,8 +106,9 @@ Digital checks do not validate fit, strength or comfort; report the test print a
 
 `scripts/export_bambu_project.py` flattens the system presets (machine `Bambu Lab A1 0.4 nozzle`,
 filament `Bambu PETG HF @BBL A1`, process `0.20mm Standard @BBL A1` with the overrides of
-`docs/src/photon/printing.md`, repeated in `docs/src/spark/printing.md` and
-`docs/src/mico/printing.md`), so keep its settings and those pages in sync. Facts it relies on:
+`docs/src/photon/printing.md`, repeated in `docs/src/spark/printing.md`; Mico: filament
+`Bambu PLA Basic @BBL A1` and 7 walls, `docs/src/mico/printing.md`), so keep its settings and
+those pages in sync. Facts it relies on:
 
 - Only the renamed process gets `from: User`; on the machine or filament the CLI reports the
   process as incompatible. The plate's `curr_bed_type` must be Textured PEI: the default Cool

@@ -34,7 +34,7 @@ PROCESS = "0.20mm Standard @BBL A1"
 FILAMENT = "Bambu PETG HF @BBL A1"
 BED_TYPE = "Textured PEI Plate"
 
-# The settings table in docs/src/<grip>/printing.md of Photon, Spark and Mico.
+# The settings table in docs/src/<grip>/printing.md of Photon and Spark.
 PROCESS_OVERRIDES = {
     "layer_height": "0.2",
     "wall_loops": "5",
@@ -43,6 +43,9 @@ PROCESS_OVERRIDES = {
     "enable_support": "0",
     "brim_type": "no_brim",
 }
+# Mico's, in docs/src/mico/printing.md: PLA and more walls.
+MICO_FILAMENT = "Bambu PLA Basic @BBL A1"
+MICO_OVERRIDES = PROCESS_OVERRIDES | {"wall_loops": "7"}
 BRIM_WIDTH = 5.0
 SUPPORT = {"enable_support": "1", "support_type": "normal(auto)"}
 BRIM = {"brim_type": "outer_only", "brim_width": f"{BRIM_WIDTH:g}"}
@@ -87,17 +90,23 @@ def flattened_preset(profiles, kind, name):
     return (flattened_preset(profiles, kind, parent) if parent else {}) | preset
 
 
+def print_settings(grip):
+    """The filament and process overrides of the grip's printing page."""
+    return (MICO_FILAMENT, MICO_OVERRIDES) if grip == "mico" else (FILAMENT, PROCESS_OVERRIDES)
+
+
 def write_presets(profiles, grip, work):
+    filament, overrides = print_settings(grip)
     process = flattened_preset(profiles, "process", PROCESS)
     for key in ("setting_id", "instantiation"):
         process.pop(key, None)
     # A project preset on top of the system process, so Bambu Studio lists the changed settings
     # against it; `from: User` on the machine or filament makes the CLI reject the process.
-    process |= PROCESS_OVERRIDES | {"name": f"0.20mm {grip.title()} @BBL A1", "inherits": PROCESS, "from": "User"}
+    process |= overrides | {"name": f"0.20mm {grip.title()} @BBL A1", "inherits": PROCESS, "from": "User"}
     presets = {
         "machine": flattened_preset(profiles, "machine", PRINTER),
         "process": process,
-        "filament": flattened_preset(profiles, "filament", FILAMENT),
+        "filament": flattened_preset(profiles, "filament", filament),
     }
     for kind, preset in presets.items():
         (work / f"{kind}.json").write_text(json.dumps(preset, indent=4))
@@ -145,13 +154,13 @@ def lay_out(parts, bed, work):
     return placed
 
 
-def list_changed_settings(project, system_process):
+def list_changed_settings(project, system_process, overrides):
     """Record the process overrides in the project's different_settings_to_system.
 
     When Bambu Studio opens a project whose preset inherits a system preset, it keeps only the
     settings listed there and resets the rest to the system values. The CLI leaves the list empty.
     """
-    changed = sorted(k for k, v in PROCESS_OVERRIDES.items() if system_process.get(k) not in (v, [v]))
+    changed = sorted(k for k, v in overrides.items() if system_process.get(k) not in (v, [v]))
     name = "Metadata/project_settings.config"
     with zipfile.ZipFile(project) as archive:
         entries = [(info, archive.read(info)) for info in archive.infolist()]
@@ -159,7 +168,7 @@ def list_changed_settings(project, system_process):
         for info, data in entries:
             if info.filename == name:
                 settings = json.loads(data)
-                lost = [k for k in changed if settings.get(k) != PROCESS_OVERRIDES[k]]
+                lost = [k for k in changed if settings.get(k) != overrides[k]]
                 if lost:
                     sys.exit(f"Bambu Studio did not keep the process overrides {lost}")
                 # Process first, then the filament and printer presets.
@@ -232,7 +241,7 @@ def main():
             ],
             project.parent,
         )
-        list_changed_settings(project, flattened_preset(profiles, "process", PROCESS))
+        list_changed_settings(project, flattened_preset(profiles, "process", PROCESS), print_settings(grip)[1])
         if not args.skip_slice:
             result = run_bambu(bambu_studio, ["--slice", "0", str(project)], work / "slice")
             # Object collisions and floating cantilevers, among others.
