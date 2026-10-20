@@ -21,6 +21,11 @@
 - [Size and cord](mico/size.md)
 - [Printing](mico/printing.md)
 
+# Quark
+
+- [Pinches and cord](quark/pinches.md)
+- [Printing](quark/printing.md)
+
 # Development
 
 - [Models and checks](development.md)

@@ -15,7 +15,8 @@ Both are fitted to your hand from a photo (optional for Spark). Every part print
 included; the only extra is a cord.
 
 **Mico** is a single printed part for mono (single finger) training: one finger goes through its
-hole and a cord through its nose.
+hole and a cord through its nose. **Quark** is a single printed pinch block with four pinches (deep
+or shallow, wide or narrow); a cord runs through its two heads.
 
 - Book: fitting, printing and assembly at [grips.crimpdeq.com](https://grips.crimpdeq.com), source in
   [`docs/`](docs/src/SUMMARY.md) (`mdbook serve docs`).
@@ -24,9 +25,9 @@ hole and a cord through its nose.
   and downloads the STLs of Photon, Spark or both in a zip (served with the book:
   `python3 scripts/fetch_openscad_wasm.py`, then `mdbook serve docs`).
 - Models: [`grips/`](grips/); export all parts of one hand with
-  `python3 scripts/export.py photon PARAMS --hand right --out DIR`, or Mico with
+  `python3 scripts/export.py photon PARAMS --hand right --out DIR`, or Mico or Quark with
   `python3 scripts/export.py mico PARAMS --out DIR`.
-- STLs and Bambu Lab A1 projects (3MF) of both grips for both hands and of Mico: attached to every
+- STLs and Bambu Lab A1 projects (3MF) of both grips for both hands and of Mico and Quark: attached to every
   [release](https://github.com/crimpdeq/crimpdeq-grips/releases); build a project from your own
   STLs with `python3 scripts/export_bambu_project.py DIR --output FILE.3mf`.
 

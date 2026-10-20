@@ -21,12 +21,15 @@ extra is a cord through the anchor.
 [**Mico**](mico/size.md) is a single printed part for mono (single finger) training: one finger
 goes through its hole and a cord through its nose.
 
+[**Quark**](quark/pinches.md) is a single printed pinch block with four pinches: deep or shallow,
+wide or narrow. A cord runs through its two heads.
+
 ## Getting the parts
 
 Each [release](https://github.com/crimpdeq/crimpdeq-grips/releases) attaches the STLs of both grips
 for both hands, at the models' defaults, and a Bambu Studio project of each for the Bambu Lab A1;
-Photon defaults to one measured right hand. Mico's STL and project are there too. To fit the grips
-to your own hand, download the parts from the [measuring page](measure-hand.html).
+Photon defaults to one measured right hand. The STLs and projects of Mico and Quark are there too.
+To fit the grips to your own hand, download the parts from the [measuring page](measure-hand.html).
 
 ## Credits
 

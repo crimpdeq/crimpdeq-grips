@@ -43,18 +43,22 @@ jobs:
             - name: Check the STLs
               run: python3 scripts/check_stl.py stl/*.stl
 
-    export-mico:
-        name: Export mico
+    export-one-piece:
+        name: Export ${{ matrix.model }}
         runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                model: [mico, quark]
         steps:
             - name: Checkout
               uses: actions/checkout@v6
             - name: Install OpenSCAD
               uses: ./.github/actions/setup-openscad
-            - name: Export Mico
-              run: python3 scripts/export.py mico --out stl
+            - name: Export the part
+              run: python3 scripts/export.py ${{ matrix.model }} --out stl
             - name: Check the STL
-              run: python3 scripts/check_stl.py stl/mico.stl
+              run: python3 scripts/check_stl.py stl/${{ matrix.model }}.stl
 
     step:
         name: Compare with the STEP files
@@ -98,7 +102,7 @@ jobs:
     deploy:
         name: Deploy book to grips.crimpdeq.com
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        needs: [lint, export, export-mico, step, book]
+        needs: [lint, export, export-one-piece, step, book]
         runs-on: ubuntu-latest
         permissions:
             contents: read
