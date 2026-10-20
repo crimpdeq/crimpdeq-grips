@@ -1,5 +1,5 @@
 // Mico: a one-piece loop for mono (single finger) training, engraved "Crimpdeq Mico" and
-// "crimpdeq.com".
+// "crimpdeq.com" around the back.
 //
 // One piece, in its print pose: lying on z = 0 with the finger hole along Z around the origin.
 // The nose points toward -Y, ending in a flat face; the cord bore crosses it along X.
@@ -37,11 +37,11 @@ CORD_D = 8.5;
 CORD_Y = END_Y + 11.31;
 CORD_EXIT_R = 1.5;
 
-// Engravings, set along arcs. OpenSCAD cannot set text along a path, so each letter is placed
+// Engravings, set along the back of the body. OpenSCAD cannot set text along a path, so each letter is placed
 // on its own from its advance width: ADVANCES holds those of the engraved characters in font
 // units (Inter Bold has 2048 per em, `hmtx` table); OpenSCAD makes an em size / 0.72 long.
 TEXT_FONT = "Inter:style=Bold";
-TEXT_DEPTH = 0.5;
+TEXT_DEPTH = 0.8;
 ADVANCES = [[" ", 485], [".", 684], ["C", 1515], ["M", 1908], ["c", 1205], ["d", 1291], ["e", 1220], ["i", 555],
             ["m", 1869], ["o", 1256], ["p", 1291], ["q", 1291], ["r", 834]];
 function font_mm(units, size) = units * size / (0.72 * 2048);
@@ -50,19 +50,13 @@ function advance(ch, size) =
   assert(len(a) == 1, str("no advance for \"", ch, "\" in ADVANCES"))
   font_mm(a[0], size);
 
-// Name, on the top face in two arcs around the finger hole, letter tops toward the nose: read
-// with the nose up, the outer arc comes first. On one arc it only fits below size 2.5. The
-// inner baseline clears the rim round by 0.6 (Mico has no descenders); the outer line's
-// descenders (418 units) clear the inner line's i dots (1572) by 0.5.
-NAME_LINES = ["Crimpdeq", "Mico"];
-NAME_SIZE = 2.8;
-NAME_RADII = let(r = HOLE_R + RIM_R + 0.6) [r + font_mm(418 + 1572, NAME_SIZE) + 0.5, r];
-
-// Around the back of the body, upright, centered on its height between the descenders of p and
-// q (-418 units) and the ascender of d (1490).
-BRAND_TEXT = "crimpdeq.com";
-BRAND_SIZE = 5;
-BRAND_BASELINE = HEIGHT / 2 - font_mm((1490 - 418) / 2, BRAND_SIZE);
+// Upright lines around the back, the first on top, centered on the height between the lowest
+// descender (p, q: 418 units) and the highest top (i dots: 1572). On walls the strokes print
+// clean; on the top face, text small enough to fit the nose closed up in a test print.
+TEXT_LINES = ["Crimpdeq Mico", "crimpdeq.com"];
+TEXT_SIZE = 5;
+LINE_PITCH = font_mm(418 + 1572, TEXT_SIZE) + 1;
+BASELINES = let(b = HEIGHT / 2 - (LINE_PITCH + font_mm(1572 - 418, TEXT_SIZE)) / 2) [b + LINE_PITCH, b];
 
 function sum(v, n) = n <= 0 ? 0 : v[n - 1] + sum(v, n - 1);
 
@@ -71,6 +65,11 @@ function sum(v, n) = n <= 0 ? 0 : v[n - 1] + sum(v, n - 1);
 function letter_angles(text, size, r, at, dir) =
   let(adv = [for (ch = text) advance(ch, size)], total = sum(adv, len(adv)))
   [for (i = [0:len(adv) - 1]) at + dir * (sum(adv, i) + adv[i] / 2 - total / 2) / r * 180 / PI];
+
+// Each line stays on the round back, between the tangent points of the nose sides.
+for (line = TEXT_LINES)
+  assert(sum([for (ch = line) advance(ch, TEXT_SIZE)], len(line)) / BODY_R * 180 / PI < 180 + 2 * SIDE_ANGLE - 10,
+         str("\"", line, "\" is too long for the back of the body"));
 
 // One letter, centered on its advance along X, its baseline on Y = 0.
 module letter(ch, size) {
@@ -113,30 +112,20 @@ module cord_path() {
     bore_exit_round([CORD_Y, HEIGHT / 2], CORD_D / 2, BODY_R * SIDE_N, SIDE_N, CORD_EXIT_R);
 }
 
-// The name lines, reading from +X to -X: seen from above with the nose up, left to right.
-module name() {
-  for (l = [0:len(NAME_LINES) - 1]) {
-    line = NAME_LINES[l];
-    r = NAME_RADII[l];
-    a = letter_angles(line, NAME_SIZE, r, -90, -1);
+// TEXT_LINES, reading from +X to -X: seen from behind (+Y), left to right.
+module engraving() {
+  for (l = [0:len(TEXT_LINES) - 1]) {
+    line = TEXT_LINES[l];
+    a = letter_angles(line, TEXT_SIZE, BODY_R, 90, 1);
     for (i = [0:len(line) - 1])
-      translate([r * cos(a[i]), r * sin(a[i]), HEIGHT - TEXT_DEPTH]) rotate(a[i] - 90)
-        linear_extrude(TEXT_DEPTH + 1) letter(line[i], NAME_SIZE);
+      rotate(a[i] - 90) translate([0, BODY_R - TEXT_DEPTH, BASELINES[l]]) rotate([90, 0, 180])
+        linear_extrude(TEXT_DEPTH + 1) letter(line[i], TEXT_SIZE);
   }
-}
-
-// BRAND_TEXT, reading from +X to -X: seen from behind (+Y), left to right.
-module brand() {
-  a = letter_angles(BRAND_TEXT, BRAND_SIZE, BODY_R, 90, 1);
-  for (i = [0:len(BRAND_TEXT) - 1])
-    rotate(a[i] - 90) translate([0, BODY_R - TEXT_DEPTH, BRAND_BASELINE]) rotate([90, 0, 180])
-      linear_extrude(TEXT_DEPTH + 1) letter(BRAND_TEXT[i], BRAND_SIZE);
 }
 
 render() difference() {
   chamfered(HEIGHT, CHAMFER) plan();
   finger_hole();
   cord_path();
-  name();
-  brand();
+  engraving();
 }

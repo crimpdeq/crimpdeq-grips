@@ -1,6 +1,6 @@
 # Size and cord
 
-![Mico from behind: Crimpdeq Mico on the top face, crimpdeq.com around the back](images/mico.png)
+![Mico from behind: Crimpdeq Mico over crimpdeq.com around the back](images/mico.png)
 
 Mico is one printed part for mono (single finger) training: the finger goes through the round
 hole and a cord through the hole across the nose. It is 25 mm high, so the finger rests on a 20 mm

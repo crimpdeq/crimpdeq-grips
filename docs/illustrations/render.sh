@@ -31,11 +31,11 @@ illustrate photon "$walls pinky_roller ring_roller pinky_pin ring_pin post" -75,
 illustrate spark "$walls pinky_roller ring_roller middle_roller index_roller pinky_pin ring_pin middle_pin post" \
   -80,55,10,50,0,-30,440
 
-# Mico, one part, from behind: both engravings read.
+# Mico, one part, from behind: its engravings face the camera.
 python3 ../../scripts/export.py mico --out "$stl" >/dev/null
 mkdir -p ../src/mico/images
 openscad -q --colorscheme Tomorrow -D "stl=\"$stl/\"" -D 'part="mico"' -o ../src/mico/images/mico.png \
-  --imgsize 600,450 --viewall --autocenter --camera 0,0,0,55,0,150,300 grip.scad
+  --imgsize 600,450 --viewall --autocenter --camera 0,0,0,60,0,180,300 grip.scad
 
 # Each grip's name engraving (part "name") and its frame without the name, to fill the name in.
 for grip in photon spark; do
