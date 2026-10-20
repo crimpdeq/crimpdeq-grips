@@ -16,6 +16,11 @@
 - [Parts](spark/parts.md)
 - [Assembly](spark/assembly.md)
 
+# Mico
+
+- [Size and cord](mico/size.md)
+- [Printing](mico/printing.md)
+
 # Development
 
 - [Models and checks](development.md)

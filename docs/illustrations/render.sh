@@ -1,6 +1,7 @@
 #!/bin/sh
 # Renders the illustrations in ../src/<grip>/images of both grips, and ../src/images/grips.png of
-# both together, from the models' right-hand defaults. Needs OpenSCAD 2025 or newer and ImageMagick.
+# both together, from the models' right-hand defaults, and ../src/mico/images/mico.png of Mico.
+# Needs OpenSCAD 2025 or newer and ImageMagick.
 set -eu
 cd "$(dirname "$0")"
 stl=$(mktemp -d)
@@ -29,6 +30,12 @@ walls="frame ring_wall middle_wall index_wall end_wall"
 illustrate photon "$walls pinky_roller ring_roller pinky_pin ring_pin post" -75,60,10,50,0,-30,420
 illustrate spark "$walls pinky_roller ring_roller middle_roller index_roller pinky_pin ring_pin middle_pin post" \
   -80,55,10,50,0,-30,440
+
+# Mico, one part, from behind: both engravings read.
+python3 ../../scripts/export.py mico --out "$stl" >/dev/null
+mkdir -p ../src/mico/images
+openscad -q --colorscheme Tomorrow -D "stl=\"$stl/\"" -D 'part="mico"' -o ../src/mico/images/mico.png \
+  --imgsize 600,450 --viewall --autocenter --camera 0,0,0,55,0,150,300 grip.scad
 
 # Each grip's name engraving (part "name") and its frame without the name, to fill the name in.
 for grip in photon spark; do

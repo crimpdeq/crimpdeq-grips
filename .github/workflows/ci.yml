@@ -43,6 +43,19 @@ jobs:
             - name: Check the STLs
               run: python3 scripts/check_stl.py stl/*.stl
 
+    export-mico:
+        name: Export mico
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+            - name: Install OpenSCAD
+              uses: ./.github/actions/setup-openscad
+            - name: Export Mico
+              run: python3 scripts/export.py mico --out stl
+            - name: Check the STL
+              run: python3 scripts/check_stl.py stl/mico.stl
+
     step:
         name: Compare with the STEP files
         runs-on: ubuntu-latest
@@ -85,7 +98,7 @@ jobs:
     deploy:
         name: Deploy book to grips.crimpdeq.com
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        needs: [lint, export, step, book]
+        needs: [lint, export, export-mico, step, book]
         runs-on: ubuntu-latest
         permissions:
             contents: read
