@@ -53,12 +53,49 @@ jobs:
                   if-no-files-found: error
                   compression-level: 0
 
+    mico:
+        name: Build mico
+        runs-on: ubuntu-latest
+        env:
+            NAME: crimpdeq-grips-mico
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Install OpenSCAD
+              uses: ./.github/actions/setup-openscad
+
+            - name: Export Mico
+              run: python3 scripts/export.py mico --out "$NAME"
+
+            - name: Check the STL
+              run: |
+                  python3 scripts/check_stl.py "$NAME/mico.stl"
+                  cp "$NAME/mico.stl" "$NAME.stl"
+
+            - name: Install Bambu Studio
+              uses: ./.github/actions/setup-bambu-studio
+
+            - name: Build the Bambu Studio project
+              run: python3 scripts/export_bambu_project.py "$NAME" --output "$NAME.3mf"
+
+            - name: Upload the release files
+              uses: actions/upload-artifact@v6
+              with:
+                  name: ${{ env.NAME }}
+                  path: |
+                      ${{ env.NAME }}.stl
+                      ${{ env.NAME }}.3mf
+                  if-no-files-found: error
+                  compression-level: 0
+
     publish:
         name: Upload files to GitHub release
         if: github.event_name == 'release'
         runs-on: ubuntu-latest
         needs:
             - parts
+            - mico
         permissions:
             contents: write
         steps:
@@ -77,6 +114,8 @@ jobs:
                           test -f "release-assets/crimpdeq-grips-$grip-$hand.3mf"
                       done
                   done
+                  test -f release-assets/crimpdeq-grips-mico.stl
+                  test -f release-assets/crimpdeq-grips-mico.3mf
 
             - name: Upload release assets
               uses: svenstaro/upload-release-action@v2

@@ -2,8 +2,8 @@
 
 ![Photon (left) and Spark (right), facing the rollers](docs/src/images/grips.png)
 
-3D-printed grips for isolated finger training, as parametric OpenSCAD models: each finger rests
-on its own roller. There are two grips:
+3D-printed grips for isolated finger training, as parametric OpenSCAD models. In the two grips,
+each finger rests on its own roller:
 
 - **Photon** targets the deep flexor (FDP), which bends the fingertip joint. In a claw grip,
   each fingertip rests on its roller under a block that holds its last joint.
@@ -14,6 +14,9 @@ on its own roller. There are two grips:
 Both are fitted to your hand from a photo (optional for Spark). Every part prints in plastic, pins
 included; the only extra is a cord.
 
+**Mico** is a single printed part for mono (single finger) training: one finger goes through its
+hole and a cord through its nose.
+
 - Book: fitting, printing and assembly at [grips.crimpdeq.com](https://grips.crimpdeq.com), source in
   [`docs/`](docs/src/SUMMARY.md) (`mdbook serve docs`).
 - Hand measuring page: [grips.crimpdeq.com/measure-hand.html](https://grips.crimpdeq.com/measure-hand.html),
@@ -21,13 +24,12 @@ included; the only extra is a cord.
   and downloads the STLs of Photon, Spark or both in a zip (served with the book:
   `python3 scripts/fetch_openscad_wasm.py`, then `mdbook serve docs`).
 - Models: [`grips/`](grips/); export all parts of one hand with
-  `python3 scripts/export.py photon PARAMS --hand right --out DIR`.
-- Mico, a one-piece loop for mono (single finger) training engraved "Crimpdeq Mico":
-  [`grips/mico.scad`](grips/mico.scad); export it with `openscad -o mico.stl grips/mico.scad`.
-- STLs and Bambu Lab A1 projects (3MF) of both grips for both hands: attached to every
+  `python3 scripts/export.py photon PARAMS --hand right --out DIR`, or Mico with
+  `python3 scripts/export.py mico PARAMS --out DIR`.
+- STLs and Bambu Lab A1 projects (3MF) of both grips for both hands and of Mico: attached to every
   [release](https://github.com/crimpdeq/crimpdeq-grips/releases); build a project from your own
   STLs with `python3 scripts/export_bambu_project.py DIR --output FILE.3mf`.
 
-Based on [OpenGrips](https://github.com/opengrips/Open_Grips) and
+Photon and Spark are based on [OpenGrips](https://github.com/opengrips/Open_Grips) and
 [Jared-Is-Coding's fork](https://github.com/Jared-Is-Coding/Open_Grips), whose Prometheus v43 and
-Sisyphus v27 STEP files the models rebuild as Photon and Spark. Released under [CC0](LICENSE).
+Sisyphus v27 STEP files the models rebuild. Released under [CC0](LICENSE).

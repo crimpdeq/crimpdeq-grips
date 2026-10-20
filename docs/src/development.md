@@ -6,6 +6,10 @@ parametric Photon and Spark models, without the STEP files' TPU guard: nothing a
 cord exits are rounded without it. Shared helpers are in `grips/common.scad`. The models need
 OpenSCAD 2025 or newer (the Manifold backend; older releases take minutes per part).
 
+`grips/mico.scad` is Mico: one part in its print pose, with no hand. OpenSCAD cannot set text
+along a path, so its engravings are placed letter by letter from the font's advance widths
+(`ADVANCES` in the model); a character missing there stops the model with a message.
+
 ## Previewing and exporting
 
 Open a model in OpenSCAD, set the values in the Customizer (Window → Customizer), pick a `part`
@@ -18,6 +22,9 @@ it takes about a minute.
 python3 scripts/export.py photon my-right-hand.txt --hand right
 python3 scripts/export.py spark --hand left
 ```
+
+Mico takes no `--hand` or `--in-place`: `python3 scripts/export.py mico` writes
+`exports/mico/mico.stl`, with an optional parameter file as well.
 
 The parameter file is optional and uses the format of the `parameters.txt` files the
 [measuring page](measure-hand.html) puts in its zip (`Name = value` lines, `#` comments); names
@@ -99,8 +106,8 @@ CI runs these on every pull request:
   the STEP solid, read from git history (needs a full clone) and tessellated with OpenCascade.
   The engravings, absent from the STEP files, are left out. Every part is within 0.5% of the STEP
   volume and within about 0.1 mm of its surface at the 95th percentile. It fails beyond 1% or 0.6 mm.
-- `python3 scripts/check_stl.py` on the exports of both grips for both hands: each STL is one
-  closed body resting on z = 0.
+- `python3 scripts/check_stl.py` on the exports of both grips for both hands and of Mico: each STL
+  is one closed body resting on z = 0.
 - `uvx ruff check --line-length 120 scripts` and `mdbook build docs`, after
   `python3 scripts/fetch_openscad_wasm.py`.
 
@@ -117,7 +124,7 @@ The checks are geometric only; fit, strength and comfort still need a test print
 ## Illustrations
 
 `docs/illustrations/render.sh` renders the part and assembly pictures of both grips from the
-right-hand defaults. Rerun it when a model changes.
+right-hand defaults, and Mico's picture. Rerun it when a model changes.
 
 ## Website
 
@@ -128,14 +135,15 @@ once every check of `.github/workflows/ci.yml` passes, its `deploy` job publishe
 ## Releases
 
 Creating a GitHub release runs `.github/workflows/release.yml`, which exports both grips for both
-hands, checks the STLs and attaches one zip of STLs and one Bambu Studio project per grip and hand.
-Run the workflow manually for a dry run.
+hands, checks the STLs and attaches one zip of STLs and one Bambu Studio project per grip and hand,
+plus Mico's STL and project. Run the workflow manually for a dry run.
 
-`scripts/export_bambu_project.py` builds the project from the STLs of one grip and hand: it lays
-the parts out in rows on the A1 plate, far enough apart for their brims, assembles the project with
-the Bambu Studio CLI and the settings of Printing ([Photon](photon/printing.md),
-[Spark](spark/printing.md), untested in print), and fails if slicing it gives an error or a
-warning, such as a floating cantilever. The project goes to `exports/<grip>-<hand>.3mf` unless
-`--output` names another file. The release workflow installs the pinned Bambu Studio AppImage with
+`scripts/export_bambu_project.py` builds the project from the STLs of one grip and hand, or from
+Mico's: it lays the parts out in rows on the A1 plate, far enough apart for their brims, assembles
+the project with the Bambu Studio CLI and the settings of Printing ([Photon](photon/printing.md),
+[Spark](spark/printing.md), [Mico](mico/printing.md), untested in print), and fails if slicing it
+gives an error or a warning, such as a floating cantilever. The project goes to
+`exports/<grip>-<hand>.3mf` (Mico: `exports/mico.3mf`) unless `--output` names another file. The
+release workflow installs the pinned Bambu Studio AppImage with
 `.github/actions/setup-bambu-studio`; locally, set `BAMBU_STUDIO` if `bambu-studio` is not on the
 `PATH` or is a wrapper script.

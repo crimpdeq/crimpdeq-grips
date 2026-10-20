@@ -3,11 +3,11 @@
 Usage:
     python3 scripts/export_bambu_project.py STL_DIR [--output FILE.3mf] [--skip-slice]
 
-STL_DIR holds the 14 STLs of one grip and hand as scripts/export.py names them. The parts are laid
-out in rows on one plate, far enough apart for their brims; the Bambu Studio CLI assembles the
-project with the print settings of docs/src/<grip>/printing.md and slices it to confirm that
-the plate prints without errors or warnings. The project goes to --output, by default
-exports/<grip>-<hand>.3mf (ignored by git).
+STL_DIR holds the 14 STLs of one grip and hand, or Mico's mico.stl, as scripts/export.py names
+them. The parts are laid out in rows on one plate, far enough apart for their brims; the Bambu
+Studio CLI assembles the project with the print settings of docs/src/<grip>/printing.md and slices
+it to confirm that the plate prints without errors or warnings. The project goes to --output, by
+default exports/<grip>-<hand>.3mf, or exports/mico.3mf (ignored by git).
 
 BAMBU_STUDIO names the Bambu Studio executable (default: bambu-studio on PATH, then the macOS
 application); BAMBU_STUDIO_PROFILES its profiles directory (default: found next to the executable).
@@ -34,7 +34,7 @@ PROCESS = "0.20mm Standard @BBL A1"
 FILAMENT = "Bambu PETG HF @BBL A1"
 BED_TYPE = "Textured PEI Plate"
 
-# The settings table in docs/src/photon/printing.md and docs/src/spark/printing.md.
+# The settings table in docs/src/<grip>/printing.md of Photon, Spark and Mico.
 PROCESS_OVERRIDES = {
     "layer_height": "0.2",
     "wall_loops": "5",
@@ -105,10 +105,12 @@ def write_presets(profiles, grip, work):
 
 
 def read_parts(stl_dir):
-    """The STLs of STL_DIR by part name, and their grip and hand."""
+    """The STLs of STL_DIR by part name, and their grip and hand (None for Mico)."""
     names = sorted(p.name for p in stl_dir.glob("*.stl"))
     if not names:
         sys.exit(f"{stl_dir}: no STLs")
+    if names == ["mico.stl"]:
+        return "mico", None, {"mico": stl_dir / "mico.stl"}
     grip, hand = names[0].split("_")[:2]
     expected = sorted(f"{grip}_{hand}_{part}.stl" for part in PARTS)
     if names != expected:
@@ -194,7 +196,7 @@ def main():
     bambu_studio = find_bambu_studio()
     profiles = find_profiles(bambu_studio)
     grip, hand, parts = read_parts(args.stl_dir)
-    output = args.output or EXPORTS / f"{grip}-{hand}.3mf"
+    output = args.output or EXPORTS / (f"{grip}-{hand}.3mf" if hand else f"{grip}.3mf")
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
         presets = write_presets(profiles, grip, work)
@@ -203,7 +205,7 @@ def main():
         assemble_list = {
             "plates": [
                 {
-                    "plate_name": f"{grip.title()} {hand} hand",
+                    "plate_name": f"{grip.title()} {hand} hand" if hand else grip.title(),
                     "need_arrange": False,
                     "plate_params": {"curr_bed_type": BED_TYPE},
                     "objects": [
