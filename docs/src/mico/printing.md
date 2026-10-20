@@ -16,8 +16,9 @@ takes more heat. PLA softens from about 55 °C, so keep a PLA Mico out of hot ca
 Either way, replace it if it whitens or cracks, above all around the cord hole.
 
 The STL is already in its print pose: lying on its bottom face, the finger hole upright. In this
-pose the cord hole runs across the plate and needs no supports, and the engravings around the back
-print with clean edges.
+pose the cord hole runs across the plate and needs no supports. The engravings are around the
+back, where walls should give them cleaner edges than the top face, on which a smaller name closed
+up in a test print; they have not been test-printed there yet.
 
 Each release has Mico's STL (`crimpdeq-grips-mico.stl`) and a Bambu Studio project for the Bambu
 Lab A1 (`crimpdeq-grips-mico.3mf`) with these settings, in Bambu PLA Basic; for PETG, change the
