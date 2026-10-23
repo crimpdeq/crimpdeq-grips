@@ -18,8 +18,8 @@ rerun them.
   font's advance widths (`ADVANCES`; add any new character there). Keep engravings on walls: on
   the top face, the name at the size that fit the nose (2.8) closed up in a test print.
   `quark.scad` is a one-piece four-pinch block in its print pose (standing on an end face), no
-  hand or parts: a hollow profile 90 mm across the heads, with the cord through the head cells and
-  wave-shaped grip ridges cut into the long arms' outer faces (vertical in the print pose). `Crimpdeq Quark` and
+  hand or parts: a hollow profile 90 mm across the heads, with the cord through the head cells and solid long arms for the deep pinch; the outer faces are
+  smooth for optional adhesive grip tape. `Crimpdeq Quark` and
   `crimpdeq.com` are engraved on the stop lugs' outer faces, sized to fill their flat from Inter
   Bold's glyph height and advance widths (`ADVANCES`): the CI snapshot has `textmetrics()` only
   as a disabled experimental feature.
