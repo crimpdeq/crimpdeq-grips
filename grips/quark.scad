@@ -1,10 +1,11 @@
 // Quark: a one-piece pinch block with four pinches, engraved "Crimpdeq Quark" and "crimpdeq.com"
 // on its finger stops.
 //
-// A hollow profile extruded Length long: two long arms (deep pinches) and two short arms with
+// A profile extruded Length long: two solid long arms (deep pinches) and two hollow short arms with
 // round heads (shallow pinches) on either side of a hexagonal hub, with a stop lug on each side
-// whose flat ledge stops the fingers on the long arms. Pinch both arms of a side from outside
-// (wide) or one arm with the thumb in the gap (narrow). The cord runs through the heads' cells
+// whose flat ledge stops the fingers on the long arms. The long arms resist flexing under a wide
+// pinch, but remain separate for a one-arm pinch. Pinch both arms from outside (wide) or one arm
+// with the thumb in the gap (narrow). The cord runs through the heads' cells
 // and stays there for all four pinches.
 //
 // The profile is drawn in (X, Y), symmetric about X = 0, long arms toward +Y; the floor of the gap
@@ -47,19 +48,6 @@ CONVEX_R = 1.5; // rounds of the outline's corners
 CONCAVE_R = 3;
 CELL_R = 2; // rounds of the cells' corners
 END_R = 1.2; // rounds of the edges of both end faces, where the cord bends
-// Grip ridges on the long arms' outer faces (the deep wide pinch): a wave across the face, its
-// crests along the block, so they lie across the skin's slip toward the tips. In the print pose
-// they are vertical, so they print as wall loops with no overhangs.
-GRIP_PITCH = 2.5;
-GRIP_DEPTH = 0.4;
-GRIP_END_GAP = 3; // between the ridges and each end face, clear of the end rounds
-// The right long arm's outer face: from its root corner P, tangent to the round tip. FACE_U runs
-// toward the tip, FACE_N points out of the arm.
-FACE_P = [Gap / 2 + ARM_ROOT_W, LEDGE_Y];
-FACE_LEN = sqrt(norm(TIP_C - FACE_P) ^ 2 - (ARM_W / 2) ^ 2);
-FACE_U = let(v = (TIP_C - FACE_P) / norm(TIP_C - FACE_P), a = -asin(ARM_W / 2 / norm(TIP_C - FACE_P)))
-  [v.x * cos(a) - v.y * sin(a), v.x * sin(a) + v.y * cos(a)];
-FACE_N = [FACE_U.y, -FACE_U.x];
 
 assert(Gap >= 25, str("Gap = ", Gap, " leaves no room for the thumb (25 mm or more)"));
 assert(Shallow > HEAD_D / 2 + WALL, str("Shallow = ", Shallow, " is shorter than a head"));
@@ -121,6 +109,9 @@ module web2d(p, q) {
 module cells2d() {
   round2d(CELL_R) difference() {
     offset(-WALL) outline2d();
+    // Stop the long-arm cells at the ledge; solid arms resist the bending of a wide pinch.
+    // The hub and head cells remain open for the cord and to save weight.
+    translate([-STOP_X - 1, LEDGE_Y + 1]) square([2 * (STOP_X + 1), Deep + ARM_W]);
     for (m = [0, 1]) mirror([m, 0]) {
       web2d([Gap / 2 + WALL / 2, -HUB_H + WALL / 2], HEX_V);
       web2d(HEX_V, [Gap / 2 + WALL / 2, -WALL / 2]);
@@ -143,22 +134,9 @@ module engraving(t) {
       text(t, size = text_size(t), font = TEXT_FONT, halign = "center", valign = "center");
 }
 
-// Material cut from the right long arm's outer face for the grip ridges: whole waves, crest to
-// crest, centered on the straight part of the face between the ledge's concave round and the tip.
-module grip_cut2d() {
-  s0 = CONCAVE_R + 2;
-  n = floor((FACE_LEN - 2 - s0) / GRIP_PITCH);
-  start = s0 + (FACE_LEN - 2 - s0 - n * GRIP_PITCH) / 2;
-  steps = 16 * n;
-  wave = [for (k = [0:steps]) let(t = k / steps)
-    FACE_P + (start + t * n * GRIP_PITCH) * FACE_U - GRIP_DEPTH * (1 - cos(360 * n * t)) / 2 * FACE_N];
-  polygon(concat(wave, [FACE_P + (start + n * GRIP_PITCH) * FACE_U + FACE_N, FACE_P + start * FACE_U + FACE_N]));
-}
-
 // Built along X (along_x maps the profile's (X, Y) to (Y, Z)), then stood up on its x = 0 end.
 render() rotate([0, -90, 0]) difference() {
   along_x_ball_swept(END_R, Length - END_R, END_R) offset(-END_R) profile2d();
-  along_x(GRIP_END_GAP, Length - GRIP_END_GAP) for (m = [0, 1]) mirror([m, 0]) grip_cut2d();
   engraving(NAME_TEXT);
   translate([Length / 2, 0, 0]) rotate(180) translate([-Length / 2, 0, 0]) engraving(BRAND_TEXT);
 }
