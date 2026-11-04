@@ -26,6 +26,11 @@
 - [Pinches and cord](quark/pinches.md)
 - [Printing](quark/printing.md)
 
+# Slap
+
+- [Angles and cord](slap/angles.md)
+- [Printing](slap/printing.md)
+
 # Development
 
 - [Models and checks](development.md)

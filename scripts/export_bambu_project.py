@@ -3,11 +3,11 @@
 Usage:
     python3 scripts/export_bambu_project.py STL_DIR [--output FILE.3mf] [--skip-slice]
 
-STL_DIR holds the 14 STLs of one grip and hand, or the one STL of Mico or Quark, as
+STL_DIR holds the 14 STLs of one grip and hand, or the one STL of Mico, Quark or Slap, as
 scripts/export.py names them. The parts are laid out in rows on one plate, far enough apart for their brims; the Bambu
 Studio CLI assembles the project with the print settings of docs/src/<grip>/printing.md and slices
 it to confirm that the plate prints without errors or warnings. The project goes to --output, by
-default exports/<grip>-<hand>.3mf, or exports/<model>.3mf for Mico and Quark (ignored by git).
+default exports/<grip>-<hand>.3mf, or exports/<model>.3mf for Mico, Quark and Slap (ignored by git).
 
 BAMBU_STUDIO names the Bambu Studio executable (default: bambu-studio on PATH, then the macOS
 application); BAMBU_STUDIO_PROFILES its profiles directory (default: found next to the executable).
@@ -34,7 +34,7 @@ PROCESS = "0.20mm Standard @BBL A1"
 FILAMENT = "Bambu PETG HF @BBL A1"
 BED_TYPE = "Textured PEI Plate"
 
-# The settings table in docs/src/<grip>/printing.md of Photon, Spark and Quark.
+# The settings table in docs/src/<grip>/printing.md of Photon, Spark, Quark and Slap.
 PROCESS_OVERRIDES = {
     "layer_height": "0.2",
     "wall_loops": "5",
@@ -56,6 +56,8 @@ PART_SETTINGS = {
     "index_wall": BRIM,
     # It stands on an end face, 115 mm tall on a footprint of thin walls.
     "quark": BRIM,
+    # It stands on an end face, 90 mm tall, its rounded bottom edges on the plate.
+    "slap": BRIM,
 }
 # Between the bounding boxes of two parts: both brims, each 0.1 mm off its part (brim_object_gap),
 # and over 2 mm between them, or the brims can merge.
