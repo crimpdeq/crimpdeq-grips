@@ -14,10 +14,12 @@ each finger rests on its own roller:
 Both are fitted to your hand from a photo (optional for Spark). Every part prints in plastic, pins
 included; the only extra is a cord.
 
-**Mico** is a single printed part for mono (single finger) training: one finger goes through its
-hole and a cord through its nose. **Quark** is a single printed pinch block with four pinches (deep
-or shallow, wide or narrow); a cord runs through its two heads. **Slap** is a single printed
-sloper pump trainer, a bent bar hung from a cord with five hanging angles.
+Mico, Quark and Slap are single printed parts hung from a cord:
+
+| [Mico](https://grips.crimpdeq.com/mico/size.html) | [Quark](https://grips.crimpdeq.com/quark/pinches.html) | [Slap](https://grips.crimpdeq.com/slap/angles.html) |
+| :---: | :---: | :---: |
+| ![Mico](docs/src/mico/images/mico.png) | ![Quark](docs/src/quark/images/quark.png) | ![Slap](docs/src/slap/images/slap.png) |
+| Mono (single finger) training: one finger goes through its hole and a cord through its nose. | Pinch block with four pinches (deep or shallow, wide or narrow); a cord runs through its two heads. | Sloper pump trainer: a bent bar, gripped over its bend, with five hanging angles. |
 
 - Book: fitting, printing and assembly at [grips.crimpdeq.com](https://grips.crimpdeq.com), source in
   [`docs/`](docs/src/SUMMARY.md) (`mdbook serve docs`).
