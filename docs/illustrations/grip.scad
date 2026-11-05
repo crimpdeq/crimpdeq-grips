@@ -1,10 +1,11 @@
 // Illustrations of the parts and assembly steps of either grip, from the STLs of
 // ../../scripts/export.py --in-place; both go together in the same order.
-// render.sh sets stl and either part (one part alone, also Mico's mico.stl and Quark's quark.stl)
-// or step (1 to 9, 10 the finished grip).
+// render.sh sets stl and either part (one part alone, also the one-piece models' <model>.stl,
+// rotated by turn) or step (1 to 9, 10 the finished grip).
 
 stl = "/tmp/photon_in_place/photon_right_";
 part = "";
+turn = [0, 0, 0];
 step = 1;
 
 // Parts added at each step and where they wait before moving in: walls, pins and the post come
@@ -27,7 +28,7 @@ module show(name, c) {
 }
 
 if (part != "") {
-  show(part, "tomato");
+  rotate(turn) show(part, "tomato");
 } else {
   show("frame", "gainsboro");
   for (i = [0:min(step, len(STEPS)) - 1], p = STEPS[i])

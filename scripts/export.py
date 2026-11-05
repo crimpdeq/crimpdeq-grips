@@ -6,13 +6,14 @@ Usage:
     python3 scripts/export.py photon PARAMS --hand right --in-place --out DIR
     python3 scripts/export.py mico PARAMS --out DIR
     python3 scripts/export.py quark PARAMS --out DIR
+    python3 scripts/export.py slap PARAMS --out DIR
 
 PARAMS (optional) holds `Name = value` lines, `#` lines ignored, e.g. a parameters.txt from the
 zip of ../docs/src/measure-hand.html; names must be parameters of the model. The STLs, named
 <model>_<hand>_<part>.stl, go to --out, by default exports/<model>-<hand> (ignored by git).
 --in-place keeps every part where it sits in the assembly instead of its print pose.
-Mico and Quark are one part each with no hand, modelled in its print pose: <model>.stl, by default
-in exports/<model>.
+Mico, Quark and Slap are one part each with no hand, modelled in its print pose: <model>.stl, by
+default in exports/<model>.
 """
 
 import argparse
@@ -43,7 +44,7 @@ PARTS = [
     "post",
 ]
 # Models of one part with no hand, in their print pose.
-ONE_PIECE = ("mico", "quark")
+ONE_PIECE = ("mico", "quark", "slap")
 
 
 def model_parameters(scad):

@@ -58,7 +58,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                model: [mico, quark]
+                model: [mico, quark, slap]
         env:
             MODEL: ${{ matrix.model }}
             NAME: crimpdeq-grips-${{ matrix.model }}
@@ -118,7 +118,7 @@ jobs:
                           test -f "release-assets/crimpdeq-grips-$grip-$hand.3mf"
                       done
                   done
-                  for model in mico quark; do
+                  for model in mico quark slap; do
                       test -f "release-assets/crimpdeq-grips-$model.stl"
                       test -f "release-assets/crimpdeq-grips-$model.3mf"
                   done

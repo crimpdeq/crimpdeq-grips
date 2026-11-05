@@ -17,6 +17,11 @@ advance widths of the engraved characters (`ADVANCES` in the model, as in Mico; 
 missing there stops the model with a message). `textmetrics()` is still experimental in the
 OpenSCAD snapshot of CI.
 
+`grips/slap.scad` is Slap: one part in its print pose, standing on an end face, with no hand.
+Its profile is drawn as it hangs, and its sizes are named constants in the model. Its engravings
+are set at a fixed size on the gripped arm's inner face; the model stops with a message if `Width`
+is too narrow for them (`ADVANCES`, as in Mico).
+
 ## Previewing and exporting
 
 Open a model in OpenSCAD, set the values in the Customizer (Window → Customizer), pick a `part`
@@ -30,8 +35,9 @@ python3 scripts/export.py photon my-right-hand.txt --hand right
 python3 scripts/export.py spark --hand left
 ```
 
-Mico and Quark take no `--hand` or `--in-place`: `python3 scripts/export.py mico` writes
-`exports/mico/mico.stl` (Quark: `exports/quark/quark.stl`), with an optional parameter file as well.
+Mico, Quark and Slap take no `--hand` or `--in-place`: `python3 scripts/export.py mico` writes
+`exports/mico/mico.stl` (Quark and Slap: `exports/<model>/<model>.stl`), with an optional
+parameter file as well.
 
 The parameter file is optional and uses the format of the `parameters.txt` files the
 [measuring page](measure-hand.html) puts in its zip (`Name = value` lines, `#` comments); names
@@ -113,7 +119,7 @@ CI runs these on every pull request:
   the STEP solid, read from git history (needs a full clone) and tessellated with OpenCascade.
   The engravings, absent from the STEP files, are left out. Every part is within 0.5% of the STEP
   volume and within about 0.1 mm of its surface at the 95th percentile. It fails beyond 1% or 0.6 mm.
-- `python3 scripts/check_stl.py` on the exports of both grips for both hands and of Mico and Quark:
+- `python3 scripts/check_stl.py` on the exports of both grips for both hands and of Mico, Quark and Slap:
   each STL is one closed body resting on z = 0.
 - `uvx ruff check --line-length 120 scripts` and `mdbook build docs`, after
   `python3 scripts/fetch_openscad_wasm.py`.
@@ -131,7 +137,7 @@ The checks are geometric only; fit, strength and comfort still need a test print
 ## Illustrations
 
 `docs/illustrations/render.sh` renders the part and assembly pictures of both grips from the
-right-hand defaults, and the pictures of Mico and Quark. Rerun it when a model changes.
+right-hand defaults, and the pictures of Mico, Quark and Slap. Rerun it when a model changes.
 
 ## Website
 
@@ -143,15 +149,15 @@ once every check of `.github/workflows/ci.yml` passes, its `deploy` job publishe
 
 Creating a GitHub release runs `.github/workflows/release.yml`, which exports both grips for both
 hands, checks the STLs and attaches one zip of STLs and one Bambu Studio project per grip and hand,
-plus the STL and project of Mico and of Quark. Run the workflow manually for a dry run.
+plus the STL and project of Mico, Quark and Slap. Run the workflow manually for a dry run.
 
 `scripts/export_bambu_project.py` builds the project from the STLs of one grip and hand, or from
-the STL of Mico or Quark: it lays the parts out in rows on the A1 plate, far enough apart for their
+the STL of Mico, Quark or Slap: it lays the parts out in rows on the A1 plate, far enough apart for their
 brims, assembles the project with the Bambu Studio CLI and the settings of Printing
 ([Photon](photon/printing.md), [Spark](spark/printing.md), [Mico](mico/printing.md),
-[Quark](quark/printing.md), untested in print), and fails if slicing it gives an error or a
-warning, such as a floating cantilever. The project goes to `exports/<grip>-<hand>.3mf` (Mico and
-Quark: `exports/<model>.3mf`) unless `--output` names another file. The
+[Quark](quark/printing.md), [Slap](slap/printing.md), untested in print), and fails if slicing it gives an error or a
+warning, such as a floating cantilever. The project goes to `exports/<grip>-<hand>.3mf` (Mico, Quark
+and Slap: `exports/<model>.3mf`) unless `--output` names another file. The
 release workflow installs the pinned Bambu Studio AppImage with
 `.github/actions/setup-bambu-studio`; locally, set `BAMBU_STUDIO` if `bambu-studio` is not on the
 `PATH` or is a wrapper script.
