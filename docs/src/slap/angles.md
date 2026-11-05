@@ -20,11 +20,13 @@ hardest.
 The cord bends over the ends of the slot, whose edges are rounded. Slap has not been load-tested.
 Build up the load gradually, and replace it if it whitens or cracks, above all around the slot.
 
-## Grip tape
+## Sandpaper
 
-The outer face is smooth. For more friction, stick adhesive grip tape over it, 90 × 157 mm, from
-the cord arm's tip down the gripped arm. OpenSCAD reports the tape's size when it renders the
-model with other values.
+The printed outer face is too smooth to hold as a sloper: Slap needs sandpaper on it for
+friction. Use a fine grit, around P220, cut to 90 × 157 mm, and glue it over the outer face from
+the cord arm's tip down the gripped arm, clamping it around the bend while the glue sets.
+OpenSCAD reports the sheet's size when it renders the model with other values. Replace the
+sheet when it wears smooth or starts to peel.
 
 ## Size
 

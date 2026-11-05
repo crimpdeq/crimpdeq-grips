@@ -26,7 +26,8 @@ rerun them.
   `slap.scad` is a one-piece sloper pump trainer in its print pose (standing on an end face), no
   hand or parts: a bent bar 90 mm wide, its profile drawn as it hangs, with a cord slot of five
   notches (the hanging angles) across the cord arm. `Crimpdeq Slap` over `crimpdeq.com` is
-  engraved on the gripped arm's inner face; the outer face stays smooth for optional grip tape.
+  engraved on the gripped arm's inner face; the outer face stays smooth for the sandpaper glued on
+  for friction (P220, see the book).
 - `scripts/export.py`: all parts of one hand, or the one STL of Mico, Quark or Slap (`ONE_PIECE`, no
   hand) (stdlib only); parameter file of `Name = value` lines, unknown names rejected.
 - `scripts/check_step.py`: compares every part with its STEP solid (`uv run`, inline dependencies;
@@ -70,7 +71,7 @@ rerun them.
 - Remotes: `origin` is `crimpdeq/crimpdeq-grips` (canonical; base task branches on `origin/main`
   and push them there), `fork` is the user's personal fork, `jared` and `upstream` are the sources
   (fetch only, never push).
-- No TPU guard and no non-printed parts besides the cord.
+- No TPU guard and no non-printed parts besides the cord (and Slap's sandpaper).
 - The book's print and assembly advice (walls print without supports, post installed right after
   the ring roller, lubricant, scaling walls but not the frame) follows the original author's
   OpenGrips assembly instructions (PDF of 2026-10-12, not kept); the same order applies to Spark.

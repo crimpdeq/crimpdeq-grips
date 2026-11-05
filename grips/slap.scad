@@ -2,9 +2,9 @@
 // gripped arm.
 //
 // A bent bar hung from a cord: a short cord arm, a bend of Bend_Angle and a long gripped arm, the
-// hand over the convex outer face (optionally taped). The cord runs through a slot across the cord
-// arm, out of both end faces, and is tied above; the load pulls it into one of the slot's notches,
-// which set the hanging angle.
+// hand over the convex outer face, with sandpaper glued on for friction. The cord runs through a
+// slot across the cord arm, out of both end faces, and is tied above; the load pulls it into one of
+// the slot's notches, which set the hanging angle.
 //
 // The profile is drawn in (X, Y) as the trainer hangs, the bend's center at the origin: the cord
 // arm runs toward -X along Y = BEND_R, the gripped arm drops toward +X, the outer face is up.
@@ -119,7 +119,7 @@ module engravings() {
         text(TEXT_LINES[l], size = TEXT_SIZE, font = TEXT_FONT, halign = "center", valign = "center");
 }
 
-echo(str("Slap: grip tape for the outer face, ", Width, " x ",
+echo(str("Slap: sandpaper for the outer face, ", Width, " x ",
          round(SHORT_ARM + OUTER_R * Bend_Angle * PI / 180 + LONG_ARM), " mm"));
 
 // Built along X (along_x maps the profile's (X, Y) to (Y, Z)), then stood up on its x = 0 end.
