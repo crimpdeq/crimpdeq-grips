@@ -39,8 +39,9 @@ Base_P_Width = 30;
 /* [Frame (mm)] */
 Wall_Width = 4;
 Base_Ext_Wall_Width = 6;
-// Length of the walls up to the lock slot
-Base_Frame_Height = 80;
+// Room for the fingertip from each roller's far edge to its finger stop; the walls lengthen to keep
+// it (v27: the middle finger's)
+Fingertip_Room = 23.66;
 
 /* [Printed pins (mm)] */
 pin_diameter = 3.3;
@@ -90,7 +91,6 @@ function axis(f) = [axis_y(f), axis_z(f)];
 function seat_end(f) = f == P ? axis_y(P) - BLOCKER[P] : axis_y(f) + BLOCKER[f];
 function hump_r(f) = DIAMETER[f] / 3; // raised arc of the wall plates around each pole
 
-LOCK_Y = Base_Frame_Height; // walls end and the lock slot starts
 LOCK_Z = 10.37; // as in v27 (the Prometheus slot height, copied over)
 POST_Y = E;
 POST_Z = W;
@@ -107,6 +107,10 @@ STOP_FOOT_R = [0, 3, 5, 3];
 STOP_SIDE_R = 5; // fillet between the stop and the wall plate beside it
 GAP_EDGE_R = 3; // plate bottom edge beside the open gap between seat and stop
 PINKY_FLOOR_Z = 5;
+
+// Walls end and the lock slot starts: v27's 80, further back when a roller's far edge would come
+// within Fingertip_Room of the top of its stop's face.
+LOCK_Y = max([80, for (f = [P:I]) axis_y(f) + DIAMETER[f] / 2 + STOP_SETBACK[f] + Fingertip_Room]);
 
 // Anchor (as in v27): a bar rising at 45 degrees from the crossbar that ends in a tube; the cord
 // runs along the tube bore. Its ends are 45 degree planes in plan through ANCHOR_X0 / ANCHOR_X1
