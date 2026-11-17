@@ -20,9 +20,15 @@ rests on its top. The page puts the PIP joint at the roller axis, so each roller
 diameter past the PIP crease. The roller diameters (index 30, middle 40, ring 38, pinky 22 mm) keep
 their defaults.
 
-Each roller sits on a seat in its wall, in front of a finger stop. Once every point is placed, the
-page checks the values against the model itself and shows its message when a grip cannot be made
-from them, for example when a finger's `Height` runs its seat into its finger stop.
+Each roller sits on a seat in its wall, in front of a finger stop. The walls are v27's 80 mm long
+or longer: a larger `Height` moves its roller toward the stops, and the walls lengthen so the
+fingertip keeps v27's room behind every roller, `Fingertip_Room` (23.66 mm from the roller's far
+edge to the top of its stop). If a fingertip still presses against the stop or the anchor bar, add
+a larger `Fingertip_Room` to `parameters.txt` and export again (below).
+
+Once every point is placed, the page checks the values against the model itself and shows its
+message when a grip cannot be made from them, for example when a finger's `Height` is too far from
+the middle finger's.
 
 The values do not depend on which hand the photo shows, so one photo can fit both hands; the model
 is a left-hand grip and the right hand is its mirror.

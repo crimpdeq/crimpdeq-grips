@@ -88,7 +88,9 @@ rerun them.
   `check_step.py` passes v43's values (it moved the blockers by hand, `To_Blocker`
   8.8/12.7/13.9/14.2, but kept the frame length of the VarSet blockers, `Base_Frame_Height` 104).
   Spark features absent from the original model (finger stops, anchor, cradle tool offsets) are
-  v27 constants, commented "as in v27".
+  v27 constants, commented "as in v27". Spark's wall length (the VarSet's `Base_Frame_Height`, 80)
+  is derived instead: at least 80, longer so each roller keeps `Fingertip_Room` (v27's middle
+  finger room) to its stop; larger `Height`s otherwise jam the fingertips against the crossbar.
 - Pins replace the original metal poles with the v43 fit: pin Ø3.3 with a 0.2 mm flat, holes Ø3.5,
   roller bore Ø3.8 with 0.5 mm chamfers.
 - Edges rounded by `along_x_rounded` need a keep-sharp profile reaching at least r past the edges

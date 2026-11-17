@@ -101,15 +101,18 @@ The values of the original model's VarSet (`Original/OpenGrips_Sisyphus.FCStd` a
 | `Base_<F>_Height` | Roller position along the fingers, relative to the pinky |
 | `Base_<F>_Blocker` | How far the seat under each roller reaches past its axis (the pinky's stops short of it) |
 | `Base_<F>_Diameter`, `Base_<F>_Width` | Roller size; all roller tops are level with the middle roller's |
-| `Base_Frame_Height` | Wall length up to the lock slot |
 
 The finger stops and the anchor have no counterpart in the original model and keep v27's
-dimensions.
+dimensions. The VarSet's `Base_Frame_Height` (wall length up to the lock slot, 80) is derived
+instead: a larger `Height` moves its roller toward the stops, so the walls lengthen until every
+roller's far edge is `Fingertip_Room` (23.66, v27's middle finger) in front of the top of its
+stop, and are never shorter than 80.
 
 As on Photon, the outer faces of the frame and the end wall carry an engraved `crimpdeq.com`, and
 the sloped top face of the anchor bar an engraved `Crimpdeq Spark`. Their space depends on the
-roller diameters and the frame length, not on the hand, so the model stops with a message if the
-text does not fit between the end wall's post hole and lock or on the anchor bar.
+roller diameters, not on the hand (the walls are never shorter than 80 mm), so the model stops
+with a message if the text does not fit between the end wall's post hole and lock or on the anchor
+bar.
 
 ## Checks
 
